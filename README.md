@@ -13,6 +13,9 @@ CH579集成BLE和Zigbee双模无线通讯的ARM内核32位微控制器，片上�
 
 [![sites](SoC/CH579.png)](http://www.wch.cn/products/CH579.html) 
 
+- [文档](docs/) 
+- [资源](src/) 
+
 #### 特 点
 
 - 32位ARM Cortex-M0内核，最高40MHz系统主频
