@@ -1,6 +1,6 @@
 ﻿# [CH579](https://github.com/sochub/CH579)
 [![sites](SoC/SoC.png)](http://www.qitas.cn) 
-#### 父级：[CH57](https://github.com/sochub/CH57) 
+#### 父级：[WCH CH57无线系列](https://github.com/sochub/CH57) 
 #### 归属：[Cortex M0](https://github.com/sochub/CM0) 
 
 ### [描述](https://github.com/sochub/CH579/wiki) 
@@ -26,17 +26,28 @@ CH579集成BLE和Zigbee双模无线通讯的ARM内核32位微控制器，片上�
 * 提供40个GPIO，32个中断输入
 * 内置AES-128加解密单元，芯片唯一ID
 
-封 装
 
-* CH579M：QFN48 5X5 
-* CH579F：QFN28 4X4
 
-### [资源组成](https://github.com/sochub/CH579)
+### [资源收录](https://github.com/sochub/CH579)
 
 * [文档](docs/) 
 * [资源](src/) 
 
-### [替换方案](https://github.com/sochub/CH579)
+#### [硬件开发资源](https://github.com/sochub/CH579)
+
+
+* CH579M封装：QFN48 （5mm x 5mm）
+
+[![sites](docs/CH579-48.png)](http://www.qitas.cn)
+
+* CH579F封装：QFN28 （4mm x 4mm）
+
+[![sites](docs/CH579-28.png)](http://www.qitas.cn)
+
+* [kicad资源](src/kicad/)
+* [AD资源](src/AD/)
+
+### [选型建议](https://github.com/sochub/CH579)
 
 * 多模无线通信替换[NRF52](https://github.com/sochub/NRF52) 和 [CC2650](https://github.com/sochub/CC2650)
 * 相识产品简配无线[CH578](https://github.com/sochub/CH578) 和 [CH576](https://github.com/sochub/CH576)
