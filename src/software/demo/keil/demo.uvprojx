@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>DEBUG</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Libs\Startup;..\Libs\CMSIS\Include;..\Libs\StdPeriphDriver\inc</IncludePath>
+              <IncludePath>..\..\Libs\Startup;..\..\Libs\CMSIS\Include;..\..\Libs\StdPeriphDriver\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -395,72 +395,72 @@
             <File>
               <FileName>CH57x_adc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libs\StdPeriphDriver\CH57x_adc.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_adc.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_clk.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libs\StdPeriphDriver\CH57x_clk.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_clk.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_flash.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libs\StdPeriphDriver\CH57x_flash.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_flash.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_gpio.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libs\StdPeriphDriver\CH57x_gpio.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_gpio.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_lcd.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libs\StdPeriphDriver\CH57x_lcd.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_lcd.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_pwm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libs\StdPeriphDriver\CH57x_pwm.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_pwm.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_pwr.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libs\StdPeriphDriver\CH57x_pwr.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_pwr.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_spi0.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libs\StdPeriphDriver\CH57x_spi0.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_spi0.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_sys.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libs\StdPeriphDriver\CH57x_sys.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_sys.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_timer0.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libs\StdPeriphDriver\CH57x_timer0.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_timer0.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_uart1.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libs\StdPeriphDriver\CH57x_uart1.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_uart1.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_usbdev.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libs\StdPeriphDriver\CH57x_usbdev.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_usbdev.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_usbhostBase.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libs\StdPeriphDriver\CH57x_usbhostBase.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_usbhostBase.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_usbhostClass.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Libs\StdPeriphDriver\CH57x_usbhostClass.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_usbhostClass.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -470,7 +470,7 @@
             <File>
               <FileName>startup_ARMCM0.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\Libs\Startup\startup_ARMCM0.s</FilePath>
+              <FilePath>..\..\Libs\Startup\startup_ARMCM0.s</FilePath>
             </File>
           </Files>
         </Group>

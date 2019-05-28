@@ -1,9 +1,9 @@
 /********************************** (C) COPYRIGHT ******************************
 * File Name          : DNS_Client.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/01
-* Description        : CH57xNET库演示文件
+* Author             : 
+* Version            : 
+* Date               : 
+* Description        : CH57xNET
 *                      (1)、CH579 Examples by KEIL;
 *                      (2)、串口0输出监控信息,115200bps;
 *                      (3)、本程序用于演示UDP 客户端通讯，单片机收到数据后，回传给目标IP上位机
@@ -18,6 +18,7 @@
 #include "CH57x_common.h"
 #include "core_cm0.h"
 #include "CH57xNET.H"
+#include "DNS.H"
 
 #define KEEPLIVE_ENABLE                      1                                  /* 开启KEEPLIVE功能 */
 
