@@ -270,7 +270,7 @@ void MQTT_Publish(char *topic,char *payload)
 	
 	topicString.cstring=topic; 
 	payloadlen=strlen(payload);
-	len= MQTTSerialize_publish(buf,sizeof(buf),0,0,0,packetid++,topicString,payload,payloadlen);	
+	len= MQTTSerialize_publish(buf,sizeof(buf),0,0,0,packetid++,topicString,(unsigned char *)payload,payloadlen);	
 	Transport_SendPacket(buf,len);
 }
 
