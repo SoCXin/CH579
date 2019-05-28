@@ -6,7 +6,7 @@
 
 ### [描述](https://github.com/sochub/CH579/wiki) 
 
-CH579集成BLE和Zigbee双模无线通讯的ARM内核32位微控制器，片上集成低功耗蓝牙BLE和Zigbee通讯模块、以太网控制器及收发器、全速USB主机和设备控制器及收发器、段式LCD驱动模块、ADC、触摸按键检测模块、RTC等丰富的外设资源。
+CH579 Cortex M0内核微控制器，片上集成低功耗蓝牙BLE和Zigbee通讯模块、以太网控制器及收发器、全速USB主机和设备控制器及收发器、段式LCD驱动模块、ADC、触摸按键检测模块、RTC等丰富的外设资源。
 
 [![sites](SoC/CH579.png)](http://www.wch.cn/products/CH579.html) 
 
@@ -32,8 +32,8 @@ CH579集成BLE和Zigbee双模无线通讯的ARM内核32位微控制器，片上�
 * [文档](docs/) 
     * [芯片手册](docs/) 
 * [资源](src/) 
-    * [示例程序](src/demo) 
-    * [工程样本](src/project) 
+    * [软件资源](src/software) 
+    * [硬件资源](src/hardware) 
 
 #### [硬件开发](https://github.com/sochub/CH579)
 
@@ -51,7 +51,10 @@ CH579目前提供两种QFN封装规格
 
 ### [选型建议](https://github.com/sochub/CH579)
 
-* 多模无线通信替换[NRF52](https://github.com/sochub/NRF52) 和 [CC2650](https://github.com/sochub/CC2650)
-* 相识产品简配无线[CH578](https://github.com/sochub/CH578) 和 [CH576](https://github.com/sochub/CH576)
+关注[WCH](https://github.com/sochub/WCH) 芯片产品应该都是对USB通信接口有需求，在已知的CH单片机系列产品中，都包括了USB相应的功能，CH579是无线通信系列中的最高规格产品，包括双模无线通信和片上集成的以太网功能，而且整个CH57X系列都是QFN封装，芯片接口较紧凑。
+
+* 单纯的BLE通信替换可采用[NRF52](https://github.com/sochub/NRF52) 和 [CC2640](https://github.com/sochub/CC2640)及相接近的产品。
+
+* 同系列产品[CH578](https://github.com/sochub/CH578) 和 [CH576](https://github.com/sochub/CH576)降低了无线协议支持、RAM和flash大小。
 
 ###  [SoC资源平台](http://www.qitas.cn)
