@@ -1,9 +1,9 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : Main.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/15
-* Description 		 : SPI0演示 Master/Slave 模式数据收发
+* File Name          : main.c
+* Author             : 
+* Version            : 
+* Date               : 
+* Description 		 : Master/Slave 模式数据收发
 *******************************************************************************/
 
 #include "CH57x_common.h"
@@ -80,9 +80,7 @@ int main()
     SPI0_SlaveTrans( spiBuffrev, 12 );  
 
     while(1); 
-#endif
-    
-    while(1);    
+#endif  
      
 }
 

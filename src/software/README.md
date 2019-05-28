@@ -1,11 +1,9 @@
-﻿# [CH579资源相关](https://github.com/sochub/CH579)
+﻿# [CH579 keil Demo](https://github.com/sochub/CH579)
 
-## [软件资源](software/) 
+demo文件中，将对应文件夹下的user文件夹下的各个项目main.c文件放置到keil工程文件中，就可以编译相应的例程。
 
-
-### 工程示例资源索引：
-
-*  NET 以太网通信
+关键资源索引：
+*  NET 
     *  DHCP_Client：DHCP功能例程，获取IP地址
     *  DNS：DNS例程，用域名解析出目标IP地址
     *  FTP_Client：FTP客户端例程
@@ -22,7 +20,7 @@
     *  UDP_Client：UDP_Client例程，通过UDP协议发送报文
     *  UDP_Server：UDP_Server例程，接受来自广播IP的指定端口报文，并将接受到报文的地址作为目标地址发送报文
     *  CH57xNET协议栈库说明.pdf：以太网协议栈库说明  
-* BLE 蓝牙通信
+* BLE
     * Broadcaster：广播者角色例程，处于广播态一直广播
     * CyclingSensor：骑行传感器例程，连接主机后定时上传速度和踏频
     * GlucoseSensor：葡萄糖传感器例程，连接主机后定时上传葡萄糖浓度
@@ -39,10 +37,5 @@
     * HAL：例程共用的硬件相关文件
     * LIB：BLE协议栈库文件及其头文件
     * CH57xBLE协议栈库说明.pdf：蓝牙协议栈库说明
-
-## [硬件资源](hardware/) 
-
-### kicad资源
-
 
 ###  [SoC资源平台](http://www.qitas.cn)
