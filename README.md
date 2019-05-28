@@ -1,7 +1,8 @@
 ﻿# [CH579](https://github.com/sochub/CH579)
 [![sites](SoC/SoC.png)](http://www.qitas.cn) 
-#### 父级：[WCH CH57无线系列](https://github.com/sochub/CH57) 
-#### 归属：[Cortex M0](https://github.com/sochub/CM0) 
+#### 厂商：[WCH](https://github.com/sochub/WCH) 
+#### 父级：[CH57无线系列](https://github.com/sochub/CH57) 
+#### 架构：[Cortex M0](https://github.com/sochub/CM0) 
 
 ### [描述](https://github.com/sochub/CH579/wiki) 
 
@@ -32,20 +33,21 @@ CH579集成BLE和Zigbee双模无线通讯的ARM内核32位微控制器，片上�
 
 * [文档](docs/) 
 * [资源](src/) 
+    * [示例程序](src/demo) 
+    * [工程样本](src/project) 
 
 #### [硬件开发资源](https://github.com/sochub/CH579)
 
 
-* CH579M封装：QFN48 （5mm x 5mm）
+* CH579M 封装：QFN48 （5mm x 5mm）
 
 [![sites](docs/CH579-48.png)](http://www.qitas.cn)
 
-* CH579F封装：QFN28 （4mm x 4mm）
+* CH579F 封装：QFN28 （4mm x 4mm）
 
 [![sites](docs/CH579-28.png)](http://www.qitas.cn)
 
-* [kicad资源](src/kicad/)
-* [AD资源](src/AD/)
+* [kicad库资源](src/kicad/)
 
 ### [选型建议](https://github.com/sochub/CH579)
 
