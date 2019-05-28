@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>ADC</TargetName>
+      <TargetName>demo</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
@@ -487,7 +487,7 @@
       <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="5.1.2" condition="ARMv6_7_8-M Device">
         <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="5.4.0"/>
         <targetInfos>
-          <targetInfo name="ADC"/>
+          <targetInfo name="demo"/>
         </targetInfos>
       </component>
     </components>
