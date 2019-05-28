@@ -27,17 +27,17 @@ CH579集成BLE和Zigbee双模无线通讯的ARM内核32位微控制器，片上�
 * 提供40个GPIO，32个中断输入
 * 内置AES-128加解密单元，芯片唯一ID
 
-
-
 ### [资源收录](https://github.com/sochub/CH579)
 
 * [文档](docs/) 
+    * [芯片手册](docs/) 
 * [资源](src/) 
     * [示例程序](src/demo) 
     * [工程样本](src/project) 
 
-#### [硬件开发资源](https://github.com/sochub/CH579)
+#### [硬件开发](https://github.com/sochub/CH579)
 
+CH579目前提供两种QFN封装规格
 
 * CH579M 封装：QFN48 （5mm x 5mm）
 

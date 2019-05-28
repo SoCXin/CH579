@@ -1,9 +1,9 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : Main.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/15
-* Description 		 : 片上flash演示：包括Code区，DataFlash区的擦/读/写
+* Author             : 
+* Version            : 
+* Date               : 
+* Description 		   : 片上flash Code区DataFlash区的擦/读/写
 *******************************************************************************/
 
 #include "CH57x_common.h"

@@ -13,7 +13,7 @@ UINT8  FoundNewDev;
 _RootHubDev   ThisUsbDev;                            //ROOT口
 
 PUINT8  pHOST_RX_RAM_Addr;
-PUINT8  pHOST_TX_RAM_Addr;
+PUINT8  pHOST_TX_RAM_Addr; 
 
 /*获取设备描述符*/
 __align(4) const UINT8  SetupGetDevDescr[] = { USB_REQ_TYP_IN, USB_GET_DESCRIPTOR, 0x00, USB_DESCR_TYP_DEVICE, 0x00, 0x00, sizeof( USB_DEV_DESCR ), 0x00 };
@@ -251,7 +251,6 @@ UINT8   USBHostTransact( UINT8 endp_pid, UINT8 tog, UINT16 timeout )
                     break;  // 超时重试
                 default:
                     return( ERR_USB_UNKNOWN );  // 不可能的情况
-                    break;
             }
         }
         else {  // 其它中断,不应该发生的情况

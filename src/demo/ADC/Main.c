@@ -1,9 +1,9 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : Main.c
-* Author             : WCH
-* Version            : V1.0
+* Author             : 
+* Version            : 
 * Date               : 2018/12/15
-* Description 		 : adc采样示例，包括温度检测、单通道检测、差分通道检测、TouchKey检测、中断方式采样。
+* Description 		 	 : adc采样示例，包括温度检测、单通道检测、差分通道检测、TouchKey检测、中断方式采样。
 *******************************************************************************/
 
 #include "CH57x_common.h"
