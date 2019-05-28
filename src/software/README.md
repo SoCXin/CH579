@@ -1,8 +1,10 @@
 ﻿# [CH579 keil Demo](https://github.com/sochub/CH579)
 
+## 使用说明
 demo文件中，将对应文件夹下的user文件夹下的各个项目main.c文件放置到keil工程文件中，就可以编译相应的例程。
 
-关键资源索引：
+### 关键资源索引：
+
 *  NET 
     *  DHCP_Client：DHCP功能例程，获取IP地址
     *  DNS：DNS例程，用域名解析出目标IP地址
@@ -14,12 +16,12 @@ demo文件中，将对应文件夹下的user文件夹下的各个项目main.c文
         *  MQTT_Pub：MQTT-Publish例程
         *  MQTT_Sub：MQTT-Subscibe例程
     *  TCP_Client
-*  TCP_MultipleClients：TCP多客户端例程，建立4个TCP客户端
-*  TCP_SingleClient：TCP单客户端例程，建立1个TCP客户端
-    *  TCP_Server: TCP_Server例程，建立TCP服务器
-    *  UDP_Client：UDP_Client例程，通过UDP协议发送报文
-    *  UDP_Server：UDP_Server例程，接受来自广播IP的指定端口报文，并将接受到报文的地址作为目标地址发送报文
-    *  CH57xNET协议栈库说明.pdf：以太网协议栈库说明  
+    *  TCP_MultipleClients：TCP多客户端例程，建立4个TCP客户端
+    *  TCP_SingleClient：TCP单客户端例程，建立1个TCP客户端
+        *  TCP_Server: TCP_Server例程，建立TCP服务器
+        *  UDP_Client：UDP_Client例程，通过UDP协议发送报文
+        *  UDP_Server：UDP_Server例程，接受来自广播IP的指定端口报文，并将接受到报文的地址作为目标地址发送报文
+        *  CH57xNET协议栈库说明.pdf：以太网协议栈库说明  
 * BLE
     * Broadcaster：广播者角色例程，处于广播态一直广播
     * CyclingSensor：骑行传感器例程，连接主机后定时上传速度和踏频
