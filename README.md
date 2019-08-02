@@ -1,16 +1,17 @@
 ﻿# [CH579](https://github.com/sochub/CH579)
 [![sites](SoC/SoC.png)](http://www.qitas.cn) 
-#### 厂商：[WCH](https://github.com/sochub/WCH) 
-#### 父级：[CH57x 无线系列](https://github.com/sochub/CH57) 
+#### 厂商：[WCH](https://github.com/sochub/WCH)
 #### 架构：[Cortex M0](https://github.com/sochub/CM0) 
+#### 父级：[CH57x](https://github.com/sochub/CH55)
+#### 芯片定级：[Level](https://github.com/sochub/Level)
 
-### [芯片描述](https://github.com/sochub/CH579/wiki) 
+## [CH579描述](https://github.com/sochub/CH579/wiki) 
 
 CH579 Cortex M0内核微控制器，片上集成低功耗蓝牙BLE(4.2)/Zigbee通讯模块、以太网控制器及收发器、全速USB主机和设备控制器及收发器、段式LCD驱动模块、ADC、触摸按键检测模块、RTC等丰富的外设资源。
 
 [![sites](SoC/CH579.png)](http://www.wch.cn/products/CH579.html) 
 
-关键参数：
+### 关键参数：
 
 * Cortex-M0内核，最高40MHz系统主频
 * 32K SRAM，250KB CodeFlash，2KB DataFlash, 4KB BootLoader，支持ICP、ISP和IAP，支持OTA无线升级
@@ -37,7 +38,9 @@ CH579 Cortex M0内核微控制器，片上集成低功耗蓝牙BLE(4.2)/Zigbee�
 
 #### [硬件开发](https://github.com/sochub/CH579)
 
-CH579目前提供两种QFN封装规格
+CH579目前提供两种QFN封装
+
+[![sites](SoC/CH579.JPG)](http://www.wch.cn/products/CH579.html) 
 
 * CH579M 封装：QFN48 （5mm x 5mm）
 
@@ -49,12 +52,14 @@ CH579目前提供两种QFN封装规格
 
 * [kicad库资源](src/kicad/)
 
-### [选型建议](https://github.com/sochub/CH579)
+### [选型建议](https://github.com/sochub)
 
-关注[WCH](https://github.com/sochub/WCH) 芯片产品应该都是对USB通信接口有需求，在已知的CH单片机系列产品中，都包括了USB相应的功能，CH579是无线通信系列中的最高规格产品，包括双模无线通信和片上集成的以太网功能，而且整个CH57X系列都是QFN封装，芯片接口较紧凑。
+[WCH](https://github.com/sochub/WCH) 芯片产品长于USB通信转换，在已知的CH单片机系列产品中，都包括了USB相应的功能，CH579是无线通信系列中的最高规格产品，包括双模无线通信和片上集成的以太网功能，而且整个CH57X系列都是QFN封装，芯片接口较紧凑。
 
 * 单纯的BLE通信替换可采用[NRF51822](https://github.com/sochub/NRF51822) 或 [CC2540](https://github.com/sochub/CC2540)及接近的产品。
 
-* 同系列产品[CH578](https://github.com/sochub/CH578) 和 [CH576](https://github.com/sochub/CH576)降低了无线协议支持、RAM和flash大小。
+* 同系列产品[CH578](https://github.com/sochub/CH578) 和 [CH576](https://github.com/sochub/CH576)降低了多无线协议支持、RAM和flash减少。
+
+[CH579](https://github.com/sochub/CH579)的相应规格还算主流，但是市场价格较高不具备竞争优势，开发资源和群体想多较少。
 
 ###  [SoC资源平台](http://www.qitas.cn)
