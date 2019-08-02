@@ -40,7 +40,7 @@ CH579 Cortex M0内核微控制器，片上集成低功耗蓝牙BLE(4.2)/Zigbee�
 
 CH579目前提供两种QFN封装
 
-[![sites](SoC/CH579.JPG)](http://www.wch.cn/products/CH579.html) 
+[![sites](SoC/CH579.jpg)](http://www.wch.cn/products/CH579.html) 
 
 * CH579M 封装：QFN48 （5mm x 5mm）
 
