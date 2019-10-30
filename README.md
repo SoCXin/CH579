@@ -1,13 +1,12 @@
 ﻿# [CH579](https://github.com/sochub/CH579)
 [![sites](SoC/SoC.png)](http://www.qitas.cn) 
 #### 厂商：[WCH](https://github.com/sochub/WCH)
-#### 架构：[Cortex M0](https://github.com/sochub/CM0) 
-#### 父级：[CH57x](https://github.com/sochub/CH55)
+#### 内核：[Cortex M0](https://github.com/sochub/CM0) 
 #### 芯片定级：[Level](https://github.com/sochub/Level)
 
 ## [CH579描述](https://github.com/sochub/CH579/wiki) 
 
-CH579 Cortex M0内核微控制器，片上集成低功耗蓝牙BLE(4.2)/Zigbee通讯模块、以太网控制器及收发器、全速USB主机和设备控制器及收发器、段式LCD驱动模块、ADC、触摸按键检测模块、RTC等丰富的外设资源。
+[CH579](https://github.com/sochub/CH579) 采用 Cortex M0内核，片上集成低功耗蓝牙BLE(4.2)/Zigbee通讯模块、以太网控制器及收发器、全速USB主机和设备控制器及收发器、段式LCD驱动模块、ADC、触摸按键检测模块、RTC等丰富的外设资源。
 
 [![sites](SoC/CH579.png)](http://www.wch.cn/products/CH579.html) 
 
@@ -25,8 +24,7 @@ CH579 Cortex M0内核微控制器，片上集成低功耗蓝牙BLE(4.2)/Zigbee�
 * 提供4组26位定时器，支持捕捉/采样，支持12路PWM输出
 * 提供4组独立UART，兼容16C550，最高通讯波特率可达5Mbps
 * 提供2组独立SPI，内置FIFO ，SPI0支持Master和Slave模式，支持DMA
-* 提供40个GPIO，32个中断输入
-* 内置AES-128加解密单元，芯片唯一ID
+* 内置AES-128加解密单元
 
 ### [资源收录](https://github.com/sochub/CH579)
 
@@ -38,28 +36,28 @@ CH579 Cortex M0内核微控制器，片上集成低功耗蓝牙BLE(4.2)/Zigbee�
 
 #### [硬件开发](https://github.com/sochub/CH579)
 
-CH579目前提供两种QFN封装
+CH579目前提供两种QFN封装规格
 
 [![sites](SoC/CH579.jpg)](http://www.wch.cn/products/CH579.html) 
 
 * CH579M 封装：QFN48 （5mm x 5mm）
 
-[![sites](docs/CH579-48.png)](http://www.qitas.cn)
+[![sites](SoC/CH579-48.png)](http://www.qitas.cn)
 
 * CH579F 封装：QFN28 （4mm x 4mm）
 
-[![sites](docs/CH579-28.png)](http://www.qitas.cn)
+[![sites](SoC/CH579-28.png)](http://www.qitas.cn)
 
 * [kicad库资源](src/kicad/)
 
 ### [选型建议](https://github.com/sochub)
 
-[WCH](https://github.com/sochub/WCH) 芯片产品长于USB通信转换，在已知的CH单片机系列产品中，都包括了USB相应的功能，CH579是无线通信系列中的最高规格产品，包括双模无线通信和片上集成的以太网功能，而且整个CH57X系列都是QFN封装，芯片接口较紧凑。
+[CH579](https://github.com/sochub/CH579)的片上资源相对独特，集成以太网通信和无线通信，对[W7500P](https://github.com/sochub/W7500P)和蓝牙芯片市场有一定影响，目前还未引爆市场。
 
 * 单纯的BLE通信替换可采用[NRF51822](https://github.com/sochub/NRF51822) 或 [CC2540](https://github.com/sochub/CC2540)及接近的产品。
 
-* 同系列产品[CH578](https://github.com/sochub/CH578) 和 [CH576](https://github.com/sochub/CH576)降低了多无线协议支持、RAM和flash减少。
+* [CH578](https://github.com/sochub/CH578)降低了多无线协议支持，规格降低。
+* [CH563](https://github.com/sochub/CH563)更偏向有线连接，使用ARM9内核主频更高。
 
-[CH579](https://github.com/sochub/CH579)的相应规格还算主流，但是市场价格较高不具备竞争优势，开发资源和群体想多较少。
 
 ###  [SoC资源平台](http://www.qitas.cn)
