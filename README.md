@@ -13,9 +13,8 @@
 ### 关键参数：
 
 * Cortex-M0内核，最高40MHz系统主频
-* 32K SRAM，250KB CodeFlash，2KB DataFlash, 4KB BootLoader，支持ICP、ISP和IAP，支持OTA无线升级
-* 蓝牙BLE和Zigbee双模，BLE兼容4.2规范，Zigbee兼容IEEE 802.15.4规范
-* 集成2.4GHz RF收发器和基带及链路控制，单端RF接口，无需外部电感
+* 32K SRAM，250KB CodeFlash，2KB DataFlash, 4KB BootLoader，支持ICP、ISP、IAP、OTA
+* 双模：BLE兼容4.2规范，Zigbee兼容IEEE 802.15.4规范，单端RF接口无需外部电感
 * 支持3.3V和2.5V电源，范围2.1V～3.6V, 内置DC/DC转换，0dBm发送功率时电流6mA
 * 多种低功耗模式：Idle，Halt，Sleep，Shutdown，内置电池电压低压监控，最低电流0.2uA
 * 提供10M以太网接口，内置PHY
@@ -59,5 +58,8 @@ CH579目前提供两种QFN封装规格
 * [CH578](https://github.com/sochub/CH578)降低了多无线协议支持，规格降低。
 * [CH563](https://github.com/sochub/CH563)更偏向有线连接，使用ARM9内核主频更高。
 
+在单纯的USB转以太网通信的应用场景下，可以使用非SoC芯片，例如Exar推出USB转以太网的接口芯片XR22800-804，USB接口为高速480M的USB2.0（支持USB CDC-ECM, CDC-ACM, & HID）,芯片内部集成了10/100M以太网MAC和PHY，支持IEEE802.3/IEEE802.3U。另外还有UART接口、I2C主设备接口，增强型I/O口。
+
+而在单纯的串口转以太网应用场景，拥有大量基于各种方案的成熟模块，CH579的存在感不强。
 
 ###  [SoC资源平台](http://www.qitas.cn)
