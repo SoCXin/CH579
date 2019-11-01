@@ -1,0 +1,14 @@
+*.crf
+*.dep
+*.map
+*.hex
+*.bin
+*.bak
+*.txt
+*.uvgu*
+*.uvop*
+obj/
+list/
+RTE/
+DebugConfig/
+

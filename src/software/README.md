@@ -1,11 +1,17 @@
-﻿# [CH579 keil Demo](https://github.com/sochub/CH579)
+﻿# [CH579 软件工程](https://github.com/sochub/CH579)
 
 ## 使用说明
-demo文件中，将对应文件夹下的user文件夹下的各个项目main.c文件放置到keil工程文件中，就可以编译相应的例程。
 
-### 关键资源索引：
+IO工程文件中，需要将对应文件夹下的user文件夹下的各个项目main.c文件放置到keil工程文件中，就可以编译相应的例程。
 
-*  NET 
+*  IO 驱动工程
+    *  ADC：控制AD
+    *  FLASH：FLASH读写
+    *  SPI0：SPI通信
+    *  UART1：串口通信配置
+    *  USB：USB通信
+    *  PWM：PWM输出      
+*  NET 网络工程
     *  DHCP_Client：DHCP功能例程，获取IP地址
     *  DNS：DNS例程，用域名解析出目标IP地址
     *  FTP_Client：FTP客户端例程
@@ -22,7 +28,7 @@ demo文件中，将对应文件夹下的user文件夹下的各个项目main.c文
         *  UDP_Client：UDP_Client例程，通过UDP协议发送报文
         *  UDP_Server：UDP_Server例程，接受来自广播IP的指定端口报文，并将接受到报文的地址作为目标地址发送报文
         *  CH57xNET协议栈库说明.pdf：以太网协议栈库说明  
-* BLE
+* BLE 无线工程
     * Broadcaster：广播者角色例程，处于广播态一直广播
     * CyclingSensor：骑行传感器例程，连接主机后定时上传速度和踏频
     * GlucoseSensor：葡萄糖传感器例程，连接主机后定时上传葡萄糖浓度
