@@ -12,8 +12,8 @@
 
 ### 关键参数：
 
-* Cortex-M0内核，最高40MHz系统主频
-* 32K SRAM，250KB CodeFlash，2KB DataFlash, 4KB BootLoader，支持ICP、ISP、IAP、OTA
+* Cortex-M0内核，40MHz主频
+* 32K SRAM，250KB，2KB DataFlash, 4KB BootLoader，支持ICP、ISP、IAP、OTA
 * 双模：BLE兼容4.2规范，Zigbee兼容IEEE 802.15.4规范，单端RF接口无需外部电感
 * 支持3.3V和2.5V电源，范围2.1V～3.6V, 内置DC/DC转换，0dBm发送功率时电流6mA
 * 多种低功耗模式：Idle，Halt，Sleep，Shutdown，内置电池电压低压监控，最低电流0.2uA
