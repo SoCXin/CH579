@@ -17,7 +17,7 @@
 #include <string.h>
 #include "CH57x_common.h"
 #include "core_cm0.h"
-#include "CH57xNET.h"
+#include "CH57xNET.H"
 
 #define KEEPLIVE_ENABLE                      1                                  /* ¿ªÆôKEEPLIVE¹¦ÄÜ */
 

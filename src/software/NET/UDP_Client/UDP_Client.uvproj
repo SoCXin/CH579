@@ -373,7 +373,7 @@
               <MiscControls>--diag_suppress=231</MiscControls>
               <Define>DEBUG</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\..\Libs\CMSIS\Include;..\LIB;..\..\Libs\StdPeriphDriver\inc</IncludePath>
+              <IncludePath>..\..\..\Libs\CMSIS\Include;..\..\Libs\LIB;..\..\Libs\StdPeriphDriver\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -470,7 +470,7 @@
             <File>
               <FileName>CH57xNET.LIB</FileName>
               <FileType>4</FileType>
-              <FilePath>..\LIB\CH57xNET.LIB</FilePath>
+              <FilePath>..\..\Libs\LIB\CH57xNET.LIB</FilePath>
             </File>
           </Files>
         </Group>

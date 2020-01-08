@@ -7,10 +7,10 @@
 
   <Targets>
     <Target>
-      <TargetName>FTP_Server</TargetName>
+      <TargetName>FTP_Client</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
+      <pCCUsed>5060183::V5.06 update 2 (build 183)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -49,7 +49,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\obj\</OutputDirectory>
-          <OutputName>FTP_Server</OutputName>
+          <OutputName>FTP_Client</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
@@ -336,9 +336,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>--diag_suppress=231</MiscControls>
-              <Define>DEBUG</Define>
+              <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libs\CMSIS\Include;..\..\Libs\LIB;..\FTP_Server;..\..\Libs\StdPeriphDriver\inc</IncludePath>
+              <IncludePath>..\..\Libs\CMSIS\Include;..\..\..\Libs\LIB;..\FTP_Client;..\..\Libs\StdPeriphDriver\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -388,9 +388,9 @@
               <FilePath>.\Main.c</FilePath>
             </File>
             <File>
-              <FileName>FTP_Server.c</FileName>
+              <FileName>FTP_Client.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\FTP_Server.c</FilePath>
+              <FilePath>.\FTP_Client.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -457,7 +457,7 @@
       <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="5.1.1" condition="ARMv6_7_8-M Device">
         <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="5.3.0"/>
         <targetInfos>
-          <targetInfo name="FTP_Server"/>
+          <targetInfo name="FTP_Client"/>
         </targetInfos>
       </component>
     </components>
