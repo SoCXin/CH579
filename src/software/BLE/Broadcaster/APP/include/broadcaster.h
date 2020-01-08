@@ -38,7 +38,7 @@ extern "C"
 /*
  * Task Initialization for the BLE Broadcaster Application
  */
-extern void Broadcaster_Init( uint8 task_id );
+extern void Broadcaster_Init( void );
 
 /*
  * Task Event Processor for the BLE Broadcaster Application

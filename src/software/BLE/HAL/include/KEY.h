@@ -116,8 +116,25 @@ void HAL_KeyInit( void );
  */
 void HAL_KeyPoll( void );
 
-
+/*
+ * Register the Key Service
+ */
 void HAL_KEY_RegisterForKeys( tmosTaskID id );
+
+/*
+ * Configure the Key Service
+ */
+void HalKeyConfig( uint8 interruptEnable, const halKeyCBack_t cback);
+
+/*
+ * Read the Key callback
+ */
+void HalKeyCallback ( uint8 keys, uint8 state );
+
+/*
+ * Read the Key status
+ */
+uint8 HalKeyRead( void);
 
 /**************************************************************************************************
 **************************************************************************************************/

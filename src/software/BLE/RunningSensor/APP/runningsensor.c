@@ -22,7 +22,7 @@
 /*********************************************************************
  * MACROS
  */
-
+ 
 #define DISTANCE_TRAVELED( speed )  ((speed) * ((DEFAULT_RSC_PERIOD) / 1000))
 
 /*********************************************************************
@@ -47,37 +47,35 @@
 // How often to perform sensor's periodic event (625us)
 #define DEFAULT_RSC_PERIOD                       2000
 
-// Whether to enable automatic parameter update request when a connection is formed
-#define DEFAULT_ENABLE_UPDATE_REQUEST            FALSE
-
-// Minimum connection interval (units of 1.25ms) if automatic parameter update request is enabled
+// Minimum connection interval (units of 1.25ms)
 #define DEFAULT_DESIRED_MIN_CONN_INTERVAL        200
 
-// Maximum connection interval (units of 1.25ms) if automatic parameter update request is enabled
+// Maximum connection interval (units of 1.25ms)
 #define DEFAULT_DESIRED_MAX_CONN_INTERVAL        1600
 
-// Slave latency to use if automatic parameter update request is enabled
+// Slave latency to use if parameter update request
 #define DEFAULT_DESIRED_SLAVE_LATENCY            0
 
-// Supervision timeout value (units of 10ms) if automatic parameter update request is enabled
+// Supervision timeout value (units of 10ms)
 #define DEFAULT_DESIRED_CONN_TIMEOUT             1000
 
+// Sensor sends a slave security request.
 #define DEFAULT_PAIRING_PARAMETER                GAPBOND_PAIRING_MODE_INITIATE
 
-#define USING_WHITE_LIST                         TRUE
+// Bonded devices' addresses are stored in white list.
+#define USING_WHITE_LIST                         FALSE
 
+// Request bonding.
 #define REQ_BONDING                              TRUE
 
+// Time alloted for service discovery before requesting more energy efficient connection parameters
 #define SVC_DISC_DELAY                           5000
 
 // After 15 seconds of no user input with notifications off, terminate connection
-#define NEGLECT_TIMEOUT_DELAY                    15000
+#define NEGLECT_TIMEOUT_DELAY                    24000
 
 // Setting this to true lets this device disconnect after a period of no use.
 #define USING_NEGLECT_TIMEOUT                    TRUE
-
-// Delay for reset of device's bonds, connections, alerts
-#define RSC_RESET_DELAY                          3000 // in (625us)
 
 // For simulated measurements
 #define FLAGS_IDX_MAX                            4
@@ -98,9 +96,6 @@
 #define WALKING_MOTION                           1
 #define RUNNING_MOTION                           2
 #define MOTION_IDX_MAX                           3
-
-// Maximum amount of time allowed to pass without user interaction before connection termination (625us)
-#define MAX_INACTIVITY_DUR                       10000
 
 // Length of running measurement value
 #define RSC_MEAS_LEN                             10
@@ -125,7 +120,7 @@
  */
 static uint8 sensor_TaskID;   // Task ID for internal task/event processing
 
-static gaprole_States_t gapProfileState = GAPROLE_INIT;
+static gapRole_States_t gapProfileState = GAPROLE_INIT;
 
 static uint8 sensorUsingWhiteList = FALSE;
 
@@ -195,7 +190,7 @@ static uint8 motion = STANDING_STILL;
  * LOCAL FUNCTIONS
  */
 static void sensor_ProcessTMOSMsg( tmos_event_hdr_t *pMsg );
-static void SensorGapStateCB( gaprole_States_t newState );
+static void SensorGapStateCB( gapRole_States_t newState ,gapRoleEvent_t * pEvent);
 static void sensorPeriodicTask( void );
 static void sensorMeasNotify(void);
 static bStatus_t SensorCB(uint8 event, uint32 *pNewCummVal);
@@ -208,13 +203,14 @@ static bStatus_t SensorCB(uint8 event, uint32 *pNewCummVal);
 static gapRolesCBs_t runningPeripheralCB =
 {
   SensorGapStateCB,  // Profile State Change Callbacks
-  NULL               // When a valid RSSI is read from controller
+  NULL,               // When a valid RSSI is read from controller
+  NULL 
 };
 
 // Bond Manager Callbacks
-static const gapBondCBs_t runningBondCB =
+static gapBondCBs_t runningBondCB =
 {
-  NULL,                   // Passcode callback (not used)
+  NULL,                   // Passcode callback
   NULL                    // Pairing state callback
 };
 
@@ -236,38 +232,18 @@ static const gapBondCBs_t runningBondCB =
  *
  * @return  none
  */
-void RunningSensor_Init( uint8 task_id )
+void RunningSensor_Init( )
 {
-  sensor_TaskID = task_id;
+  sensor_TaskID = TMOS_ProcessEventRegister(RunningSensor_ProcessEvent);
 
   // Setup the GAP Peripheral Role Profile
   {
-    // Fdevice start advertising
     uint8 initial_advertising_enable = TRUE;
-
-    // setting this to zero, the device will go into the waiting state after
-    // being discoverable for 30.72 second, and will not being advertising again
-    // until the enabler is set back to TRUE
-    uint16 gapRole_AdvertOffTime = 100;
-
-    uint8 enable_update_request = DEFAULT_ENABLE_UPDATE_REQUEST;
-    uint16 desired_min_interval = DEFAULT_DESIRED_MIN_CONN_INTERVAL;
-    uint16 desired_max_interval = DEFAULT_DESIRED_MAX_CONN_INTERVAL;
-    uint16 desired_slave_latency = DEFAULT_DESIRED_SLAVE_LATENCY;
-    uint16 desired_conn_timeout = DEFAULT_DESIRED_CONN_TIMEOUT;
 
     // Set the GAP Role Parameters
     GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &initial_advertising_enable );
-    GAPRole_SetParameter( GAPROLE_ADVERT_OFF_TIME, sizeof( uint16 ), &gapRole_AdvertOffTime );
-
     GAPRole_SetParameter( GAPROLE_SCAN_RSP_DATA, sizeof ( scanRspData ), scanRspData );
     GAPRole_SetParameter( GAPROLE_ADVERT_DATA, sizeof( advertData ), advertData );
-
-    GAPRole_SetParameter( GAPROLE_PARAM_UPDATE_ENABLE, sizeof( uint8 ), &enable_update_request );
-    GAPRole_SetParameter( GAPROLE_MIN_CONN_INTERVAL, sizeof( uint16 ), &desired_min_interval );
-    GAPRole_SetParameter( GAPROLE_MAX_CONN_INTERVAL, sizeof( uint16 ), &desired_max_interval );
-    GAPRole_SetParameter( GAPROLE_SLAVE_LATENCY, sizeof( uint16 ), &desired_slave_latency );
-    GAPRole_SetParameter( GAPROLE_TIMEOUT_MULTIPLIER, sizeof( uint16 ), &desired_conn_timeout );
   }
 
   // Set the GAP Characteristics
@@ -282,11 +258,11 @@ void RunningSensor_Init( uint8 task_id )
     uint8 bonding = REQ_BONDING;
     uint8 autoSync = USING_WHITE_LIST;
 
-    GAPBondMgr_SetParameter( GAPBOND_DEFAULT_PASSCODE, sizeof ( uint32 ), &passkey );
-    GAPBondMgr_SetParameter( GAPBOND_PAIRING_MODE, sizeof ( uint8 ), &pairMode );
-    GAPBondMgr_SetParameter( GAPBOND_MITM_PROTECTION, sizeof ( uint8 ), &mitm );
-    GAPBondMgr_SetParameter( GAPBOND_IO_CAPABILITIES, sizeof ( uint8 ), &ioCap );
-    GAPBondMgr_SetParameter( GAPBOND_BONDING_ENABLED, sizeof ( uint8 ), &bonding );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_DEFAULT_PASSCODE, sizeof ( uint32 ), &passkey );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_PAIRING_MODE, sizeof ( uint8 ), &pairMode );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_MITM_PROTECTION, sizeof ( uint8 ), &mitm );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_IO_CAPABILITIES, sizeof ( uint8 ), &ioCap );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_BONDING_ENABLED, sizeof ( uint8 ), &bonding );
     GAPBondMgr_SetParameter( GAPBOND_AUTO_SYNC_WL, sizeof ( uint8 ), &autoSync );
   }
 
@@ -362,10 +338,7 @@ uint16 RunningSensor_ProcessEvent( uint8 task_id, uint16 events )
   if ( events & START_DEVICE_EVT )
   {
     // Start the Device
-    VOID GAPRole_StartDevice( &runningPeripheralCB );
-
-    // Register with bond manager after starting device
-    GAPBondMgr_Register( (gapBondCBs_t *) &runningBondCB );
+    VOID GAPRole_PeripheralStartDevice( sensor_TaskID, &runningBondCB, &runningPeripheralCB );
 
     return ( events ^ START_DEVICE_EVT );
   }
@@ -380,10 +353,13 @@ uint16 RunningSensor_ProcessEvent( uint8 task_id, uint16 events )
 
   if ( events & RSC_CONN_PARAM_UPDATE_EVT )
   {
-    // Send param update.  If it fails, retry until successful.
-    GAPRole_SendUpdateParam( DEFAULT_DESIRED_MIN_CONN_INTERVAL, DEFAULT_DESIRED_MAX_CONN_INTERVAL,
-                             DEFAULT_DESIRED_SLAVE_LATENCY, DEFAULT_DESIRED_CONN_TIMEOUT,
-                             GAPROLE_RESEND_PARAM_UPDATE );
+    // Send param update.
+    GAPRole_PeripheralConnParamUpdateReq( gapConnHandle, 
+                                          DEFAULT_DESIRED_MIN_CONN_INTERVAL, 
+                                          DEFAULT_DESIRED_MAX_CONN_INTERVAL,  
+                                          DEFAULT_DESIRED_SLAVE_LATENCY, 
+                                          DEFAULT_DESIRED_CONN_TIMEOUT,  
+                                          sensor_TaskID );
 
     // Assuming service discovery complete, start neglect timer
     if ( USING_NEGLECT_TIMEOUT )
@@ -397,64 +373,9 @@ uint16 RunningSensor_ProcessEvent( uint8 task_id, uint16 events )
   if ( events & RSC_NEGLECT_TIMEOUT_EVT )
   {
     // No user input, terminate connection.
-    GAPRole_TerminateConnection();
+    GAPRole_TerminateLink( gapConnHandle );
 
     return ( events ^ RSC_NEGLECT_TIMEOUT_EVT );
-  }
-
-  if ( events & RSC_RESET_EVT )
-  {
-     if ( gapProfileState == GAPROLE_CONNECTED )
-     {
-       // Exit the connection
-       GAPRole_TerminateConnection();
-
-       // There is no callback for manual termination of the link.  change state variable here.
-       gapProfileState = GAPROLE_WAITING;
-
-       // Set timer to give the end advertising event time to finish
-       tmos_start_task( sensor_TaskID, RSC_RESET_EVT, 500 );
-     }
-     else if ( gapProfileState == GAPROLE_ADVERTISING )
-     {
-       uint8 value = FALSE;
-
-       // Turn off advertising
-       GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &value );
-
-       // Set timer to give the end advertising event time to finish
-       tmos_start_task( sensor_TaskID, RSC_RESET_EVT, 500 );
-     }
-     else if ( USING_WHITE_LIST == TRUE )
-     {
-       //temporary variable
-       uint8 value = GAP_FILTER_POLICY_ALL;
-
-       // Turn off white list filter policy
-       GAPRole_SetParameter(GAPROLE_ADV_FILTER_POLICY, sizeof( uint8 ), &value);
-
-       sensorUsingWhiteList = FALSE;
-
-       // Clear the white list
-//       HCI_LE_ClearWhiteListCmd();
-
-       // Set timer to give the end advertising event time to finish
-       tmos_start_task( sensor_TaskID, RSC_RESET_EVT, 500 );
-     }
-     else if ( (gapProfileState == GAPROLE_STARTED) ||
-               (gapProfileState == GAPROLE_WAITING) ||
-               (gapProfileState == GAPROLE_WAITING_AFTER_TIMEOUT) )
-     {
-       uint8 eraseBonds = TRUE;
-
-       // Erase all bonds
-       GAPBondMgr_SetParameter( GAPBOND_ERASE_ALLBONDS, 0, &eraseBonds );
-
-       // Turn on GREEN LED for set time
-//       HalLedSet( HAL_LED_1, HAL_LED_MODE_BLINK );
-
-       return (events ^ RSC_RESET_EVT);
-     }
   }
 
   // Discard unknown events
@@ -475,7 +396,6 @@ static void sensor_ProcessTMOSMsg( tmos_event_hdr_t *pMsg )
   switch ( pMsg->event )
   {
 		default:
-			
 		break;
   }
 }
@@ -587,17 +507,20 @@ static void sensorMeasNotify(void)
  *
  * @return  none
  */
-static void SensorGapStateCB( gaprole_States_t newState )
+static void SensorGapStateCB( gapRole_States_t newState ,gapRoleEvent_t * pEvent)
 {
   // if connected
   if (newState == GAPROLE_CONNECTED)
   {
-    // get connection handle
-    GAPRole_GetParameter(GAPROLE_CONNHANDLE, &gapConnHandle);
+    if( pEvent->gap.opcode == GAP_LINK_ESTABLISHED_EVENT )
+    {
+      // Get connection handle
+      gapConnHandle = pEvent->linkCmpl.connectionHandle;
 
-    // Set timer to update connection parameters
-    // 5 seconds should allow enough time for Service Discovery by the collector to finish
-    tmos_start_task( sensor_TaskID, RSC_CONN_PARAM_UPDATE_EVT, SVC_DISC_DELAY);
+      // Set timer to update connection parameters
+      // 5 seconds should allow enough time for Service Discovery by the collector to finish
+      tmos_start_task( sensor_TaskID, RSC_CONN_PARAM_UPDATE_EVT, SVC_DISC_DELAY );
+    }
   }
   // if disconnected
   else if (gapProfileState == GAPROLE_CONNECTED &&
@@ -616,7 +539,7 @@ static void SensorGapStateCB( gaprole_States_t newState )
     // If not already using white list, begin to do so.
     GAPBondMgr_GetParameter( GAPBOND_BOND_COUNT, &bondCount );
 
-    if(USING_WHITE_LIST && sensorUsingWhiteList == FALSE && bondCount > 0 )
+    if( USING_WHITE_LIST && sensorUsingWhiteList == FALSE && bondCount > 0 )
     {
       uint8 value = GAP_FILTER_POLICY_WHITE;
 
@@ -625,20 +548,10 @@ static void SensorGapStateCB( gaprole_States_t newState )
       sensorUsingWhiteList = TRUE;
     }
 
-    if ( newState == GAPROLE_WAITING_AFTER_TIMEOUT )
-    {
-      // link loss timeout-- use fast advertising
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MIN, DEFAULT_FAST_ADV_INTERVAL );
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MAX, DEFAULT_FAST_ADV_INTERVAL );
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_MIN, DEFAULT_WHITE_LIST_ADV_DURATION );
-    }
-    else
-    {
-      // Else use slow advertising
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MIN, DEFAULT_SLOW_ADV_INTERVAL );
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MAX, DEFAULT_SLOW_ADV_INTERVAL );
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_MIN, DEFAULT_WHITE_LIST_ADV_DURATION );
-    }
+    // link loss -- use fast advertising
+    GAP_SetParamValue( TGAP_DISC_ADV_INT_MIN, DEFAULT_FAST_ADV_INTERVAL );
+    GAP_SetParamValue( TGAP_DISC_ADV_INT_MAX, DEFAULT_FAST_ADV_INTERVAL );
+    GAP_SetParamValue( TGAP_GEN_DISC_ADV_MIN, DEFAULT_WHITE_LIST_ADV_DURATION );
 
     // Enable advertising
     GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &advState );
@@ -668,23 +581,23 @@ static void SensorGapStateCB( gaprole_States_t newState )
     }
     // if fast advertising interrupted to cancel white list
     else if ( ( (!USING_WHITE_LIST) || whiteListUsed) &&
-              (GAP_GetParamValue( TGAP_GEN_DISC_ADV_INT_MIN ) == DEFAULT_FAST_ADV_INTERVAL ) )
+              (GAP_GetParamValue( TGAP_DISC_ADV_INT_MIN ) == DEFAULT_FAST_ADV_INTERVAL ) )
     {
       uint8 advState = TRUE;
 
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MIN, DEFAULT_FAST_ADV_INTERVAL );
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MAX, DEFAULT_FAST_ADV_INTERVAL );
+      GAP_SetParamValue( TGAP_DISC_ADV_INT_MIN, DEFAULT_FAST_ADV_INTERVAL );
+      GAP_SetParamValue( TGAP_DISC_ADV_INT_MAX, DEFAULT_FAST_ADV_INTERVAL );
       GAP_SetParamValue( TGAP_GEN_DISC_ADV_MIN, DEFAULT_FAST_ADV_DURATION );
       GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &advState );
     }
     // if fast advertising switch to slow or if was already slow but using white list.
     else if ( ((!USING_WHITE_LIST) || whiteListUsed) ||
-              (GAP_GetParamValue( TGAP_GEN_DISC_ADV_INT_MIN ) == DEFAULT_FAST_ADV_INTERVAL) )
+              (GAP_GetParamValue( TGAP_DISC_ADV_INT_MIN ) == DEFAULT_FAST_ADV_INTERVAL) )
     {
       uint8 advState = TRUE;
 
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MIN, DEFAULT_SLOW_ADV_INTERVAL );
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MAX, DEFAULT_SLOW_ADV_INTERVAL );
+      GAP_SetParamValue( TGAP_DISC_ADV_INT_MIN, DEFAULT_SLOW_ADV_INTERVAL );
+      GAP_SetParamValue( TGAP_DISC_ADV_INT_MAX, DEFAULT_SLOW_ADV_INTERVAL );
       GAP_SetParamValue( TGAP_GEN_DISC_ADV_MIN, DEFAULT_SLOW_ADV_DURATION );
       GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &advState );
     }
@@ -827,7 +740,7 @@ static void sensorPeriodicTask( void )
 {
   if (gapProfileState == GAPROLE_CONNECTED)
   {
-    // send speed and cadence measurement notification
+    // Send speed and cadence measurement notification
     sensorMeasNotify();
 
     // Restart timer

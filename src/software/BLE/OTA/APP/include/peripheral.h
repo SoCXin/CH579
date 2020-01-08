@@ -42,7 +42,7 @@ extern "C"
 /*
  * Task Initialization for the BLE Application
  */
-extern void SimpleBLEPeripheral_Init( uint8 task_id );
+extern void SimpleBLEPeripheral_Init( void );
 
 /*
  * Task Event Processor for the BLE Application

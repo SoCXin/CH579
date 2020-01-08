@@ -58,7 +58,7 @@
 #define DEFAULT_CONN_PAUSE_PERIPHERAL         6
 
 // Company Identifier: WCH  
-#define WCH_COMPANY_ID                        0x0739
+#define WCH_COMPANY_ID                        0x07D7
 
 #define INVALID_CONNHANDLE                    0xFFFF
 
@@ -161,7 +161,7 @@ UINT8 VerifyStatus = 0;
  * LOCAL FUNCTIONS
  */
 static void Peripheral_ProcessTMOSMsg( tmos_event_hdr_t *pMsg );
-static void peripheralStateNotificationCB( gaprole_States_t newState );
+static void peripheralStateNotificationCB( gapRole_States_t newState ,gapRoleEvent_t * pEvent );
 static void performPeriodicTask( void );
 static void simpleProfileChangeCB( uint8 paramID );
 void OTA_IAPReadDataComplete( unsigned char index );
@@ -177,7 +177,8 @@ void OTA_IAP_SendCMDDealSta(UINT8 deal_status);
 static gapRolesCBs_t Peripheral_PeripheralCBs =
 {
     peripheralStateNotificationCB,  // Profile State Change Callbacks
-    NULL                            // When a valid RSSI is read from controller (not used by application)
+    NULL,                            // When a valid RSSI is read from controller (not used by application)
+    NULL
 };
 
 // GAP Bond Manager Callbacks
@@ -226,43 +227,19 @@ gapRolesParamUpdateCB_t PeripheralParamUpdate_t = NULL;
  *
  * @return  none
  */
-void SimpleBLEPeripheral_Init( uint8 task_id )
+void SimpleBLEPeripheral_Init( )
 {
-  Peripheral_TaskID = task_id;
+  Peripheral_TaskID = TMOS_ProcessEventRegister(SimpleBLEPeripheral_ProcessEvent);
 
-  // Setup the GAP
-  GAP_SetParamValue( TGAP_CONN_PAUSE_PERIPHERAL, DEFAULT_CONN_PAUSE_PERIPHERAL );
-  
   // Setup the GAP Peripheral Role Profile
   {
 		// For other hardware platforms, device starts advertising upon initialization
      uint8 initial_advertising_enable = TRUE;
 
-    // By setting this to zero, the device will go into the waiting state after
-    // being discoverable for 30.72 second, and will not being advertising again
-    // until the enabler is set back to TRUE
-    uint16 gapRole_AdvertOffTime = 100;
-
-    uint8 adverise_channel = GAP_ADVCHAN_ALL;
-    uint8 enable_update_request = DEFAULT_ENABLE_UPDATE_REQUEST;
-    uint16 desired_min_interval = DEFAULT_DESIRED_MIN_CONN_INTERVAL;
-    uint16 desired_max_interval = DEFAULT_DESIRED_MAX_CONN_INTERVAL;
-    uint16 desired_slave_latency = DEFAULT_DESIRED_SLAVE_LATENCY;
-    uint16 desired_conn_timeout = DEFAULT_DESIRED_CONN_TIMEOUT;
-
     // Set the GAP Role Parameters
-    GAPRole_SetParameter( GAPROLE_ADV_CHANNEL_MAP, sizeof( uint8 ), &adverise_channel );
     GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &initial_advertising_enable );
-    GAPRole_SetParameter( GAPROLE_ADVERT_OFF_TIME, sizeof( uint16 ), &gapRole_AdvertOffTime );
-
     GAPRole_SetParameter( GAPROLE_SCAN_RSP_DATA, sizeof ( scanRspData ), scanRspData );
     GAPRole_SetParameter( GAPROLE_ADVERT_DATA, sizeof( advertData ), advertData );
-
-    GAPRole_SetParameter( GAPROLE_PARAM_UPDATE_ENABLE, sizeof( uint8 ), &enable_update_request );
-    GAPRole_SetParameter( GAPROLE_MIN_CONN_INTERVAL, sizeof( uint16 ), &desired_min_interval );
-    GAPRole_SetParameter( GAPROLE_MAX_CONN_INTERVAL, sizeof( uint16 ), &desired_max_interval );
-    GAPRole_SetParameter( GAPROLE_SLAVE_LATENCY, sizeof( uint16 ), &desired_slave_latency );
-    GAPRole_SetParameter( GAPROLE_TIMEOUT_MULTIPLIER, sizeof( uint16 ), &desired_conn_timeout );
 	
 	//PeripheralParamUpdate_t = (gapRolesParamUpdateCB_t *)PeripheralParamUpdate;
 	
@@ -278,10 +255,8 @@ void SimpleBLEPeripheral_Init( uint8 task_id )
   {
     uint16 advInt = DEFAULT_ADVERTISING_INTERVAL;
 
-    GAP_SetParamValue( TGAP_LIM_DISC_ADV_INT_MIN, advInt );
-    GAP_SetParamValue( TGAP_LIM_DISC_ADV_INT_MAX, advInt );
-    GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MIN, advInt );
-    GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MAX, advInt );
+    GAP_SetParamValue( TGAP_DISC_ADV_INT_MIN, advInt );
+    GAP_SetParamValue( TGAP_DISC_ADV_INT_MAX, advInt );
   }
 
   // Setup the GAP Bond Manager
@@ -291,11 +266,11 @@ void SimpleBLEPeripheral_Init( uint8 task_id )
     uint8 mitm = TRUE;
     uint8 ioCap = GAPBOND_IO_CAP_DISPLAY_ONLY;
     uint8 bonding = TRUE;
-    GAPBondMgr_SetParameter( GAPBOND_DEFAULT_PASSCODE, sizeof ( uint32 ), &passkey );
-    GAPBondMgr_SetParameter( GAPBOND_PAIRING_MODE, sizeof ( uint8 ), &pairMode );
-    GAPBondMgr_SetParameter( GAPBOND_MITM_PROTECTION, sizeof ( uint8 ), &mitm );
-    GAPBondMgr_SetParameter( GAPBOND_IO_CAPABILITIES, sizeof ( uint8 ), &ioCap );
-    GAPBondMgr_SetParameter( GAPBOND_BONDING_ENABLED, sizeof ( uint8 ), &bonding );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_DEFAULT_PASSCODE, sizeof ( uint32 ), &passkey );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_PAIRING_MODE, sizeof ( uint8 ), &pairMode );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_MITM_PROTECTION, sizeof ( uint8 ), &mitm );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_IO_CAPABILITIES, sizeof ( uint8 ), &ioCap );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_BONDING_ENABLED, sizeof ( uint8 ), &bonding );
   }
 
   // Initialize GATT attributes
@@ -379,9 +354,7 @@ uint16 SimpleBLEPeripheral_ProcessEvent( uint8 task_id, uint16 events )
 
   if ( events & SBP_START_DEVICE_EVT ){
 	// Start the Device
-    GAPRole_StartDevice( &Peripheral_PeripheralCBs );
-    // Start Bond Manager
-    GAPBondMgr_Register( &Peripheral_BondMgrCBs );
+    GAPRole_PeripheralStartDevice( Peripheral_TaskID, &Peripheral_BondMgrCBs, &Peripheral_PeripheralCBs );
     // Set timer for first periodic event
     tmos_start_task( Peripheral_TaskID, SBP_PERIODIC_EVT, SBP_PERIODIC_EVT_PERIOD );
     return ( events ^ SBP_START_DEVICE_EVT );
@@ -402,31 +375,50 @@ uint16 SimpleBLEPeripheral_ProcessEvent( uint8 task_id, uint16 events )
 	{
 		UINT8 status;
 		
-		PRINT("ERASE:%08x num:%d\r\n",(int)(EraseAdd+EraseBlockCnt*FLASH_BLOCK_SIZE),(int)EraseBlockCnt);
-		status = CodeFlash_BlockEarse(EraseAdd+EraseBlockCnt*FLASH_BLOCK_SIZE);
-		
-		/* 擦除失败 */
-		if(status != SUCCESS)
+		if((op_codeflash_access_flag1 == OP_CODEFLASH_SAFE_FLAG1)
+		 &&(op_codeflash_access_flag2 == OP_CODEFLASH_SAFE_FLAG2))
 		{
-			OTA_IAP_SendCMDDealSta(status);
+			PRINT("ERASE:%08x num:%d\r\n",(int)(EraseAdd+EraseBlockCnt*FLASH_BLOCK_SIZE),(int)EraseBlockCnt);
+			status = OTA_CodeFlash_BlockErase(EraseAdd+EraseBlockCnt*FLASH_BLOCK_SIZE);
+			
+			/* 擦除失败 */
+			if(status != SUCCESS)
+			{
+				op_codeflash_access_flag1 = 0;
+				op_codeflash_access_flag2 = 0;
+				OTA_IAP_SendCMDDealSta(status);
+				return (events ^ OTA_FLASH_ERASE_EVT);
+			}
+			
+			EraseBlockCnt++;
+			
+			/* 擦除结束 */
+			if( EraseBlockCnt >= EraseBlockNum )
+			{
+				op_codeflash_access_flag1 = 0;
+				op_codeflash_access_flag2 = 0;
+				PRINT("ERASE Complete\r\n");
+				OTA_IAP_SendCMDDealSta(status);
+				return (events ^ OTA_FLASH_ERASE_EVT);
+			}
+			else
+			{
+				op_codeflash_access_flag1 = OP_CODEFLASH_SAFE_FLAG1;
+				op_codeflash_access_flag2 = OP_CODEFLASH_SAFE_FLAG2;
+			}
+			
+			return (events);
+		}
+		else
+		{
+			op_codeflash_access_flag1 = 0;
+			op_codeflash_access_flag2 = 0;
 			return (events ^ OTA_FLASH_ERASE_EVT);
 		}
-		
-		EraseBlockCnt++;
-		
-		/* 擦除结束 */
-		if( EraseBlockCnt >= EraseBlockNum )
-		{
-			PRINT("ERASE Complete\r\n");
-			OTA_IAP_SendCMDDealSta(status);
-			return (events ^ OTA_FLASH_ERASE_EVT);
-		}
-		return (events);
 	}
-	
-  
-  // Discard unknown events
-  return 0;
+
+	// Discard unknown events
+	return 0;
 }
 
 /*********************************************************************
@@ -455,7 +447,7 @@ static void Peripheral_ProcessTMOSMsg( tmos_event_hdr_t *pMsg )
  *
  * @return  none
  */
-static void peripheralStateNotificationCB( gaprole_States_t newState )
+static void peripheralStateNotificationCB( gapRole_States_t newState ,gapRoleEvent_t * pEvent )
 {
   switch ( newState )
   {
@@ -489,24 +481,26 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
 
     case GAPROLE_CONNECTED:
 	{
+    gapEstLinkReqEvent_t *event = (gapEstLinkReqEvent_t *) pEvent;
 		uint16 conn_interval = 0;
 		uint16 conn_slave_latency = 0;
 		uint16 conn_timeout = 0;
 
-		GAPRole_GetParameter( GAPROLE_CONN_INTERVAL, (void *)&conn_interval );
-		GAPRole_GetParameter( GAPROLE_CONN_LATENCY, (void *)&conn_slave_latency );
-		GAPRole_GetParameter( GAPROLE_CONN_TIMEOUT, (void *)&conn_timeout );
+    conn_interval = event->connInterval;
+    conn_slave_latency = event->connLatency;
+    conn_timeout = event->connTimeout;
 
 		PRINT( "Connected..%d %d %d \n",conn_interval,conn_slave_latency,conn_timeout );
 		
 		if( conn_interval > DEFAULT_DESIRED_MAX_CONN_INTERVAL)
 		{
 			PRINT("Send Update\r\n");
-			GAPRole_SendUpdateParam( DEFAULT_DESIRED_MIN_CONN_INTERVAL, 
-			                         DEFAULT_DESIRED_MAX_CONN_INTERVAL,
-									 DEFAULT_DESIRED_SLAVE_LATENCY, 
-			                         DEFAULT_DESIRED_CONN_TIMEOUT, 
-			                         GAPROLE_NO_ACTION );
+			GAPRole_PeripheralConnParamUpdateReq( event->connectionHandle, 
+                                            DEFAULT_DESIRED_MIN_CONN_INTERVAL, 
+                                            DEFAULT_DESIRED_MAX_CONN_INTERVAL,
+                                            DEFAULT_DESIRED_SLAVE_LATENCY, 
+                                            DEFAULT_DESIRED_CONN_TIMEOUT, 
+                                            Peripheral_TaskID );
 			
 		}
 		break;
@@ -516,10 +510,6 @@ static void peripheralStateNotificationCB( gaprole_States_t newState )
       break;      
     case GAPROLE_WAITING:
       PRINT( "Disconnected..\n" );
-      break;
-
-    case GAPROLE_WAITING_AFTER_TIMEOUT:
-      PRINT( "Timed Out..\n" );
       break;
 
     case GAPROLE_ERROR:
@@ -642,6 +632,7 @@ void SwitchImageFlag(UINT8 new_flag)
 	UINT8  *p_flash;
 	UINT16 i;
 	UINT8  ver_flag;
+	UINT8  op_flag = 0;
 	
 	/* 读取第一块 */
 	p_flash = (UINT8 *)OTA_DATAFLASH_ADD;
@@ -650,14 +641,29 @@ void SwitchImageFlag(UINT8 new_flag)
 		dataflash_block_buf[i] = p_flash[i];
 	}
 	
+	if((op_dataflash_access_flag1 == OP_DATAFLASH_SAFE_FLAG1)
+	 &&(op_dataflash_access_flag2 == OP_DATAFLASH_SAFE_FLAG2))
+	{
+		op_flag = 0x55;
+	}
+	
 	/* 擦除第一块 */
-	CodeFlash_BlockEarse(OTA_DATAFLASH_ADD);
+	OTA_DataFlash_BlockErase(OTA_DATAFLASH_ADD);
 
+	if(op_flag == 0x55)
+	{
+		op_dataflash_access_flag1 = OP_DATAFLASH_SAFE_FLAG1;
+		op_dataflash_access_flag2 = OP_DATAFLASH_SAFE_FLAG2;
+	}
+	
 	/* 更新Image信息 */
 	dataflash_block_buf[0] = new_flag;
 	
 	/* 编程DataFlash */
-	CodeFlash_WriteBuf(OTA_DATAFLASH_ADD, (UINT32 *)dataflash_block_buf, FLASH_BLOCK_SIZE);
+	if(op_flag == 0x55)
+	{
+		OTA_DataFlash_WriteBuf(OTA_DATAFLASH_ADD, (UINT32 *)dataflash_block_buf, FLASH_BLOCK_SIZE);
+	}
 	
 	/* 打印输出消息 */
 	p_flash = (UINT8 *)OTA_DATAFLASH_ADD;
@@ -707,7 +713,7 @@ void Rec_OTA_IAP_DataDeal(void)
 		{
 			UINT32 i;
 			UINT8 status;
-
+			
 			OpParaDataLen = iap_rec_data.program.len;   
 			
 			OpAdd = (UINT32)(iap_rec_data.program.addr[0]);
@@ -724,10 +730,15 @@ void Rec_OTA_IAP_DataDeal(void)
 				OpParaData[i] |= ((UINT32)(iap_rec_data.program.buf[3+4*i]) << 24);
 			}
 			
+			if(op_codeflash_access_flag1 == OP_CODEFLASH_SAFE_FLAG1)
+			{
+				op_codeflash_access_flag2 = OP_CODEFLASH_SAFE_FLAG2;
+			}
+			
 			/* 当前是ImageA，直接编程 */
 			if(CurrImageFlag == IMAGE_A_FLAG)
 			{
-				status = CodeFlash_WriteBuf(OpAdd, OpParaData, (UINT16) OpParaDataLen);				
+				status = OTA_CodeFlash_WriteBuf(OpAdd, OpParaData, (UINT16) OpParaDataLen);				
 			}
 			/* 当前是ImageB，除了第一块直接编程 */
 			else
@@ -745,10 +756,14 @@ void Rec_OTA_IAP_DataDeal(void)
 				/* 其他块 */
 				else
 				{
-					status = CodeFlash_WriteBuf(OpAdd, (PUINT32)OpParaData, (UINT16) OpParaDataLen);
+					status = OTA_CodeFlash_WriteBuf(OpAdd, (PUINT32)OpParaData, (UINT16) OpParaDataLen);
 					OTA_IAP_SendCMDDealSta(status);
 				}
 			}
+			
+			op_codeflash_access_flag1 = 0x0;
+			op_codeflash_access_flag2 = 0x0;
+			
 			break;
 		}
 		/* 擦除 -- 蓝牙擦除由主机控制 */
@@ -777,6 +792,11 @@ void Rec_OTA_IAP_DataDeal(void)
 			
 			/* 启动擦除 */
 			tmos_set_event( Peripheral_TaskID, OTA_FLASH_ERASE_EVT );
+
+			if(op_codeflash_access_flag1 == OP_CODEFLASH_SAFE_FLAG1)
+			{
+				op_codeflash_access_flag2 = OP_CODEFLASH_SAFE_FLAG2;
+			}
 
 			break;
 		}
@@ -840,7 +860,18 @@ void Rec_OTA_IAP_DataDeal(void)
 		/* 编程结束 */
 		case CMD_IAP_END:
 		{
+			uint8 op_flag = 0;
+			
 			PRINT("IAP_END \r\n");
+			
+			op_codeflash_access_flag2 = OP_CODEFLASH_SAFE_FLAG2;
+			op_dataflash_access_flag2 = OP_DATAFLASH_SAFE_FLAG2;
+			
+			if((op_codeflash_access_flag1 == OP_CODEFLASH_SAFE_FLAG1)
+			 &&(op_codeflash_access_flag2 == OP_CODEFLASH_SAFE_FLAG2))
+			{
+				op_flag = 0x56;
+			}
 			
 			/* 当前的是ImageA */
 			if(CurrImageFlag == IMAGE_A_FLAG)
@@ -851,8 +882,14 @@ void Rec_OTA_IAP_DataDeal(void)
 				/* 关闭当前所有使用中断，或者方便一点直接全部关闭 */
 				DisableAllIRQ();
 
+				/* 保证打印结束 */
+				DelayMs( 10 );
+        
 				/* 跳入ImageB运行 */
-				GotoResetVector(IMAGE_B_ENTRY_ADD);
+				if(op_flag == 0x56)
+				{
+					GotoResetVector(IMAGE_B_ENTRY_ADD);
+				}
 			}
 			/* 当前的是ImageB */
 			else
@@ -863,13 +900,42 @@ void Rec_OTA_IAP_DataDeal(void)
 				/* 关闭当前所有使用中断，或者方便一点直接全部关闭 */
 				DisableAllIRQ();
 
+				if((op_codeflash_access_flag1 == OP_CODEFLASH_SAFE_FLAG1)
+				 &&(op_codeflash_access_flag2 == OP_CODEFLASH_SAFE_FLAG2))
+				{
+					op_flag = 0x56;
+				}
+				
 				/* 编程ImageA第一块 */
-				CodeFlash_BlockEarse(IMAGE_A_START_ADD);
-				CodeFlash_WriteBuf(IMAGE_A_START_ADD, (PUINT32) vectors_block_buf, FLASH_BLOCK_SIZE);
-
+				OTA_CodeFlash_BlockErase(IMAGE_A_START_ADD);
+				
+				if(op_flag == 0x56)
+				{
+					op_codeflash_access_flag1 = OP_CODEFLASH_SAFE_FLAG1;
+					op_codeflash_access_flag2 = OP_CODEFLASH_SAFE_FLAG2;
+				}
+				
+				if(op_flag == 0x56)
+				{
+					OTA_CodeFlash_WriteBuf(IMAGE_A_START_ADD, (PUINT32) vectors_block_buf, FLASH_BLOCK_SIZE);
+				}
+				
+				/* 保证打印结束 */
+				DelayMs( 10 );        
+        
 				/* 跳入ImageA运行 */
-				GotoResetVector(IMAGE_A_ENTRY_ADD);
+				if(op_flag == 0x56)
+				{
+					GotoResetVector(IMAGE_A_ENTRY_ADD);
+				}
 			}
+			
+			op_codeflash_access_flag1 = 0;
+			op_codeflash_access_flag2 = 0;
+			
+			op_dataflash_access_flag1 = 0;
+			op_dataflash_access_flag2 = 0;
+			
 			break;
 		}
 		case CMD_IAP_INFO:
@@ -933,6 +999,9 @@ void OTA_IAPWriteData( unsigned char index, unsigned char *p_data, unsigned char
 	unsigned char rec_len;
 	unsigned char *rec_data;
 
+	op_codeflash_access_flag1 = OP_CODEFLASH_SAFE_FLAG1;
+	op_dataflash_access_flag1 = OP_DATAFLASH_SAFE_FLAG1;
+	
 	rec_len = w_len;
 	rec_data = p_data;
 	tmos_memcpy( (unsigned char *)&iap_rec_data, rec_data, rec_len );

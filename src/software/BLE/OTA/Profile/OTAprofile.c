@@ -13,6 +13,7 @@
 #include "CONFIG.h"
 #include "CH57xBLE_LIB.h"
 #include "OTAprofile.h"
+#include "CH579SFR.h"
 
 
 /*********************************************************************
@@ -80,6 +81,14 @@ static uint8 OTAProfileReadLen;
 static uint8 OTAProfileReadBuf[20];
 static uint8 OTAProfileWriteLen;
 static uint8 OTAProfileWriteBuf[20];
+
+/* OTA操作Flash的保护状态变量 */
+uint8 op_codeflash_access_flag1 = 0x0;
+uint8 op_codeflash_access_flag2 = 0x0;
+
+/* OTA操作DataFlash的保护状态变量 */
+uint8 op_dataflash_access_flag1 = 0x0;
+uint8 op_dataflash_access_flag2 = 0x0;
 
 /*********************************************************************
  * Profile Attributes - Table
@@ -335,6 +344,191 @@ bStatus_t OTAProfile_SendData(unsigned char paramID ,unsigned char *p_data, unsi
 }
 
 /* 写数据通过回调 */
+
+/* 芯片的Flash操作接口，Dataflash和Flash分开 */
+/*******************************************************************************
+* Function Name  : OTA_CodeFlash_BlockErase
+* Description    : CodeFlash 块擦除，一次擦除512B
+* Input          : addr: 32位地址，需要512对齐		   				
+* Return         : 1  - 错误
+				   0 - 成功
+*******************************************************************************/
+unsigned char OTA_CodeFlash_BlockErase(unsigned long addr)
+{
+    unsigned char  status = 0;
+
+    if( addr & (0x200-1) )          return 1;
+
+    R32_FLASH_ADDR = addr;
+    R8_FLASH_PROTECT = RB_ROM_WE_MUST_10|RB_ROM_CODE_WE;
+	
+	/* 判断OTA操作Flash的保护状态标志 */
+	if((op_codeflash_access_flag1==OP_CODEFLASH_SAFE_FLAG1)
+	 &&(op_codeflash_access_flag2==OP_CODEFLASH_SAFE_FLAG2))
+	{
+		op_codeflash_access_flag1 = 0x00;
+		op_codeflash_access_flag2 = 0x00;
+		
+		R8_FLASH_COMMAND = ROM_CMD_ERASE;
+		status = R8_FLASH_STATUS;
+		R8_FLASH_PROTECT = RB_ROM_WE_MUST_10;
+
+		if( status == RB_ROM_ADDR_OK )  return 0;
+		else                            return 1;
+	}
+	else
+	{
+		op_codeflash_access_flag1 = 0x00;
+		op_codeflash_access_flag2 = 0x00;
+		R8_FLASH_PROTECT = RB_ROM_WE_MUST_10;
+		
+		return 1;	
+	}
+}
+
+/*******************************************************************************
+* Function Name  : OTA_CodeFlash_WriteBuf
+* Description    : CodeFlash 连续多个双字写入
+* Input          : addr: 32位地址，需要4对齐
+				   pdat: 待写入数据缓存区首地址
+				    len: 待写入数据字节长度
+* Return         : 1  - 错误
+				   0 - 成功
+*******************************************************************************/
+unsigned char OTA_CodeFlash_WriteBuf(unsigned long addr,unsigned long* pdat,unsigned short len)
+{
+    unsigned long  add = addr;
+    unsigned long* p32 = pdat;
+    unsigned char  status = 0;	
+	unsigned short  i;
+
+    if( addr & (4-1) )              return 1;
+
+    R8_FLASH_PROTECT = RB_ROM_WE_MUST_10|RB_ROM_CODE_WE;
+	
+	/* 判断OTA操作Flash的保护状态标志 */
+	if((op_codeflash_access_flag1==OP_CODEFLASH_SAFE_FLAG1)
+	 &&(op_codeflash_access_flag2==OP_CODEFLASH_SAFE_FLAG2))
+	{
+		op_codeflash_access_flag1 = 0x00;
+		op_codeflash_access_flag2 = 0x00;
+		
+		for(i=0; i<len; i+=4)
+		{
+			R32_FLASH_ADDR = add;
+			R32_FLASH_DATA = *p32++;		
+			R8_FLASH_COMMAND = ROM_CMD_PROG;		
+			add += 4;
+			status = R8_FLASH_STATUS;
+			if( status != RB_ROM_ADDR_OK )  break;
+		}
+		R8_FLASH_PROTECT = RB_ROM_WE_MUST_10;
+
+		if( status == RB_ROM_ADDR_OK )  return 0;
+		else                            return 1;
+		
+	}
+	else
+	{
+		op_codeflash_access_flag1 = 0x00;
+		op_codeflash_access_flag2 = 0x00;
+		R8_FLASH_PROTECT = RB_ROM_WE_MUST_10;
+		
+		return 1;
+	}
+}
+
+/*******************************************************************************
+* Function Name  : OTA_DataFlash_BlockErase
+* Description    : DataFlash 块擦除，一次擦除512B
+* Input          : addr: 32位地址，需要512对齐		   				
+* Return         : 1  - 错误
+				   0 - 成功
+*******************************************************************************/
+unsigned char OTA_DataFlash_BlockErase(unsigned long addr)
+{
+	unsigned char  status = 0;
+	
+    if( addr & (0x200-1) )          return 1;
+    //if( addr < DATA_FLASH_ADDR )   return 1;
+
+    R32_FLASH_ADDR = addr;
+    R8_FLASH_PROTECT = RB_ROM_WE_MUST_10|RB_ROM_DATA_WE;
+	
+	/* 判断OTA操作DataFlash的保护状态标志 */
+	if((op_dataflash_access_flag1==OP_DATAFLASH_SAFE_FLAG1)
+	 &&(op_dataflash_access_flag2==OP_DATAFLASH_SAFE_FLAG2))
+	{
+		op_dataflash_access_flag1 = 0x00;
+		op_dataflash_access_flag2 = 0x00;
+		
+		R8_FLASH_COMMAND = ROM_CMD_ERASE;
+		status = R8_FLASH_STATUS;
+		R8_FLASH_PROTECT = RB_ROM_WE_MUST_10;
+
+		if( status == RB_ROM_ADDR_OK )  return 0;
+		else                            return 1;
+	}
+	else
+	{
+		op_dataflash_access_flag1 = 0x00;
+		op_dataflash_access_flag2 = 0x00;
+		R8_FLASH_PROTECT = RB_ROM_WE_MUST_10;
+		
+		return 1;
+	}
+}
+
+/*******************************************************************************
+* Function Name  : OTA_DataFlash_WriteBuf
+* Description    : DataFlash 连续多个双字写入
+* Input          : addr: 32位地址，需要4对齐
+				   pdat: 待写入数据缓存区首地址
+				    len: 待写入数据字节长度
+* Return         : FAILED  - 错误
+				   SUCCESS - 成功
+*******************************************************************************/
+unsigned char OTA_DataFlash_WriteBuf(unsigned long addr,unsigned long* pdat,unsigned short len)
+{
+    unsigned long  add = addr;
+    unsigned long* p32 = pdat;
+    unsigned char  status = 0;	
+	unsigned short  i;
+
+    if( addr & (4-1) )              return 1;
+
+    R8_FLASH_PROTECT = RB_ROM_WE_MUST_10|RB_ROM_DATA_WE;
+	
+	/* 判断OTA操作DataFlash的保护状态标志 */
+	if((op_dataflash_access_flag1==OP_DATAFLASH_SAFE_FLAG1)
+	 &&(op_dataflash_access_flag2==OP_DATAFLASH_SAFE_FLAG2))
+	{
+		op_dataflash_access_flag1 = 0x00;
+		op_dataflash_access_flag2 = 0x00;
+		
+		for(i=0; i<len; i+=4)
+		{
+			R32_FLASH_ADDR = add;
+			R32_FLASH_DATA = *p32++;		
+			R8_FLASH_COMMAND = ROM_CMD_PROG;		
+			add += 4;
+			status = R8_FLASH_STATUS;
+			if( status != RB_ROM_ADDR_OK )  break;
+		}
+		R8_FLASH_PROTECT = RB_ROM_WE_MUST_10;
+
+		if( status == RB_ROM_ADDR_OK )  return 0;
+		else                            return 1;
+	}
+	else
+	{
+		op_dataflash_access_flag1 = 0x00;
+		op_dataflash_access_flag2 = 0x00;
+		R8_FLASH_PROTECT = RB_ROM_WE_MUST_10;
+		
+		return 1;
+	}
+}
 
 
 /*********************************************************************

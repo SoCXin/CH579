@@ -101,7 +101,6 @@ static CONST uint8 hidInfo[HID_INFORMATION_LEN] =
 };
 
 // HID Report Map characteristic value
-// Keyboard report descriptor (using format for Boot interface descriptor)
 static CONST uint8 hidReportMap[] =
 {
   0x05, 0x01,     // Usage Pg (Generic Desktop)

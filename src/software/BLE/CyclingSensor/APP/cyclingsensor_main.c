@@ -1,13 +1,11 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/11
+* Version            : V1.1
+* Date               : 2019/11/05
 * Description        : 骑行传感器主函数及任务系统初始化
             
 *******************************************************************************/
-
-
 
 /******************************************************************************/
 /* 头文件包含 */
@@ -18,62 +16,14 @@
 #include "cyclingservice.h"
 #include "cyclingsensor.h"
 
-
 /*********************************************************************
  * GLOBAL TYPEDEFS
  */
-pTaskEventHandlerFn tasksArr[] = {
-  TMOS_CbTimerProcessEvent,
-  HAL_ProcessEvent,
-  LL_ProcessEvent,
-  L2CAP_ProcessEvent,
-  GAP_ProcessEvent,	
-  GATT_ProcessEvent,                                                
-  SM_ProcessEvent,                                                 
-  GAPBondMgr_ProcessEvent,                                         
-  GATTServApp_ProcessEvent,    
-  GAPRole_PeripheralProcessEvent,                                            
-  
-  CyclingService_ProcessEvent,
-  CyclingSensor_ProcessEvent,                                 
-};
-tmosTaskID TASK_CNT =  sizeof( tasksArr ) / sizeof( tasksArr[0] );
+__align(4) u32 MEM_BUF[BLE_MEMHEAP_SIZE/4];
 
-/*********************************************************************
- * @fn      TMOS_InitTasks
- *
- * @brief   This function invokes the initialization function for each task.
- *
- * @param   void
- *
- * @return  none
- */
-void TMOS_InitTasks( void )
-{
-  UINT8 taskID = 0;
-
-  TMOS_Init( taskID++ );
-   /* Hal Task */
-  Hal_Init( taskID++ );
-  /* LL Task */
-  LL_Init( taskID++ );
-  /* L2CAP Task */
-  L2CAP_Init( taskID++ );
-  /* GAP Task */
-  GAP_Init( taskID++ );
-  /* GATT Task */
-  GATT_Init( taskID++ );
-  /* SM Task */
-  SM_Init( taskID++ );
-  GAPBondMgr_Init( taskID++ );
-  GATTServApp_Init( taskID++ );
-   /* Role */
-  GAPRole_PeripheralInit( taskID++ );
-  /* hid */
-  CyclingService_Init(taskID++);
-  /* Application */
-  CyclingSensor_Init(taskID++);
-}
+#if (defined (BLE_MAC)) && (BLE_MAC == TRUE)
+u8C MacAddr[6] = {0x84,0xC2,0xE4,0x03,0x02,0x02};
+#endif
 
 /*******************************************************************************
 * Function Name  : main
@@ -91,7 +41,9 @@ int main( void )
 #endif   
   PRINT("%s\n",VER_LIB);
   CH57X_BLEInit( );
-	TMOS_InitTasks( );
+	HAL_Init( );
+	GAPRole_PeripheralInit( );
+	CyclingSensor_Init( ); 
 	while(1){
 		TMOS_SystemProcess( );
 	}

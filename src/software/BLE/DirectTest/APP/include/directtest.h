@@ -21,7 +21,7 @@ extern "C"
  */
  #define  TEST_EVENT    1
   
-extern void TEST_Init( tmosTaskID id );
+extern void TEST_Init( void );
  
 extern tmosEvents TEST_ProcessEvent( tmosTaskID task_id, tmosEvents events );
   

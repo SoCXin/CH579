@@ -1,12 +1,10 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0
-* Date               : 2018/11/12
+* Version            : V1.1
+* Date               : 2019/11/05
 * Description        : 观察应用主函数及任务系统初始化
 *******************************************************************************/
-
-
 
 /******************************************************************************/
 /* 头文件包含 */
@@ -19,44 +17,11 @@
 /*********************************************************************
  * GLOBAL TYPEDEFS
  */
-pTaskEventHandlerFn tasksArr[] = {
-	TMOS_CbTimerProcessEvent,
-  HAL_ProcessEvent,
-  LL_ProcessEvent,
-	GAP_ProcessEvent,	
-	GAPRole_ObserverProcessEvent,
-  Observer_ProcessEvent,
-};
-uint8 TASK_CNT =  sizeof( tasksArr ) / sizeof( tasksArr[0] );
+__align(4) u32 MEM_BUF[BLE_MEMHEAP_SIZE/4];
 
-/*********************************************************************
- * @fn      TMOS_InitTasks
- *
- * @brief   This function invokes the initialization function for each task.
- *
- * @param   void
- *
- * @return  none
- */
-uint8 TMOS_InitTasks( void )
-{
-  uint8 taskID = 0;
-
-  /* Tmos Task */
-	TMOS_Init( taskID++ );
-  /* Hal Task */
-  Hal_Init( taskID++ );
-  /* LL Task */
-  LL_Init( taskID++ );
-  /* GAP Task */
-  GAP_Init( taskID++ );
-  /* Profiles */
-  GAPRole_ObserverInit( taskID++ );
-  /* Application */
-  Observer_Init( taskID++ );
-
-	return taskID;
-}
+#if (defined (BLE_MAC)) && (BLE_MAC == TRUE)
+u8C MacAddr[6] = {0x84,0xC2,0xE4,0x03,0x02,0x02};
+#endif
 
 /*******************************************************************************
 * Function Name  : main
@@ -65,17 +30,18 @@ uint8 TMOS_InitTasks( void )
 * Output         : None
 * Return         : None
 *******************************************************************************/
-
 int main( void ) 
 {
 #ifdef DEBUG
   GPIOA_SetBits(GPIO_Pin_9);
   GPIOA_ModeCfg(GPIO_Pin_9, GPIO_ModeOut_PP_5mA);
-	UART1_DefInit( );
+  UART1_DefInit( );
 #endif   
   PRINT("%s\n",VER_LIB);
   CH57X_BLEInit( );
-	TMOS_InitTasks( );
+	HAL_Init( );
+	GAPRole_ObserverInit( );
+	Observer_Init( ); 
 	while(1){
 		TMOS_SystemProcess( );
 	}

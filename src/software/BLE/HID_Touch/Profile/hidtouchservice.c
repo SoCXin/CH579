@@ -91,7 +91,6 @@ static CONST uint8 hidInfo[HID_INFORMATION_LEN] =
 };
 
 // HID Report Map characteristic value
-// Keyboard report descriptor (using format for Boot interface descriptor)
 static CONST uint8 hidReportMap[] =
 {
     
@@ -99,8 +98,7 @@ static CONST uint8 hidReportMap[] =
     0x09, 0x04,                               // Usage (Touch Screen)
     0xA1, 0x01,                               // Collection (Application)
     0x85, 0x01,                               /* REPORT_ID (01) */
-    
-    
+       
     0x05, 0x0D,                               //   Usage Page (Digitizer)
     0x09, 0x22,                               //   Usage (Finger)
     0xA1, 0x02,                               //   Collection (Logical)

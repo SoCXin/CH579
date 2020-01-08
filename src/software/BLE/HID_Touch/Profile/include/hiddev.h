@@ -271,6 +271,7 @@ typedef struct
   hidDevReportCB_t    reportCB;
   hidDevEvtCB_t       evtCB;
   hidDevPasscodeCB_t  passcodeCB;
+  gapRolesStateNotify_t     pfnStateChange;  //!< Whenever the device changes state
 } hidDevCB_t;
 
 /*********************************************************************
@@ -287,7 +288,7 @@ typedef struct
  *
  * @return  none
  */
-extern void HidDev_Init( uint8 task_id );
+extern void HidDev_Init( void );
 
 /*********************************************************************
  * @fn      HidDev_ProcessEvent

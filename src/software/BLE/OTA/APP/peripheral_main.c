@@ -1,13 +1,10 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : main.c
 * Author             : WCH
-* Version            : V1.0
-* Date               : 2018/11/12
+* Version            : V1.1
+* Date               : 2019/11/05
 * Description        : 外设从机应用主函数及任务系统初始化
 *******************************************************************************/
-
-
-
 
 /******************************************************************************/
 /* 头文件包含 */
@@ -18,6 +15,8 @@
 #include "GATTprofile.h"
 #include "Peripheral.h"
 #include "OTA.h"
+#include "OTAprofile.h"
+
 
 /* 记录当前的Image */
 unsigned char CurrImageFlag = 0xff;
@@ -27,56 +26,11 @@ __align(8) unsigned char flash_buf[FLASH_BLOCK_SIZE];
 /*********************************************************************
  * GLOBAL TYPEDEFS
  */
-pTaskEventHandlerFn tasksArr[] = {
-    TMOS_CbTimerProcessEvent,
-    HAL_ProcessEvent,
-    LL_ProcessEvent,
-    L2CAP_ProcessEvent,
-    GAP_ProcessEvent,    
-    GATT_ProcessEvent,                                                
-    SM_ProcessEvent,                                                 
-    GAPBondMgr_ProcessEvent,                                         
-    GATTServApp_ProcessEvent,                                        
+__align(4) u32 MEM_BUF[BLE_MEMHEAP_SIZE/4];
 
-    GAPRole_PeripheralProcessEvent,                                            
-    SimpleBLEPeripheral_ProcessEvent,                                 
-};
-
-uint8 TASK_CNT =  sizeof( tasksArr ) / sizeof( tasksArr[0] );
-
-/*********************************************************************
- * @fn      TMOS_InitTasks
- *
- * @brief   This function invokes the initialization function for each task.
- *
- * @param   void
- *
- * @return  none
- */
-void TMOS_InitTasks( void )
-{
-    UINT8 taskID = 0;
-    
-    /* Hal Task */
-    TMOS_Init( taskID++ );
-    Hal_Init( taskID++ );
-    /* LL Task */
-    LL_Init( taskID++ );
-    /* L2CAP Task */
-    L2CAP_Init( taskID++ );
-    /* GAP Task */
-    GAP_Init( taskID++ );
-    /* GATT Task */
-    GATT_Init( taskID++ );
-    /* SM Task */
-    SM_Init( taskID++ );
-    GAPBondMgr_Init( taskID++ );
-    GATTServApp_Init( taskID++ );
-    /* Profiles */
-    GAPRole_PeripheralInit( taskID++ );
-    /* Application */
-    SimpleBLEPeripheral_Init( taskID++ );
-}
+#if (defined (BLE_MAC)) && (BLE_MAC == TRUE)
+u8C MacAddr[6] = {0x84,0xC2,0xE4,0x03,0x02,0x02};
+#endif
 
 /* 注意：关于程序升级后flash的操作必须先执行，不开启任何中断，防止操作中断和失败 */
 /*******************************************************************************
@@ -112,9 +66,26 @@ void ReadImageFlag(void)
 void ImageVectorsCopy(void)
 {
 	unsigned int vectors_entry;
+	UINT8 op_flag = 0;
 	
 	/* 读取当前的程序的入口地址 */
 	vectors_entry = *(unsigned int *)IMAGE_A_ENTRY_ADD;
+	
+	if((CurrImageFlag == IMAGE_B_FLAG) && (vectors_entry < IMAGE_B_START_ADD))
+	{
+		op_codeflash_access_flag1 = OP_CODEFLASH_SAFE_FLAG1;
+	}
+	
+	if((CurrImageFlag == IMAGE_B_FLAG) && (vectors_entry < IMAGE_B_START_ADD))
+	{
+		op_codeflash_access_flag2 = OP_CODEFLASH_SAFE_FLAG2;
+	}
+	
+	if((op_codeflash_access_flag1 == OP_CODEFLASH_SAFE_FLAG1)
+	 &&(op_codeflash_access_flag2 == OP_CODEFLASH_SAFE_FLAG2))
+	{
+		op_flag = 0x55;
+	}
 	
     /* ImageA->ImageB，当前的是ImageB，向量入口是ImageA，需要搬移 */
     if( (CurrImageFlag == IMAGE_B_FLAG) && (vectors_entry < IMAGE_B_START_ADD) )
@@ -127,10 +98,22 @@ void ImageVectorsCopy(void)
         for(i=0; i<FLASH_BLOCK_SIZE; i++) flash_buf[i] = p_flash[i];
 		
         /* 擦除ImageA代码的第一块 */
-        CodeFlash_BlockEarse(IMAGE_A_START_ADD);
+        OTA_CodeFlash_BlockErase(IMAGE_A_START_ADD);
+		
+		if(op_flag == 0x55)
+		{
+			op_codeflash_access_flag1 = OP_CODEFLASH_SAFE_FLAG1;
+			op_codeflash_access_flag2 = OP_CODEFLASH_SAFE_FLAG2;
+		}
 		
         /* 将ImageB中断向量覆盖ImageA中断向量 */
-        CodeFlash_WriteBuf(IMAGE_A_START_ADD,(PUINT32)&flash_buf[0],FLASH_BLOCK_SIZE);
+		if(op_flag == 0x55)
+		{
+			OTA_CodeFlash_WriteBuf(IMAGE_A_START_ADD,(PUINT32)&flash_buf[0],FLASH_BLOCK_SIZE);
+		}
+		
+        op_codeflash_access_flag1 = 0x0;
+		op_codeflash_access_flag2 = 0x0;
 		
 		PRINT("ImageB vectors entry copy complete %08x \n",vectors_entry);
     }
@@ -153,8 +136,10 @@ int main( void )
     PRINT("%s\n",VER_LIB);
     ReadImageFlag();
 	ImageVectorsCopy();
-    CH57X_BLEInit( );
-    TMOS_InitTasks( );
+	CH57X_BLEInit( );
+	HAL_Init( );
+	GAPRole_PeripheralInit( );
+	SimpleBLEPeripheral_Init( ); 
     while(1){
         TMOS_SystemProcess( );
     }

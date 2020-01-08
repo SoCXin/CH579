@@ -17,8 +17,6 @@ extern "C"
 {
 #endif
 
-#include "CONFIG.h"
-#include "CH57xBLE_LIB.H"
 #include "RTC.h"
 #include "SLEEP.h"	
 #include "LED.h"
@@ -52,10 +50,11 @@ typedef struct  tag_uart_package
 /*********************************************************************
  * GLOBAL FUNCTIONS
  */
-extern void Hal_Init( tmosTaskID id );
+extern void HAL_Init( void );
 extern tmosEvents HAL_ProcessEvent( tmosTaskID task_id, tmosEvents events );
 extern void CH57X_BLEInit( void );
-	
+extern u16 HAL_GetInterTempValue( void );
+
 
 /*********************************************************************
 *********************************************************************/

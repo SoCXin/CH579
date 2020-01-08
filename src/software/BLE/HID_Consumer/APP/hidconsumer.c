@@ -3,7 +3,7 @@
 * Author             : WCH
 * Version            : V1.0
 * Date               : 2018/12/13
-* Description        : 蓝牙拍照器应用程序，初始化广播连接参数，然后广播，直至连接主机后，定时上传 音 量 键 下 键
+* Description        : 蓝牙拍照器应用程序，初始化广播连接参数，然后广播，直至连接主机后，定时上传音量键下键
 *******************************************************************************/
 
 
@@ -31,27 +31,23 @@
 /*********************************************************************
  * CONSTANTS
  */
+// Param uodate delay
+#define START_PARAM_UPDATE_EVT_DELAY          3200
 
 // HID idle timeout in msec; set to zero to disable timeout
 #define DEFAULT_HID_IDLE_TIMEOUT              60000
 
-// Minimum connection interval (units of 1.25ms) if automatic parameter update request is enabled
+// Minimum connection interval (units of 1.25ms)
 #define DEFAULT_DESIRED_MIN_CONN_INTERVAL     8
 
-// Maximum connection interval (units of 1.25ms) if automatic parameter update request is enabled
+// Maximum connection interval (units of 1.25ms)
 #define DEFAULT_DESIRED_MAX_CONN_INTERVAL     8
 
-// Slave latency to use if automatic parameter update request is enabled
-#define DEFAULT_DESIRED_SLAVE_LATENCY         50
+// Slave latency to use if parameter update request
+#define DEFAULT_DESIRED_SLAVE_LATENCY         0
 
-// Supervision timeout value (units of 10ms) if automatic parameter update request is enabled
+// Supervision timeout value (units of 10ms)
 #define DEFAULT_DESIRED_CONN_TIMEOUT          500
-
-// Whether to enable automatic parameter update request when a connection is formed
-#define DEFAULT_ENABLE_UPDATE_REQUEST         TRUE
-
-// Connection Pause Peripheral time value (in seconds)
-#define DEFAULT_CONN_PAUSE_PERIPHERAL         10
 
 // Default passcode
 #define DEFAULT_PASSCODE                      0
@@ -80,8 +76,7 @@
  */
 
 // Task ID
-static uint8 hidEmuTaskId=0xff;
-
+static uint8 hidEmuTaskId=INVALID_TASK_ID;
 
 /*********************************************************************
  * EXTERNAL VARIABLES
@@ -138,8 +133,8 @@ static uint8 advertData[] =
   // appearance
   0x03,   // length of this data
   GAP_ADTYPE_APPEARANCE,
-  LO_UINT16(GAP_APPEARE_HID_DIGITIZER_TYABLET),
-  HI_UINT16(GAP_APPEARE_HID_DIGITIZER_TYABLET),
+  LO_UINT16(GAP_APPEARE_GENERIC_HID),
+  HI_UINT16(GAP_APPEARE_GENERIC_HID),
 
   // service UUIDs
   0x05,   // length of this data
@@ -160,6 +155,8 @@ static hidDevCfg_t hidEmuCfg =
   HID_FEATURE_FLAGS           // HID feature flags
 };
 
+static uint16 hidEmuConnHandle = GAP_CONNHANDLE_INIT;
+
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
@@ -169,6 +166,7 @@ static void hidEmuSendConsumerReport( uint8 volume_up ,uint8 volume_dowm );
 static uint8 hidEmuRptCB( uint8 id, uint8 type, uint16 uuid,
                              uint8 oper, uint16 *pLen, uint8 *pData );
 static void hidEmuEvtCB( uint8 evt );
+static void hidEmuStateCB( gapRole_States_t newState , gapRoleEvent_t * pEvent );
 
 /*********************************************************************
  * PROFILE CALLBACKS
@@ -178,7 +176,8 @@ static hidDevCB_t hidEmuHidCBs =
 {
   hidEmuRptCB,
   hidEmuEvtCB,
-  NULL
+  NULL,
+  hidEmuStateCB
 };
 
 /*********************************************************************
@@ -199,42 +198,20 @@ static hidDevCB_t hidEmuHidCBs =
  *
  * @return  none
  */
-void HidEmu_Init( uint8 task_id )
+void HidEmu_Init( )
 {
-  hidEmuTaskId = task_id;
-
-  // Setup the GAP
-  GAP_SetParamValue( TGAP_CONN_PAUSE_PERIPHERAL, DEFAULT_CONN_PAUSE_PERIPHERAL );
+  hidEmuTaskId = TMOS_ProcessEventRegister(HidEmu_ProcessEvent);
   
   // Setup the GAP Peripheral Role Profile
   {
     uint8 initial_advertising_enable = TRUE;
 
-    // By setting this to zero, the device will go into the waiting state after
-    // being discoverable for 30.72 second, and will not being advertising again
-    // until the enabler is set back to TRUE
-    uint16 gapRole_AdvertOffTime = 100;
-		
-    uint8 CHANNEL = GAP_ADVCHAN_ALL;
-    uint8 enable_update_request = DEFAULT_ENABLE_UPDATE_REQUEST;
-    uint16 desired_min_interval = DEFAULT_DESIRED_MIN_CONN_INTERVAL;
-    uint16 desired_max_interval = DEFAULT_DESIRED_MAX_CONN_INTERVAL;
-    uint16 desired_slave_latency = DEFAULT_DESIRED_SLAVE_LATENCY;
-    uint16 desired_conn_timeout = DEFAULT_DESIRED_CONN_TIMEOUT;
-    
+       
     // Set the GAP Role Parameters
-    GAPRole_SetParameter( GAPROLE_ADV_CHANNEL_MAP, sizeof( uint8 ), &CHANNEL );
     GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &initial_advertising_enable );
-    GAPRole_SetParameter( GAPROLE_ADVERT_OFF_TIME, sizeof( uint16 ), &gapRole_AdvertOffTime );
 
     GAPRole_SetParameter( GAPROLE_ADVERT_DATA, sizeof( advertData ), advertData );
     GAPRole_SetParameter( GAPROLE_SCAN_RSP_DATA, sizeof ( scanRspData ), scanRspData );
-
-    GAPRole_SetParameter( GAPROLE_PARAM_UPDATE_ENABLE, sizeof( uint8 ), &enable_update_request );
-    GAPRole_SetParameter( GAPROLE_MIN_CONN_INTERVAL, sizeof( uint16 ), &desired_min_interval );
-    GAPRole_SetParameter( GAPROLE_MAX_CONN_INTERVAL, sizeof( uint16 ), &desired_max_interval );
-    GAPRole_SetParameter( GAPROLE_SLAVE_LATENCY, sizeof( uint16 ), &desired_slave_latency );
-    GAPRole_SetParameter( GAPROLE_TIMEOUT_MULTIPLIER, sizeof( uint16 ), &desired_conn_timeout );
   }
 
   // Set the GAP Characteristics
@@ -247,11 +224,11 @@ void HidEmu_Init( uint8 task_id )
     uint8 mitm = DEFAULT_MITM_MODE;
     uint8 ioCap = DEFAULT_IO_CAPABILITIES;
     uint8 bonding = DEFAULT_BONDING_MODE;
-    GAPBondMgr_SetParameter( GAPBOND_DEFAULT_PASSCODE, sizeof( uint32 ), &passkey );
-    GAPBondMgr_SetParameter( GAPBOND_PAIRING_MODE, sizeof( uint8 ), &pairMode );
-    GAPBondMgr_SetParameter( GAPBOND_MITM_PROTECTION, sizeof( uint8 ), &mitm );
-    GAPBondMgr_SetParameter( GAPBOND_IO_CAPABILITIES, sizeof( uint8 ), &ioCap );
-    GAPBondMgr_SetParameter( GAPBOND_BONDING_ENABLED, sizeof( uint8 ), &bonding );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_DEFAULT_PASSCODE, sizeof( uint32 ), &passkey );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_PAIRING_MODE, sizeof( uint8 ), &pairMode );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_MITM_PROTECTION, sizeof( uint8 ), &mitm );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_IO_CAPABILITIES, sizeof( uint8 ), &ioCap );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_BONDING_ENABLED, sizeof( uint8 ), &bonding );
   }
 
   // Setup Battery Characteristic Values
@@ -307,6 +284,19 @@ uint16 HidEmu_ProcessEvent( uint8 task_id, uint16 events )
   {
     return ( events ^ START_DEVICE_EVT );
   }
+  
+  if ( events & START_PARAM_UPDATE_EVT )
+  {
+    // Send connect param update request
+    GAPRole_PeripheralConnParamUpdateReq( hidEmuConnHandle,
+                                          DEFAULT_DESIRED_MIN_CONN_INTERVAL,
+                                          DEFAULT_DESIRED_MAX_CONN_INTERVAL,
+                                          DEFAULT_DESIRED_SLAVE_LATENCY,
+                                          DEFAULT_DESIRED_CONN_TIMEOUT,
+                                          hidEmuTaskId);
+    
+    return (events ^ START_PARAM_UPDATE_EVT);
+  }
 
   if ( events & START_REPORT_EVT )
   {
@@ -314,7 +304,7 @@ uint16 HidEmu_ProcessEvent( uint8 task_id, uint16 events )
 	  hidEmuSendConsumerReport( 0 ,1 );
     hidEmuSendConsumerReport( 0 ,0 );
 
-		tmos_start_task( hidEmuTaskId, START_REPORT_EVT, 1000 );
+		tmos_start_task( hidEmuTaskId, START_REPORT_EVT, 1600 );
     return ( events ^ START_REPORT_EVT );
   }
   return 0;
@@ -360,6 +350,62 @@ static void hidEmuSendConsumerReport( uint8 volume_up ,uint8 volume_dowm )
 }
 
 /*********************************************************************
+ * @fn      hidEmuStateCB
+ *
+ * @brief   GAP state change callback.
+ *
+ * @param   newState - new state
+ *
+ * @return  none
+ */
+static void hidEmuStateCB( gapRole_States_t newState , gapRoleEvent_t * pEvent )
+{
+  switch ( newState )
+  {
+    case GAPROLE_STARTED:
+      PRINT( "Initialized..\n" );
+      break;
+
+    case GAPROLE_ADVERTISING:
+        PRINT( "Advertising..\n" );
+      break;
+
+    case GAPROLE_CONNECTED:
+      {
+        gapEstLinkReqEvent_t *event = (gapEstLinkReqEvent_t *) pEvent;
+        
+        // get connection handle
+        hidEmuConnHandle = event->connectionHandle;    
+        tmos_start_task( hidEmuTaskId, START_PARAM_UPDATE_EVT, START_PARAM_UPDATE_EVT_DELAY );    
+        PRINT( "Connected..\n" );
+      }
+      break;
+
+    case GAPROLE_CONNECTED_ADV:
+      PRINT( "Connected Advertising..\n" );
+      break;      
+    
+    case GAPROLE_WAITING:
+      if( pEvent->gap.opcode == GAP_END_DISCOVERABLE_DONE_EVENT )
+      {
+        PRINT( "Waiting for advertising..\n" );
+      }
+      else if( pEvent->gap.opcode == GAP_LINK_TERMINATED_EVENT )
+      {
+        PRINT( "Disconnected..\n" );
+      }
+      break;
+
+    case GAPROLE_ERROR:
+			PRINT( "Error..\n" );
+      break;
+
+    default:
+      break;
+  }
+}
+
+/*********************************************************************
  * @fn      hidEmuRptCB
  *
  * @brief   HID Dev report callback.
@@ -381,7 +427,7 @@ static uint8 hidEmuRptCB( uint8 id, uint8 type, uint16 uuid,
   // write
   if ( oper == HID_DEV_OPER_WRITE )
   {
-     status = Hid_SetParameter( id, type, uuid, *pLen, pData );
+    status = Hid_SetParameter( id, type, uuid, *pLen, pData );
   }
   // read
   else if ( oper == HID_DEV_OPER_READ )
@@ -391,8 +437,7 @@ static uint8 hidEmuRptCB( uint8 id, uint8 type, uint16 uuid,
   // notifications enabled
   else if ( oper == HID_DEV_OPER_ENABLE )
   {
-		tmos_start_task( hidEmuTaskId, START_REPORT_EVT, 5000 );
-		PRINT("start report event.\n");
+		tmos_start_task( hidEmuTaskId, START_REPORT_EVT, 500 );
   }
   return status;
 }
@@ -409,10 +454,8 @@ static uint8 hidEmuRptCB( uint8 id, uint8 type, uint16 uuid,
 static void hidEmuEvtCB( uint8 evt )
 {
   // process enter/exit suspend or enter/exit boot mode
-
   return;
 }
-
 
 /*********************************************************************
 *********************************************************************/

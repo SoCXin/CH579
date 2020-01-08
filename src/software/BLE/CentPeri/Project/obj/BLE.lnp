@@ -1,0 +1,22 @@
+--cpu Cortex-M0
+".\obj\centperi_main.o"
+".\obj\central.o"
+".\obj\peripheral.o"
+".\obj\devinfoservice.o"
+".\obj\gattprofile.o"
+".\obj\startup_armcm0.o"
+".\obj\ch57x_clk.o"
+".\obj\ch57x_gpio.o"
+".\obj\ch57x_pwr.o"
+".\obj\ch57x_sys.o"
+".\obj\ch57x_uart1.o"
+".\obj\ch57x_timer0.o"
+".\obj\mcu.o"
+".\obj\rtc.o"
+".\obj\sleep.o"
+".\obj\key.o"
+"..\..\LIB\CH57xBLE.LIB"
+--library_type=microlib --scatter ".\obj\BLE.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\listing\BLE.map" -o .\obj\BLE.axf

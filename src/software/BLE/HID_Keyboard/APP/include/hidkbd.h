@@ -25,7 +25,7 @@ extern "C"
 // Task Events
 #define START_DEVICE_EVT                              0x0001
 #define START_REPORT_EVT                              0x0002
-
+#define START_PARAM_UPDATE_EVT                        0x0004
 /*********************************************************************
  * MACROS
  */
@@ -41,7 +41,7 @@ extern "C"
 /*
  * Task Initialization for the BLE Application
  */
-extern void HidEmu_Init( uint8 task_id );
+extern void HidEmu_Init( void );
 
 /*
  * Task Event Processor for the BLE Application

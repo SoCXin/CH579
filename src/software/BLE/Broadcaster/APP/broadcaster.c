@@ -25,11 +25,11 @@
  * CONSTANTS
  */
 
-// What is the advertising interval when device is discoverable (units of 625us, 160=100ms)
-#define DEFAULT_ADVERTISING_INTERVAL          160
+// What is the advertising interval when device is discoverable (units of 625us, 80=50ms)
+#define DEFAULT_ADVERTISING_INTERVAL          80
 
 // Company Identifier: WCH 
-#define WCH_COMPANY_ID                        0x0739
+#define WCH_COMPANY_ID                        0x07D7
 
 // Length of bd addr as a string
 #define B_ADDR_STR_LEN                        15
@@ -98,24 +98,26 @@ static uint8 advertData[] =
   'e',
   0x04,
   GAP_ADTYPE_LOCAL_NAME_SHORT,
-  'a',	'b',	'c'
+  'a',	
+  'b',	
+  'c'
 };
 
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
 static void Broadcaster_ProcessTMOSMsg( tmos_event_hdr_t *pMsg );
-static void peripheralStateNotificationCB( gaprole_States_t newState );
+static void peripheralStateNotificationCB( gapRole_States_t newState );
 
 /*********************************************************************
  * PROFILE CALLBACKS
  */
 
 // GAP Role Callbacks
-static gapRolesCBs_t Broadcaster_BroadcasterCBs =
+static gapRolesBroadcasterCBs_t Broadcaster_BroadcasterCBs =
 {
   peripheralStateNotificationCB,  // Profile State Change Callbacks
-  NULL                            // When a valid RSSI is read from controller (not used by application)
+  NULL                           
 };
 
 /*********************************************************************
@@ -136,40 +138,28 @@ static gapRolesCBs_t Broadcaster_BroadcasterCBs =
  *
  * @return  none
  */
-void Broadcaster_Init( uint8 task_id )
+void Broadcaster_Init( )
 {
-  Broadcaster_TaskID = task_id;
+  Broadcaster_TaskID = TMOS_ProcessEventRegister(Broadcaster_ProcessEvent);
 
   // Setup the GAP Broadcaster Role Profile
   {
     // Device starts advertising upon initialization
     uint8 initial_advertising_enable = TRUE;
-
-    // By setting this to zero, the device will go into the waiting state after
-    // being discoverable for 30.72 second, and will not being advertising again
-    // until the enabler is set back to TRUE
-    uint16 gapRole_AdvertOffTime = 100;
-      
-    uint8 advType = GAP_ADTYPE_ADV_NONCONN_IND;   // use non-connectable advertisements
-
+    uint8 initial_adv_event_type = GAP_ADTYPE_ADV_NONCONN_IND;
     // Set the GAP Role Parameters
     GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &initial_advertising_enable );
-    GAPRole_SetParameter( GAPROLE_ADVERT_OFF_TIME, sizeof( uint16 ), &gapRole_AdvertOffTime );
-    
+    GAPRole_SetParameter( GAPROLE_ADV_EVENT_TYPE, sizeof( uint8 ), &initial_adv_event_type );
     GAPRole_SetParameter( GAPROLE_SCAN_RSP_DATA, sizeof ( scanRspData ), scanRspData );
     GAPRole_SetParameter( GAPROLE_ADVERT_DATA, sizeof( advertData ), advertData );
-
-    GAPRole_SetParameter( GAPROLE_ADV_EVENT_TYPE, sizeof( uint8 ), &advType );
   }
 
   // Set advertising interval
   {
     uint16 advInt = DEFAULT_ADVERTISING_INTERVAL;
 
-    GAP_SetParamValue( TGAP_LIM_DISC_ADV_INT_MIN, advInt );
-    GAP_SetParamValue( TGAP_LIM_DISC_ADV_INT_MAX, advInt );
-    GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MIN, advInt );
-    GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MAX, advInt );
+    GAP_SetParamValue( TGAP_DISC_ADV_INT_MIN, advInt );
+    GAP_SetParamValue( TGAP_DISC_ADV_INT_MAX, advInt );
   }
   
   // Setup a delayed profile startup
@@ -233,7 +223,6 @@ static void Broadcaster_ProcessTMOSMsg( tmos_event_hdr_t *pMsg )
   switch ( pMsg->event )
   {
 		default:
-    // do nothing
     break;
   }
 }
@@ -247,41 +236,12 @@ static void Broadcaster_ProcessTMOSMsg( tmos_event_hdr_t *pMsg )
  *
  * @return  none
  */
-static void peripheralStateNotificationCB( gaprole_States_t newState )
+static void peripheralStateNotificationCB( gapRole_States_t newState )
 {
+	printf("%x \n",newState);
   switch ( newState )
-  {
-    case GAPROLE_STARTED:
-      {    
-        uint8 ownAddress[B_ADDR_LEN];
-        
-        GAPRole_GetParameter(GAPROLE_BD_ADDR, ownAddress);
-    
-      }
-      break;
-
-    case GAPROLE_ADVERTISING:
-      {
-
-      }
-      break;
-
-    case GAPROLE_WAITING:
-      {
-
-      }
-      break;          
-
-    case GAPROLE_ERROR:
-      {
-
-      }
-      break;      
-      
+  {     
     default:
-      {
-
-      }        
       break; 
   }
 }

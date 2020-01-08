@@ -97,7 +97,7 @@ uint8 hidDevTaskId;
  */
 
 // GAP State
-static gaprole_States_t hidDevGapState = GAPROLE_INIT;
+static gapRole_States_t hidDevGapState = GAPROLE_INIT;
 
 // TRUE if connection is secure
 static uint8 hidDevConnSecure = FALSE;
@@ -119,9 +119,6 @@ static hidDevCB_t *pHidDevCB;
 
 static hidDevCfg_t *pHidDevCfg;
 
-// Whether to change to the preferred connection parameters
-static uint8 updateConnParams = TRUE;
-
 // Pending reports
 static uint8 firstQIdx = 0;
 static uint8 lastQIdx = 0;
@@ -137,7 +134,7 @@ static hidDevReport_t lastReport = { 0 };
 static void hidDev_ProcessTMOSMsg( tmos_event_hdr_t *pMsg );
 static void hidDevProcessGattMsg( gattMsgEvent_t *pMsg );
 static void hidDevDisconnected( void );
-static void hidDevGapStateCB( gaprole_States_t newState );
+static void hidDevGapStateCB( gapRole_States_t newState, gapRoleEvent_t * pEvent );
 static void hidDevPairStateCB( uint16 connHandle, uint8 state, uint8 status );
 static void hidDevPasscodeCB( uint8 *deviceAddr, uint16 connectionHandle,
                               uint8 uiInputs, uint8 uiOutputs );
@@ -166,11 +163,12 @@ static uint8 HidDev_isbufset(uint8 *buf, uint8 val, uint8 len);
 static gapRolesCBs_t hidDev_PeripheralCBs =
 {
   hidDevGapStateCB,   // Profile State Change Callbacks
-  NULL                // When a valid RSSI is read from controller
+  NULL,                // When a valid RSSI is read from controller
+  NULL
 };
 
 // Bond Manager Callbacks
-static const gapBondCBs_t hidDevBondCB =
+static gapBondCBs_t hidDevBondCB =
 {
   hidDevPasscodeCB,
   hidDevPairStateCB
@@ -194,9 +192,9 @@ static const gapBondCBs_t hidDevBondCB =
  *
  * @return  none
  */
-void HidDev_Init( uint8 task_id )
+void HidDev_Init( )
 {
-  hidDevTaskId = task_id;
+  hidDevTaskId = TMOS_ProcessEventRegister(HidDev_ProcessEvent);
 
   // Setup the GAP Bond Manager
   {
@@ -263,10 +261,7 @@ uint16 HidDev_ProcessEvent( uint8 task_id, uint16 events )
   if ( events & START_DEVICE_EVT )
   {
     // Start the Device
-    GAPRole_StartDevice( &hidDev_PeripheralCBs );
-
-    // Register with bond manager after starting device
-    GAPBondMgr_Register( (gapBondCBs_t *) &hidDevBondCB );
+    GAPRole_PeripheralStartDevice( hidDevTaskId, &hidDevBondCB, &hidDev_PeripheralCBs );
 
     return ( events ^ START_DEVICE_EVT );
   }
@@ -284,7 +279,7 @@ uint16 HidDev_ProcessEvent( uint8 task_id, uint16 events )
       // else disconnect
       else
       {
-        GAPRole_TerminateConnection();
+        GAPRole_TerminateLink( gapConnHandle );
       }
     }
 
@@ -418,7 +413,7 @@ void HidDev_Close( void )
   // if connected then disconnect
   if ( hidDevGapState == GAPROLE_CONNECTED )
   {
-    GAPRole_TerminateConnection();
+    GAPRole_TerminateLink( gapConnHandle );
   }
   // else stop advertising
   else
@@ -451,7 +446,7 @@ bStatus_t HidDev_SetParameter( uint8 param, uint8 len, void *pValue )
     case HIDDEV_ERASE_ALLBONDS:
       if ( len == 0 )
       {
-		hidRptMap_t           *pRpt;
+        hidRptMap_t *pRpt;
         if ((pRpt = hidDevRptById(lastReport.id, lastReport.type)) != NULL)
         {
           // See if the last report sent out wasn't a release key
@@ -472,7 +467,7 @@ bStatus_t HidDev_SetParameter( uint8 param, uint8 len, void *pValue )
         // Drop connection
         if ( hidDevGapState == GAPROLE_CONNECTED )
         {
-          GAPRole_TerminateConnection();
+          GAPRole_TerminateLink( gapConnHandle );
         }
 
         // Flush report queue
@@ -695,7 +690,6 @@ bStatus_t HidDev_WriteAttrCB( uint16 connHandle, gattAttribute_t *pAttr,
   {
     status = GATTServApp_ProcessCCCWriteReq( connHandle, pAttr, pValue, len,
                                              offset, GATT_CLIENT_CFG_NOTIFY );
-		PRINT("write client char uuid.%x..\n",status);
     if ( status == SUCCESS )
     {
       uint16 charCfg = BUILD_UINT16( pValue[0], pValue[1] );
@@ -858,14 +852,16 @@ static void hidDevDisconnected( void )
  *
  * @return  none
  */
-static void hidDevGapStateCB( gaprole_States_t newState )
+static void hidDevGapStateCB( gapRole_States_t newState, gapRoleEvent_t * pEvent )
 {
   uint8 param;
   // if connected
   if ( newState == GAPROLE_CONNECTED )
   {
+    gapEstLinkReqEvent_t *event = (gapEstLinkReqEvent_t *) pEvent;
+    
     // get connection handle
-    GAPRole_GetParameter( GAPROLE_CONNHANDLE, &gapConnHandle );
+    gapConnHandle = event->connectionHandle;
 
     // connection not secure yet
     hidDevConnSecure = FALSE;
@@ -882,7 +878,6 @@ static void hidDevGapStateCB( gaprole_States_t newState )
             newState != GAPROLE_CONNECTED )
   {
     hidDevDisconnected();
-    updateConnParams = TRUE;
 
     if ( pairingStatus == SMP_PAIRING_FAILED_CONFIRM_VALUE )
     {
@@ -897,8 +892,15 @@ static void hidDevGapStateCB( gaprole_States_t newState )
   {
     // nothing to do for now!
   }
+  
+  if ( pHidDevCB && pHidDevCB->pfnStateChange )
+  {
+    // execute HID app state change callback
+    (*pHidDevCB->pfnStateChange)( newState, pEvent );
+  }
 
   hidDevGapState = newState;
+  
 }
 
 /*********************************************************************
@@ -968,8 +970,11 @@ static void hidDevPasscodeCB( uint8 *deviceAddr, uint16 connectionHandle,
   }
   else
   {
+    uint32 passkey; 
+    GAPBondMgr_GetParameter( GAPBOND_PERI_DEFAULT_PASSCODE, &passkey );
+    
     // Send passcode response
-    GAPBondMgr_PasscodeRsp( connectionHandle, SUCCESS, 0 );
+    GAPBondMgr_PasscodeRsp( connectionHandle, SUCCESS, passkey );
   }
 }
 
@@ -1139,14 +1144,6 @@ static void hidDevSendReport( uint8 id, uint8 type, uint8 len, uint8 *pData )
       value  = GATTServApp_ReadCharCfg( gapConnHandle, (gattCharCfg_t *) pAttr->pValue );
       if ( value & GATT_CLIENT_CFG_NOTIFY )
       {
-        // After service discovery and encryption, the HID Device should request to
-        // change to the preferred connection parameters that best suit its use case.
-        if ( updateConnParams )
-        {
-          GAPRole_SetParameter( GAPROLE_PARAM_UPDATE_REQ, sizeof( uint8 ), &updateConnParams );
-          updateConnParams = FALSE;
-        }
-
         // Send report notification
 				if (HidDev_sendNoti(pRpt->handle, len, pData) == SUCCESS)
 				{
@@ -1280,13 +1277,9 @@ static void hidDevHighAdvertising( void )
 {
   uint8 param;
 
-  GAP_SetParamValue( TGAP_LIM_DISC_ADV_INT_MIN, HID_HIGH_ADV_INT_MIN );
-  GAP_SetParamValue( TGAP_LIM_DISC_ADV_INT_MAX, HID_HIGH_ADV_INT_MAX );
+  GAP_SetParamValue( TGAP_DISC_ADV_INT_MIN, HID_HIGH_ADV_INT_MIN );
+  GAP_SetParamValue( TGAP_DISC_ADV_INT_MAX, HID_HIGH_ADV_INT_MAX );
   GAP_SetParamValue( TGAP_LIM_ADV_TIMEOUT, HID_HIGH_ADV_TIMEOUT );
-
-  // Setup adverstising filter policy first
-  param = GAP_FILTER_POLICY_WHITE;
-  GAPRole_SetParameter( GAPROLE_ADV_FILTER_POLICY, sizeof( uint8 ), &param );
 
   param = TRUE;
   GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &param );
@@ -1305,13 +1298,9 @@ static void hidDevLowAdvertising( void )
 {
   uint8 param;
 
-  GAP_SetParamValue( TGAP_LIM_DISC_ADV_INT_MIN, HID_LOW_ADV_INT_MIN );
-  GAP_SetParamValue( TGAP_LIM_DISC_ADV_INT_MAX, HID_LOW_ADV_INT_MAX );
+  GAP_SetParamValue( TGAP_DISC_ADV_INT_MIN, HID_LOW_ADV_INT_MIN );
+  GAP_SetParamValue( TGAP_DISC_ADV_INT_MAX, HID_LOW_ADV_INT_MAX );
   GAP_SetParamValue( TGAP_LIM_ADV_TIMEOUT, HID_LOW_ADV_TIMEOUT );
-
-  // Setup adverstising filter policy first
-  param = GAP_FILTER_POLICY_WHITE;
-  GAPRole_SetParameter( GAPROLE_ADV_FILTER_POLICY, sizeof( uint8 ), &param );
 
   param = TRUE;
   GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &param );
@@ -1328,13 +1317,9 @@ static void hidDevInitialAdvertising( void )
 {
   uint8 param;
 
-  GAP_SetParamValue( TGAP_LIM_DISC_ADV_INT_MIN, HID_INITIAL_ADV_INT_MIN );
-  GAP_SetParamValue( TGAP_LIM_DISC_ADV_INT_MAX, HID_INITIAL_ADV_INT_MAX );
+  GAP_SetParamValue( TGAP_DISC_ADV_INT_MIN, HID_INITIAL_ADV_INT_MIN );
+  GAP_SetParamValue( TGAP_DISC_ADV_INT_MAX, HID_INITIAL_ADV_INT_MAX );
   GAP_SetParamValue( TGAP_LIM_ADV_TIMEOUT, HID_INITIAL_ADV_TIMEOUT );
-
-  // Setup adverstising filter policy first
-  param = GAP_FILTER_POLICY_ALL;
-  GAPRole_SetParameter( GAPROLE_ADV_FILTER_POLICY, sizeof( uint8 ), &param );
 
   param = TRUE;
   GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &param );

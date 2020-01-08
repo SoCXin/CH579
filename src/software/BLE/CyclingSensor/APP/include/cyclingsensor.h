@@ -29,8 +29,7 @@ extern "C"
 #define CSC_PERIODIC_EVT                              0x0002
 #define CSC_CONN_PARAM_UPDATE_EVT                     0x0004
 #define CSC_NEGLECT_TIMEOUT_EVT                       0x0008
-#define CSC_RESET_EVT                                 0x0010
-
+  
 #define CSC_MEAS_LEN                            			11
 
 /*********************************************************************
@@ -44,7 +43,7 @@ extern "C"
 /*
  * Task Initialization for the BLE Application
  */
-extern void CyclingSensor_Init( uint8 task_id );
+extern void CyclingSensor_Init( void );
 
 /*
  * Task Event Processor for the BLE Application

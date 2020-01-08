@@ -44,26 +44,26 @@
 // How often to perform heart rate periodic event
 #define DEFAULT_HEARTRATE_PERIOD              2000
 
-// Whether to enable automatic parameter update request when a connection is formed
-#define DEFAULT_ENABLE_UPDATE_REQUEST         FALSE
-
-// Minimum connection interval (units of 1.25ms) if automatic parameter update request is enabled
+// Minimum connection interval (units of 1.25ms)
 #define DEFAULT_DESIRED_MIN_CONN_INTERVAL     200
 
-// Maximum connection interval (units of 1.25ms) if automatic parameter update request is enabled
+// Maximum connection interval (units of 1.25ms)
 #define DEFAULT_DESIRED_MAX_CONN_INTERVAL     1600
 
-// Slave latency to use if automatic parameter update request is enabled
+// Slave latency to use if parameter update request
 #define DEFAULT_DESIRED_SLAVE_LATENCY         1
 
-// Supervision timeout value (units of 10ms) if automatic parameter update request is enabled
+// Supervision timeout value (units of 10ms)
 #define DEFAULT_DESIRED_CONN_TIMEOUT          1000
+
+// Delay of start connect paramter update
+#define DEFAULT_CONN_PARAM_UPDATE_DELAY       1600
 
 // Battery level is critical when it is less than this %
 #define DEFAULT_BATT_CRITICAL_LEVEL           6 
 
 // Battery measurement period in (625us)
-#define DEFAULT_BATT_PERIOD                   15000
+#define DEFAULT_BATT_PERIOD                   24000
 
 // Some values used to simulate measurements
 #define BPM_DEFAULT                           73
@@ -92,7 +92,7 @@
  */
 static uint8 heartRate_TaskID;   // Task ID for internal task/event processing
 
-static gaprole_States_t gapProfileState = GAPROLE_INIT;
+static gapRole_States_t gapProfileState = GAPROLE_INIT;
 
 // GAP Profile - Name attribute for SCAN RSP data
 static uint8 scanRspData[] =
@@ -169,7 +169,7 @@ static BOOL heartRateAdvCancelled = FALSE;
  * LOCAL FUNCTIONS
  */
 static void heartRate_ProcessTMOSMsg( tmos_event_hdr_t *pMsg );
-static void HeartRateGapStateCB( gaprole_States_t newState );
+static void HeartRateGapStateCB( gapRole_States_t newState ,gapRoleEvent_t * pEvent);
 static void heartRatePeriodicTask( void );
 static void heartRateBattPeriodicTask( void );
 static void heartRateMeasNotify(void);
@@ -184,11 +184,12 @@ static void heartRateBattCB(uint8 event);
 static gapRolesCBs_t heartRatePeripheralCB =
 {
   HeartRateGapStateCB,  // Profile State Change Callbacks
-  NULL                            // When a valid RSSI is read from controller
+  NULL,                            // When a valid RSSI is read from controller
+	NULL
 };
 
 // Bond Manager Callbacks
-static const gapBondCBs_t heartRateBondCB =
+static gapBondCBs_t heartRateBondCB =
 {
   NULL,                   // Passcode callback
   NULL                    // Pairing state callback
@@ -212,40 +213,19 @@ static const gapBondCBs_t heartRateBondCB =
  *
  * @return  none
  */
-void HeartRate_Init( uint8 task_id )
+void HeartRate_Init( )
 {
-  heartRate_TaskID = task_id;
+  heartRate_TaskID = TMOS_ProcessEventRegister(HeartRate_ProcessEvent);
 
   // Setup the GAP Peripheral Role Profile
   {
-    // device doesn't start advertising until button is pressed
     uint8 initial_advertising_enable = TRUE;
-
-    // By setting this to zero, the device will go into the waiting state after
-    // being discoverable for 30.72 second, and will not being advertising again
-    // until the enabler is set back to TRUE
-    uint16 gapRole_AdvertOffTime = 100;
-      
-    uint8 enable_update_request = DEFAULT_ENABLE_UPDATE_REQUEST;
-    uint16 desired_min_interval = DEFAULT_DESIRED_MIN_CONN_INTERVAL;
-    uint16 desired_max_interval = DEFAULT_DESIRED_MAX_CONN_INTERVAL;
-    uint16 desired_slave_latency = DEFAULT_DESIRED_SLAVE_LATENCY;
-    uint16 desired_conn_timeout = DEFAULT_DESIRED_CONN_TIMEOUT;
-
-    // Set the GAP Role Parameters
-    GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &initial_advertising_enable );
-    GAPRole_SetParameter( GAPROLE_ADVERT_OFF_TIME, sizeof( uint16 ), &gapRole_AdvertOffTime );
     
+    // Set the GAP Role Parameters
+    GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &initial_advertising_enable );  
     GAPRole_SetParameter( GAPROLE_SCAN_RSP_DATA, sizeof ( scanRspData ), scanRspData );
     GAPRole_SetParameter( GAPROLE_ADVERT_DATA, sizeof( advertData ), advertData );
-    
-    GAPRole_SetParameter( GAPROLE_PARAM_UPDATE_ENABLE, sizeof( uint8 ), &enable_update_request );
-    GAPRole_SetParameter( GAPROLE_MIN_CONN_INTERVAL, sizeof( uint16 ), &desired_min_interval );
-    GAPRole_SetParameter( GAPROLE_MAX_CONN_INTERVAL, sizeof( uint16 ), &desired_max_interval );
-    GAPRole_SetParameter( GAPROLE_SLAVE_LATENCY, sizeof( uint16 ), &desired_slave_latency );
-    GAPRole_SetParameter( GAPROLE_TIMEOUT_MULTIPLIER, sizeof( uint16 ), &desired_conn_timeout );
   }
-  
   // Set the GAP Characteristics
   GGS_SetParameter( GGS_DEVICE_NAME_ATT, GAP_DEVICE_NAME_LEN, attDeviceName );
 
@@ -256,11 +236,11 @@ void HeartRate_Init( uint8 task_id )
     uint8 mitm = FALSE;
     uint8 ioCap = GAPBOND_IO_CAP_DISPLAY_ONLY;
     uint8 bonding = TRUE;
-    GAPBondMgr_SetParameter( GAPBOND_DEFAULT_PASSCODE, sizeof ( uint32 ), &passkey );
-    GAPBondMgr_SetParameter( GAPBOND_PAIRING_MODE, sizeof ( uint8 ), &pairMode );
-    GAPBondMgr_SetParameter( GAPBOND_MITM_PROTECTION, sizeof ( uint8 ), &mitm );
-    GAPBondMgr_SetParameter( GAPBOND_IO_CAPABILITIES, sizeof ( uint8 ), &ioCap );
-    GAPBondMgr_SetParameter( GAPBOND_BONDING_ENABLED, sizeof ( uint8 ), &bonding );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_DEFAULT_PASSCODE, sizeof ( uint32 ), &passkey );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_PAIRING_MODE, sizeof ( uint8 ), &pairMode );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_MITM_PROTECTION, sizeof ( uint8 ), &mitm );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_IO_CAPABILITIES, sizeof ( uint8 ), &ioCap );
+    GAPBondMgr_SetParameter( GAPBOND_PERI_BONDING_ENABLED, sizeof ( uint8 ), &bonding );
   }  
 
   // Setup the Heart Rate Characteristic Values
@@ -329,10 +309,7 @@ uint16 HeartRate_ProcessEvent( uint8 task_id, uint16 events )
   if ( events & START_DEVICE_EVT )
   {
     // Start the Device
-    VOID GAPRole_StartDevice( &heartRatePeripheralCB );
-
-    // Register with bond manager after starting device
-    GAPBondMgr_Register( (gapBondCBs_t *) &heartRateBondCB );
+    VOID GAPRole_PeripheralStartDevice( heartRate_TaskID, &heartRateBondCB, &heartRatePeripheralCB );
     
     return ( events ^ START_DEVICE_EVT );
   }
@@ -353,6 +330,19 @@ uint16 HeartRate_ProcessEvent( uint8 task_id, uint16 events )
     return (events ^ BATT_PERIODIC_EVT);
   }  
   
+  if ( events & HEART_CONN_PARAM_UPDATE_EVT )
+  {		
+    // Send param update.  
+    GAPRole_PeripheralConnParamUpdateReq( gapConnHandle, 
+                                          DEFAULT_DESIRED_MIN_CONN_INTERVAL, 
+                                          DEFAULT_DESIRED_MAX_CONN_INTERVAL, 
+                                          DEFAULT_DESIRED_SLAVE_LATENCY, 
+                                          DEFAULT_DESIRED_CONN_TIMEOUT, 
+                                          heartRate_TaskID );
+
+    return (events ^ HEART_CONN_PARAM_UPDATE_EVT);
+  }
+ 
   // Discard unknown events
   return 0;
 }
@@ -436,13 +426,19 @@ static void heartRateMeasNotify(void)
  *
  * @return  none
  */
-static void HeartRateGapStateCB( gaprole_States_t newState )
+static void HeartRateGapStateCB( gapRole_States_t newState ,gapRoleEvent_t * pEvent)
 {
   // if connected
   if (newState == GAPROLE_CONNECTED)
   {
-    // get connection handle
-    GAPRole_GetParameter(GAPROLE_CONNHANDLE, &gapConnHandle);
+    if( pEvent->gap.opcode == GAP_LINK_ESTABLISHED_EVENT )
+    {
+      // Get connection handle
+      gapConnHandle = pEvent->linkCmpl.connectionHandle;
+      
+      // Set timer to update connection parameters
+      tmos_start_task( heartRate_TaskID, HEART_CONN_PARAM_UPDATE_EVT, DEFAULT_CONN_PARAM_UPDATE_DELAY);
+    }
   }
   // if disconnected
   else if (gapProfileState == GAPROLE_CONNECTED && 
@@ -457,21 +453,11 @@ static void HeartRateGapStateCB( gaprole_States_t newState )
     HeartRate_HandleConnStatusCB( gapConnHandle, LINKDB_STATUS_UPDATE_REMOVED );
     Batt_HandleConnStatusCB( gapConnHandle, LINKDB_STATUS_UPDATE_REMOVED );
 
-    if ( newState == GAPROLE_WAITING_AFTER_TIMEOUT )
-    {
-      // link loss timeout-- use fast advertising
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MIN, DEFAULT_FAST_ADV_INTERVAL );
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MAX, DEFAULT_FAST_ADV_INTERVAL );
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_MIN, DEFAULT_FAST_ADV_DURATION );
-    }
-    else
-    {
-      // Else use slow advertising
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MIN, DEFAULT_SLOW_ADV_INTERVAL );
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MAX, DEFAULT_SLOW_ADV_INTERVAL );
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_MIN, DEFAULT_SLOW_ADV_DURATION );
-    }
-
+    // link loss -- use fast advertising
+    GAP_SetParamValue( TGAP_DISC_ADV_INT_MIN, DEFAULT_FAST_ADV_INTERVAL );
+    GAP_SetParamValue( TGAP_DISC_ADV_INT_MAX, DEFAULT_FAST_ADV_INTERVAL );
+    GAP_SetParamValue( TGAP_GEN_DISC_ADV_MIN, DEFAULT_FAST_ADV_DURATION );
+    
     // Enable advertising
     GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &advState );    
   }    
@@ -485,12 +471,12 @@ static void HeartRateGapStateCB( gaprole_States_t newState )
       heartRateAdvCancelled = FALSE;
     }
     // if fast advertising switch to slow
-    else if ( GAP_GetParamValue( TGAP_GEN_DISC_ADV_INT_MIN ) == DEFAULT_FAST_ADV_INTERVAL )
+    else if ( GAP_GetParamValue( TGAP_DISC_ADV_INT_MIN ) == DEFAULT_FAST_ADV_INTERVAL )
     {
       uint8 advState = TRUE;
       
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MIN, DEFAULT_SLOW_ADV_INTERVAL );
-      GAP_SetParamValue( TGAP_GEN_DISC_ADV_INT_MAX, DEFAULT_SLOW_ADV_INTERVAL );
+      GAP_SetParamValue( TGAP_DISC_ADV_INT_MIN, DEFAULT_SLOW_ADV_INTERVAL );
+      GAP_SetParamValue( TGAP_DISC_ADV_INT_MAX, DEFAULT_SLOW_ADV_INTERVAL );
       GAP_SetParamValue( TGAP_GEN_DISC_ADV_MIN, DEFAULT_SLOW_ADV_DURATION );
       GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &advState );   
     }  

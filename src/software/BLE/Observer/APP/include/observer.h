@@ -39,7 +39,7 @@ extern "C"
 /*
  * Task Initialization for the BLE Application
  */
-extern void Observer_Init( uint8 task_id );
+extern void Observer_Init( void );
 
 /*
  * Task Event Processor for the BLE Application

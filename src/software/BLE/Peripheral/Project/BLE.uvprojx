@@ -16,7 +16,7 @@
         <TargetCommonOption>
           <Device>ARMCM0</Device>
           <Vendor>ARM</Vendor>
-          <PackID>ARM.CMSIS.5.4.0</PackID>
+          <PackID>ARM.CMSIS.5.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x00020000) IROM(0x00000000,0x00040000) CPUTYPE("Cortex-M0") CLOCK(12000000) ESEL ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -33,7 +33,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile></SFDFile>
+          <SFDFile>$$Device:ARMCM0$Device\ARM\SVD\ARMCM0.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
@@ -55,7 +55,7 @@
           <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
-          <ListingPath>.\list\</ListingPath>
+          <ListingPath>.\listing\</ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
           <CreateBatchFile>0</CreateBatchFile>
@@ -80,9 +80,9 @@
             <nStopB2X>0</nStopB2X>
           </BeforeMake>
           <AfterMake>
-            <RunUserProg1>1</RunUserProg1>
+            <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name>fromelf.exe  --bin -o  ./BLE.bin  ./obj/BLE.axf</UserProg1Name>
+            <UserProg1Name></UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>DEBUG</Define>
               <Undefine></Undefine>
-              <IncludePath>..\APP\include;..\Profile\include;..\..\HAL\include;..\..\..\Libs\BLE;..\..\..\Libs\CMSIS\Include;..\..\..\Libs\StdPeriphDriver\inc</IncludePath>
+              <IncludePath>..\APP\include;..\Profile\include;..\..\HAL\include;..\..\LIB;..\..\..\SRC\CMSIS\Include;..\..\..\SRC\StdPeriphDriver\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -415,32 +415,32 @@
             <File>
               <FileName>startup_ARMCM0.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\Libs\Startup\startup_ARMCM0.s</FilePath>
+              <FilePath>..\..\..\SRC\Startup\startup_ARMCM0.s</FilePath>
             </File>
             <File>
               <FileName>CH57x_clk.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Libs\StdPeriphDriver\CH57x_clk.c</FilePath>
+              <FilePath>..\..\..\SRC\StdPeriphDriver\CH57x_clk.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_gpio.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Libs\StdPeriphDriver\CH57x_gpio.c</FilePath>
+              <FilePath>..\..\..\SRC\StdPeriphDriver\CH57x_gpio.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_pwr.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Libs\StdPeriphDriver\CH57x_pwr.c</FilePath>
+              <FilePath>..\..\..\SRC\StdPeriphDriver\CH57x_pwr.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_sys.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Libs\StdPeriphDriver\CH57x_sys.c</FilePath>
+              <FilePath>..\..\..\SRC\StdPeriphDriver\CH57x_sys.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_uart1.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Libs\StdPeriphDriver\CH57x_uart1.c</FilePath>
+              <FilePath>..\..\..\SRC\StdPeriphDriver\CH57x_uart1.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -470,7 +470,7 @@
             <File>
               <FileName>CH57xBLE.LIB</FileName>
               <FileType>4</FileType>
-              <FilePath>..\..\..\Libs\BLE\CH57xBLE.LIB</FilePath>
+              <FilePath>..\..\LIB\CH57xBLE.LIB</FilePath>
             </File>
           </Files>
         </Group>
@@ -478,9 +478,9 @@
           <GroupName>config</GroupName>
           <Files>
             <File>
-              <FileName>CONFIG.h</FileName>
+              <FileName>config.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\APP\include\CONFIG.h</FilePath>
+              <FilePath>..\..\HAL\include\config.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -494,8 +494,8 @@
   <RTE>
     <apis/>
     <components>
-      <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="5.1.2" condition="ARMv6_7_8-M Device">
-        <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="5.4.0"/>
+      <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="5.1.1" condition="ARMv6_7_8-M Device">
+        <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="5.3.0"/>
         <targetInfos>
           <targetInfo name="BLE"/>
         </targetInfos>

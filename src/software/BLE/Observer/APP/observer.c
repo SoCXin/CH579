@@ -20,9 +20,6 @@
  * MACROS
  */
 
-// Length of bd addr as a string
-#define B_ADDR_STR_LEN                        15
-
 /*********************************************************************
  * CONSTANTS
  */
@@ -31,7 +28,7 @@
 #define DEFAULT_MAX_SCAN_RES                  8
 
 // Scan duration in (625us)
-#define DEFAULT_SCAN_DURATION                 4000
+#define DEFAULT_SCAN_DURATION                 4800
 
 // Discovey mode (limited, general, all)
 #define DEFAULT_DISCOVERY_MODE                DEVDISC_MODE_ALL
@@ -66,22 +63,16 @@ uint8 gStatus;
 // Task ID for internal task/event processing
 static uint8 ObserverTaskId;
 
-// GAP GATT Attributes
-//static const uint8 ObserverDeviceName[GAP_DEVICE_NAME_LEN] = "Simple BLE Observer";
-
 // Number of scan results and scan result index
 static uint8 ObserverScanRes;
 
 // Scan result list
 static gapDevRec_t ObserverDevList[DEFAULT_MAX_SCAN_RES];
 
-// Scanning state
-static uint8 ObserverScanning = FALSE;
-
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
-static void ObserverEventCB( gapObserverRoleEvent_t *pEvent );
+static void ObserverEventCB( gapRoleEvent_t *pEvent );
 static void Observer_ProcessOSALMsg( tmos_event_hdr_t *pMsg );
 static void ObserverAddDeviceInfo( uint8 *pAddr, uint8 addrType );
 char *bdAddr2Str ( uint8 *pAddr );
@@ -91,9 +82,8 @@ char *bdAddr2Str ( uint8 *pAddr );
  */
 
 // GAP Role Callbacks
-static const gapObserverRoleCB_t ObserverRoleCB =
+static const gapRoleObserverCB_t ObserverRoleCB =
 {
-  NULL,                     // RSSI callback
   ObserverEventCB  // Event callback
 };
 
@@ -115,9 +105,9 @@ static const gapObserverRoleCB_t ObserverRoleCB =
  *
  * @return  none
  */
-void Observer_Init( uint8 task_id )
+void Observer_Init( )
 {
-  ObserverTaskId = task_id;
+  ObserverTaskId = TMOS_ProcessEventRegister(Observer_ProcessEvent);
 
   // Setup Observer Profile
   {
@@ -126,8 +116,7 @@ void Observer_Init( uint8 task_id )
   }
   
   // Setup GAP
-  GAP_SetParamValue( TGAP_GEN_DISC_SCAN, DEFAULT_SCAN_DURATION );
-  GAP_SetParamValue( TGAP_LIM_DISC_SCAN, DEFAULT_SCAN_DURATION );
+  GAP_SetParamValue( TGAP_DISC_SCAN, DEFAULT_SCAN_DURATION );
 
   // Setup a delayed profile startup
   tmos_set_event( ObserverTaskId, START_DEVICE_EVT );
@@ -169,46 +158,12 @@ uint16 Observer_ProcessEvent( uint8 task_id, uint16 events )
 
   if ( events & START_DEVICE_EVT )
   {
-		uint8 stat;
     // Start the Device
-    stat = GAPRole_ObserverStartDevice( (gapObserverRoleCB_t *) &ObserverRoleCB );
-		PRINT ("start device %d \n",stat);
+    GAPRole_ObserverStartDevice( (gapRoleObserverCB_t *) &ObserverRoleCB );
+    
     return ( events ^ START_DEVICE_EVT );
   }
-	if( events & START_SCAN_EVT ){
-    PRINT ( "scan event:%d %d...\n",ObserverScanning,ObserverScanRes);      
-    // Display discovery results
-    if ( ObserverScanning && ObserverScanRes > 0 )
-    {
-			int i,j;
-			// Increment index of current result (with wraparound)
-			for( j=0;j<ObserverScanRes;j++ ){
-				PRINT ( "Device %d : ", j  );
-				for( i=0; i<6; i++)
-				{
-					PRINT ( "%x ",ObserverDevList[j].addr[i] );
-				}
-				PRINT ("\n");
-			}
-		}
-    if ( !ObserverScanning )
-    {
-      ObserverScanning = TRUE;
-      ObserverScanRes = 0;
-      
-      PRINT ( "Discovering...\n");      
-      GAPRole_ObserverStartDiscovery( DEFAULT_DISCOVERY_MODE,
-                                      DEFAULT_DISCOVERY_ACTIVE_SCAN,
-                                      DEFAULT_DISCOVERY_WHITE_LIST );      
-    }
-    else
-    {
-      PRINT ( "cancel discovering...\n");      
-      GAPRole_ObserverCancelDiscovery();
-    }
-		tmos_start_task( ObserverTaskId, START_SCAN_EVT, 5000 ); // 5000*625us
-		return ( events ^ START_SCAN_EVT );
-	}
+  
   // Discard unknown events
   return 0;
 }
@@ -243,34 +198,49 @@ static void Observer_ProcessOSALMsg( tmos_event_hdr_t *pMsg )
  *
  * @return  none
  */
-static void ObserverEventCB( gapObserverRoleEvent_t *pEvent )
+static void ObserverEventCB( gapRoleEvent_t *pEvent )
 {
   switch ( pEvent->gap.opcode )
   {
     case GAP_DEVICE_INIT_DONE_EVENT:  
       {
-				PRINT ("GAP_DEVICE_INIT_DONE_EVENT\n");
-				tmos_set_event( ObserverTaskId, START_SCAN_EVT);
+        GAPRole_ObserverStartDiscovery( DEFAULT_DISCOVERY_MODE,
+                                        DEFAULT_DISCOVERY_ACTIVE_SCAN,
+                                        DEFAULT_DISCOVERY_WHITE_LIST ); 
+        PRINT ( "Discovering...\n");        
       }
       break;
 
     case GAP_DEVICE_INFO_EVENT:
       {
-				PRINT ("GAP_DEVICE_INFO_EVENT\n");
         ObserverAddDeviceInfo( pEvent->deviceInfo.addr, pEvent->deviceInfo.addrType );
       }
       break;
       
     case GAP_DEVICE_DISCOVERY_EVENT:
       {
-        // discovery complete
-        ObserverScanning = FALSE;
+        PRINT ( "Discovery over...\n");
 
-				PRINT ("GAP_DEVICE_DISCOVERY_EVENT\n");
-        // Copy results
-        ObserverScanRes = pEvent->discCmpl.numDevs;
-        tmos_memcpy( ObserverDevList, pEvent->discCmpl.pDevList,
-                     (sizeof( gapDevRec_t ) * pEvent->discCmpl.numDevs) );
+        // Display discovery results
+        if ( pEvent->discCmpl.numDevs > 0 )
+        {
+          int i,j;
+          // Increment index of current result (with wraparound)
+          for( j=0;j<pEvent->discCmpl.numDevs;j++ )
+          {
+            PRINT ( "Device %d : ", j  );
+            for( i=0; i<6; i++)
+            {
+              PRINT ( "%x ",pEvent->discCmpl.pDevList[j].addr[i] );
+            }
+            PRINT ("\n");
+          }
+        }         
+                
+        GAPRole_ObserverStartDiscovery( DEFAULT_DISCOVERY_MODE,
+                                        DEFAULT_DISCOVERY_ACTIVE_SCAN,
+                                        DEFAULT_DISCOVERY_WHITE_LIST );      
+        PRINT ( "Discovering...\n ");
       }
       break;
       
@@ -301,7 +271,6 @@ static void ObserverAddDeviceInfo( uint8 *pAddr, uint8 addrType )
         return;
       }
     }
-    PRINT ("Add addr to scan result list\n");
     
     // Add addr to scan result list
     tmos_memcpy( ObserverDevList[ObserverScanRes].addr, pAddr, B_ADDR_LEN );

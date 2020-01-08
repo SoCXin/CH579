@@ -97,7 +97,7 @@ static uint8 simpleProfileChar1Props = GATT_PROP_READ | GATT_PROP_WRITE;
 static uint8 simpleProfileChar1 = 0;
 
 // Simple Profile Characteristic 1 User Description
-static uint8 simpleProfileChar1UserDesp[17] = "Characteristi2 1\0";
+static uint8 simpleProfileChar1UserDesp[17] = "Characteristic 1\0";
 
 
 // Simple Profile Characteristic 2 Properties
@@ -107,7 +107,7 @@ static uint8 simpleProfileChar2Props = GATT_PROP_READ;
 static uint8 simpleProfileChar2 = 0;
 
 // Simple Profile Characteristic 2 User Description
-static uint8 simpleProfileChar2UserDesp[17] = "Characteristi2 2\0";
+static uint8 simpleProfileChar2UserDesp[17] = "Characteristic 2\0";
 
 
 // Simple Profile Characteristic 3 Properties
@@ -430,19 +430,15 @@ bStatus_t SimpleProfile_SetParameter( uint8 param, uint8 len, void *value )
       break;
 
     case SIMPLEPROFILE_CHAR4:
-//      if ( len == sizeof ( uint8 ) ) 
+      if ( len == sizeof ( uint8 ) ) 
       {
         simpleProfileChar4 = *((uint8*)value);
-        
-        // See if Notification has been enabled
-        GATTServApp_ProcessCharCfg( simpleProfileChar4Config, &simpleProfileChar4, FALSE,
-                                    simpleProfileAttrTbl, GATT_NUM_ATTRS( simpleProfileAttrTbl ),
-                                    INVALID_TASK_ID, simpleProfile_ReadAttrCB );
+
       }
-//      else
-//      {
-//        ret = bleInvalidRange;
-//      }
+      else
+      {
+        ret = bleInvalidRange;
+      }
       break;
 
     case SIMPLEPROFILE_CHAR5:

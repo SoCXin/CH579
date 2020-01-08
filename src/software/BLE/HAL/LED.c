@@ -10,7 +10,6 @@
 
 /******************************************************************************/
 /* 头文件包含 */
-#include "CONFIG.h"
 #include "CH57x_common.h"
 #include "HAL.h"
 
@@ -34,24 +33,16 @@ typedef struct
 /***************************************************************************************************
  *                                           GLOBAL VARIABLES
  ***************************************************************************************************/
-#if HAL_LED == TRUE
 static uint8 HalLedState;              // LED state at last set/clr/blink update
 
-static uint8 HalSleepLedState;         // LED state at last set/clr/blink update
 static uint8 preBlinkState;            // Original State before going to blink mode
                                        // bit 0, 1, 2, 3 represent led 0, 1, 2, 3
-#endif
-
-#if( BLINK_LEDS )
-  static HalLedStatus_t HalLedStatusControl;
-#endif
+static HalLedStatus_t HalLedStatusControl;
 
 /***************************************************************************************************
  *                                            LOCAL FUNCTION
  ***************************************************************************************************/
-#if (HAL_LED == TRUE)
 void HalLedOnOff (uint8 leds, uint8 mode);
-#endif /* HAL_LED */
 
 /***************************************************************************************************
  *                                            FUNCTIONS - API
@@ -68,17 +59,13 @@ void HalLedOnOff (uint8 leds, uint8 mode);
  */
 void HAL_LedInit (void)
 {
-#if (HAL_LED == TRUE)
   /* Initialize all LEDs to OFF */
   LED1_DDR;
   HalLedSet(HAL_LED_ALL, HAL_LED_MODE_OFF);
 // just test	
 	HalLedBlink( HAL_LED_1, 10, 30 , 4000);
-#endif /* HAL_LED */
-#if( BLINK_LEDS )
   /* Initialize sleepActive to FALSE */
   HalLedStatusControl.sleepActive = FALSE;
-#endif
 }
 
 /***************************************************************************************************
@@ -93,7 +80,6 @@ void HAL_LedInit (void)
  */
 uint8 HalLedSet (uint8 leds, uint8 mode)
 {
-#if (defined (BLINK_LEDS)) && (HAL_LED == TRUE)
   uint8 led;
   HalLedControl_t *sts;
 
@@ -133,11 +119,6 @@ uint8 HalLedSet (uint8 leds, uint8 mode)
     default:
       break;
   }
-#else
-  // HAL LED is disabled, suppress unused argument warnings
-  (void) leds;
-  (void) mode;
-#endif /* BLINK_LEDS && HAL_LED   */
   return ( NULL );
 }
 
@@ -155,7 +136,6 @@ uint8 HalLedSet (uint8 leds, uint8 mode)
  */
 void HalLedBlink (uint8 leds, uint8 numBlinks, uint8 percent, uint16 period)
 {
-#if (defined (BLINK_LEDS)) && (HAL_LED == TRUE)
   uint8 led;
   HalLedControl_t *sts;
 
@@ -189,13 +169,6 @@ void HalLedBlink (uint8 leds, uint8 numBlinks, uint8 percent, uint16 period)
   else{
     HalLedSet (leds, HAL_LED_MODE_OFF);                     /* No on time, turn off */
   }
-#else
-  // HAL LED is disabled, suppress unused argument warnings
-  (void) leds;
-  (void) numBlinks;
-  (void) percent;
-  (void) period;
-#endif /* BLINK_LEDS && HAL_LED */
 }
 
 /***************************************************************************************************
@@ -209,7 +182,6 @@ void HalLedBlink (uint8 leds, uint8 numBlinks, uint8 percent, uint16 period)
  */
 void HalLedUpdate (void)
 {
-#if (HAL_LED == TRUE)
   uint8 led,pct,leds;
   uint16 next,wait;
   uint32 time;
@@ -272,10 +244,8 @@ void HalLedUpdate (void)
       tmos_start_task( halTaskID, LED_BLINK_EVENT, next);   /* Schedule event */
     }
   }
-#endif
 }
 
-#if (HAL_LED == TRUE)
 /***************************************************************************************************
  * @fn     : HalLedOnOff
  *
@@ -328,7 +298,6 @@ void HalLedOnOff (uint8 leds, uint8 mode)
     HalLedState &= (leds ^ 0xFF);
   }
 }
-#endif /* HAL_LED */
 
 /***************************************************************************************************
  * @fn      HalGetLedState
@@ -341,65 +310,7 @@ void HalLedOnOff (uint8 leds, uint8 mode)
  ***************************************************************************************************/
 uint8 HalLedGetState ()
 {
-#if (HAL_LED == TRUE)
   return HalLedState;
-#else
-  return 0;
-#endif
-}
-
-/***************************************************************************************************
- * @fn      HalLedEnterSleep
- *
- * @brief   Store current LEDs state before sleep
- *
- * @param   none
- *
- * @return  none
- ***************************************************************************************************/
-void HalLedEnterSleep( void )
-{
-#if( BLINK_LEDS )
-  /* Sleep ON */
-  HalLedStatusControl.sleepActive = TRUE;
-#endif /* BLINK_LEDS */
-
-#if (HAL_LED == TRUE)
-  /* Save the state of each led */
-  HalSleepLedState = 0;
-  HalSleepLedState |= HAL_STATE_LED1();
-  HalSleepLedState |= HAL_STATE_LED2() << 1;
-  HalSleepLedState |= HAL_STATE_LED3() << 2;
-  HalSleepLedState |= HAL_STATE_LED4() << 3;
-  /* TURN OFF all LEDs to save power */
-  HalLedOnOff (HAL_LED_ALL, HAL_LED_MODE_OFF);
-#endif /* HAL_LED */
-
-}
-
-/***************************************************************************************************
- * @fn      HalLedExitSleep
- *
- * @brief   Restore current LEDs state after sleep
- *
- * @param   none
- *
- * @return  none
- ***************************************************************************************************/
-void HalLedExitSleep( void )
-{
-#if (HAL_LED == TRUE)
-  /* Load back the saved state */
-  HalLedOnOff(HalSleepLedState, HAL_LED_MODE_ON);
-
-  /* Restart - This takes care BLINKING LEDS */
-  HalLedUpdate();
-#endif /* HAL_LED */
-
-#if( BLINK_LEDS )
-  /* Sleep OFF */
-  HalLedStatusControl.sleepActive = FALSE;
-#endif /* BLINK_LEDS */
 }
 
 /******************************** endfile @ led ******************************/

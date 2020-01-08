@@ -28,7 +28,6 @@ extern "C"
 #define RSC_PERIODIC_EVT                              0x0002
 #define RSC_CONN_PARAM_UPDATE_EVT                     0x0004
 #define RSC_NEGLECT_TIMEOUT_EVT                       0x0008
-#define RSC_RESET_EVT                                 0x0010
 
 /*********************************************************************
  * MACROS
@@ -41,7 +40,7 @@ extern "C"
 /*
  * Task Initialization for the BLE Application
  */
-extern void RunningSensor_Init( uint8 task_id );
+extern void RunningSensor_Init( void );
 
 /*
  * Task Event Processor for the BLE Application

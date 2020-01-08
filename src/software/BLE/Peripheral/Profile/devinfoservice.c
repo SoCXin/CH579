@@ -152,7 +152,7 @@ static uint8 devInfoPnpIdProps = GATT_PROP_READ;
 static uint8 devInfoPnpId[DEVINFO_PNP_ID_LEN] =
 {
   1,                                      // Vendor ID source (1=Bluetooth SIG)
-  LO_UINT16(0x0739), HI_UINT16(0x0739),   // Vendor ID (WCH)
+  LO_UINT16(0x07D7), HI_UINT16(0x07D7),   // Vendor ID (WCH)
   LO_UINT16(0x0000), HI_UINT16(0x0000),   // Product ID (vendor-specific)
   LO_UINT16(0x0110), HI_UINT16(0x0110)    // Product version (JJ.M.N)
 };

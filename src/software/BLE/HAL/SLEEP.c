@@ -1,17 +1,13 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : SLEEP.c
 * Author             : WCH
-* Version            : V1.0
-* Date               : 2018/11/12
+* Version            : V1.1
+* Date               : 2019/11/05
 * Description        : 睡眠配置及其初始化
 *******************************************************************************/
 
-
-
-
 /******************************************************************************/
 /* 头文件包含 */
-#include "CONFIG.h"
 #include "CH57x_common.h"
 #include "HAL.h"
 
@@ -34,7 +30,7 @@
 u32 CH57X_LowPower( u32 time )
 {
 #if (defined (HAL_SLEEP)) && (HAL_SLEEP == TRUE)
-  u32 tmp,irq_status,sys_cfg;
+  u32 tmp,irq_status;
 
   SYS_DisableAllIrq( &irq_status );
   tmp = RTC_GetCycle32k();
@@ -43,7 +39,7 @@ u32 CH57X_LowPower( u32 time )
     PRINT("! t1:%x %x...\n",time,tmp);
     return 1;
   }
-  if( (time < tmp) || ((time - tmp) < WAKE_UP_RTC_MAX_TIME) ){ // 检测睡眠的最短时间
+  if( (time < tmp) || ((time - tmp) < 10) ){ // 检测睡眠的最短时间
     SYS_RecoverIrq( irq_status );
     return 2;
   }    
@@ -53,26 +49,12 @@ u32 CH57X_LowPower( u32 time )
   while((R8_UART1_LSR&RB_LSR_TX_ALL_EMP)== 0 ) __nop();// 使用其他串口输出打印信息需要修改这行代码
 #endif
 // LOW POWER-sleep模式
-  sys_cfg = R16_CLK_SYS_CFG;
-  R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-  R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-  R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT |0x08;		
-  R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-  R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-  R16_POWER_PLAN &= (RB_PWR_DCDC_EN|RB_PWR_DCDC_PRE);
-  R16_POWER_PLAN |= RB_PWR_PLAN_EN\
-                  |RB_PWR_MUST_0010\
-                  |RB_PWR_MUST_1\
-                  |RB_PWR_CORE\
-                  |RB_PWR_RAM2K\
-                  |RB_PWR_RAM14K\
-                  |RB_PWR_EXTEND;
-  R8_SAFE_ACCESS_SIG = 0;
-  if( !RTCTigFlag ) __WFI();
-  R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-  R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-  R16_CLK_SYS_CFG = sys_cfg; //恢复系统主频配置值
-  R8_SAFE_ACCESS_SIG = 0;
+  if( !RTCTigFlag ){
+		LowPower_Sleep(RB_PWR_RAM2K|RB_PWR_RAM14K|RB_PWR_EXTEND );
+  }
+  else{
+    return 3;
+  }
 #endif
   return 0;
 }
@@ -101,6 +83,5 @@ void HAL_SleepInit( void )
   R8_RTC_MODE_CTRL  |= RB_RTC_TRIG_EN;	// 触发模式
   R8_SAFE_ACCESS_SIG = 0;						    // 
   NVIC_EnableIRQ(RTC_IRQn);	
-  TMOS_SleepRegister( CH57X_LowPower );
 #endif
 }

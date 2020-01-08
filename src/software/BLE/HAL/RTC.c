@@ -1,25 +1,28 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : RTC.c
 * Author             : WCH
-* Version            : V1.0
-* Date               : 2018/11/06
+* Version            : V1.1
+* Date               : 2019/11/05
 * Description        : RTC配置及其初始化
 *******************************************************************************/
-
-
-
 
 /******************************************************************************/
 /* 头文件包含 */
 #include "CH57x_common.h"
 #include "HAL.h"
 
+/*********************************************************************
+ * CONSTANTS
+ */
+#define RTC_INIT_TIME_HOUR              0
+#define RTC_INIT_TIME_MINUTE            0
+#define RTC_INIT_TIME_SECEND            0
 
 /***************************************************
  * Global variables
  */
 u32V RTCTigFlag;
-
+pfnTIMHandleCB_t  pTIMHandleCB;
 
 /*******************************************************************************
 * Function Name  : RTC_SetTignTime
@@ -56,6 +59,7 @@ void RTC_IRQHandler( void )
 {
 	R8_RTC_FLAG_CTRL =(RB_RTC_TMR_CLR|RB_RTC_TRIG_CLR);
 	RTCTigFlag = 1;
+	if( pTIMHandleCB ) pTIMHandleCB();
 }
 
 /*******************************************************************************
@@ -76,15 +80,20 @@ void RTC_IRQHandler( void )
 void HAL_TimeInit( void )
 {
 #if( CLK_OSC32K_RC )
-  HSE_Calibration_LSI();
-  TMOS_Rc32KRegister( HSE_Calibration_LSI ); // 注册内部32K时钟校准，并配置为使用内部时钟作为32K时钟源
-#endif
-#if( CLK_OSC32K_XT )
+  Calibration_LSI();
+#else
   R8_SAFE_ACCESS_SIG = 0x57; 
   R8_SAFE_ACCESS_SIG = 0xa8;
   R8_CK32K_CONFIG    |= RB_CLK_OSC32K_XT | RB_CLK_INT32K_PON | RB_CLK_XT32K_PON;
   R8_SAFE_ACCESS_SIG = 0;
 #endif
+  RTC_InitTime( RTC_INIT_TIME_HOUR, RTC_INIT_TIME_MINUTE, RTC_INIT_TIME_SECEND ); //RTC时钟初始化当前时间
+  pTIMHandleCB = TMOS_TimerInit( 1 );
+  R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+  R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+  R8_RTC_MODE_CTRL  |= RB_RTC_TRIG_EN;	// 触发模式
+  R8_SAFE_ACCESS_SIG = 0;						// 
+  NVIC_EnableIRQ(RTC_IRQn);	
 }
 
 /******************************** endfile @ time ******************************/

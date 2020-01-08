@@ -1,24 +1,17 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : MCU.c
 * Author             : WCH
-* Version            : V1.0
-* Date               : 2018/11/12
+* Version            : V1.1
+* Date               : 2019/11/05
 * Description        : 硬件任务处理函数及BLE和硬件初始化
 *******************************************************************************/
-
-
-
 
 /******************************************************************************/
 /* 头文件包含 */
 #include "CH57x_common.h"
 #include "HAL.h"
-
-                                                    
-__align(4) u32 MEM_BUF[BLE_MEMHEAP_SIZE/4];
-//u8C MacAddr[6] = {0x84,0xC2,0xE4,0x85,0x22,0x11};
+                                                
 tmosTaskID halTaskID;
-
 
 /*******************************************************************************
  * @fn          CH57X_BLEInit
@@ -40,25 +33,52 @@ void CH57X_BLEInit( void )
   UINT8 i;
   bleConfig_t cfg;
 
+  if( tmos_memcmp( VER_LIB,VER_FILE,strlen(VER_FILE)) == FALSE ){
+    PRINT("head file error...\n");
+    while(1);
+  }
   R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
   R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
   R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT|(2<<6)|0x08;			// 32M -> Fsys
   R8_SAFE_ACCESS_SIG = 0;
+  SysTick_Config( SysTick_LOAD_RELOAD_Msk );
+  SysTick->CTRL  &= ~SysTick_CTRL_TICKINT_Msk ;   /* disable SysTick IRQ */
   tmos_memset(&cfg,0,sizeof(bleConfig_t));
-	cfg.MEMAddr  = (u32)MEM_BUF;
-	cfg.MEMLen   = (u32)BLE_MEMHEAP_SIZE;
-	cfg.SNVAddr  = (u32)BLE_SNV_ADDR;
-	cfg.TxNumEvent =  BLE_NUM_PKT_PER_EVT;
-//	for(i=0;i<6;i++) cfg.MacAddr[i]  = MacAddr[5-i];
+	cfg.MEMAddr  		= (u32)MEM_BUF;
+	cfg.MEMLen   		= (u32)BLE_MEMHEAP_SIZE;
+	cfg.SNVAddr			= (u32)BLE_SNV_ADDR;
+	cfg.SNVNum			= (u32)BLE_SNV_NUM;
+	cfg.BufMaxLen		= (u32)BLE_BUFF_MAX_LEN;
+	cfg.BufNumber		= (u32)BLE_BUFF_NUM;
+	cfg.TxNumEvent  = (u32)BLE_TX_NUM_EVENT;
+	cfg.TxPower			= (u32)BLE_TX_POWER;
+	cfg.ConnectNumber  = (PERIPHERAL_MAX_CONNECTION&3)|(CENTRAL_MAX_CONNECTION<<2);
+  cfg.srandCB = SYS_GetSysTickCnt;
+#if (defined TEM_SAMPLE)  && (TEM_SAMPLE == TRUE)
+  cfg.tsCB = HAL_GetInterTempValue;
+#if( CLK_OSC32K_RC )
+  cfg.rcCB = Calibration_LSI; // 内部32K时钟校准  
+#endif
+#endif
+#if (defined (HAL_SLEEP)) && (HAL_SLEEP == TRUE)
+  cfg.WakeUpTime = WAKE_UP_RTC_MAX_TIME;  
+  cfg.sleepCB = CH57X_LowPower;  // 启用睡眠
+#endif
+#if (defined (BLE_MAC)) && (BLE_MAC == TRUE)
+	for(i=0;i<6;i++) cfg.MacAddr[i]  = MacAddr[5-i];
+#endif
 	if( !cfg.MEMAddr || cfg.MEMLen < 4*1024 )while(1);
+#if (defined 	HAL_SLEEP) && (HAL_SLEEP == TRUE)
+	if( (u32)MEM_BUF < (u32)0x20003800 ){
+    PRINT("RAM config error...\n");
+    while(1);
+  }		
+#endif
   i = BLE_LibInit( &cfg );
   if(i){
     PRINT("LIB init error...\n");
     while(1);
   }
-  SysTick_Config( SysTick_LOAD_RELOAD_Msk );
-  SysTick->CTRL  &= ~SysTick_CTRL_TICKINT_Msk ;   /* disable SysTick IRQ */
-  TMOS_RandRegister( SYS_GetSysTickCnt );
 }
 
 /*******************************************************************************
@@ -112,7 +132,7 @@ tmosEvents HAL_ProcessEvent( tmosTaskID task_id, tmosEvents events )
 }
 
 /*******************************************************************************
- * @fn          Hal_Init
+ * @fn          HAL_Init
  *
  * @brief       硬件初始化
  *
@@ -126,9 +146,9 @@ tmosEvents HAL_ProcessEvent( tmosTaskID task_id, tmosEvents events )
  *
  * @return      None.
  */
- void Hal_Init( tmosTaskID id )
+ void HAL_Init( )
 {
-  halTaskID = id;
+  halTaskID = TMOS_ProcessEventRegister( HAL_ProcessEvent );
   HAL_TimeInit( );
 #if (defined HAL_SLEEP) && (HAL_SLEEP == TRUE)
   HAL_SleepInit( );
@@ -142,4 +162,60 @@ tmosEvents HAL_ProcessEvent( tmosTaskID task_id, tmosEvents events )
   __enable_irq();
 //  tmos_start_task( halTaskID , HAL_TEST_EVENT ,1000 ); // 添加一个测试任务
 }
+
+/*******************************************************************************
+ * @fn          LLE_IRQHandler
+ *
+ * @brief       LLE interrupt function 
+ *
+ * input parameters
+ *
+ * @param       None.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
+ */
+void LLE_IRQHandler(void)
+{
+  BLE_IRQHandler();
+}
+
+/*******************************************************************************
+ * @fn          HAL_GetInterTempValue
+ *
+ * @brief       None.
+ *
+ * input parameters
+ *
+ * @param       None.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
+ */
+u16 HAL_GetInterTempValue( void )
+{
+  u8 sensor,channel,config;
+  u16 adc_data;
+  
+  sensor  = R8_TEM_SENSOR;
+  channel = R8_ADC_CHANNEL;
+  config  = R8_ADC_CFG;
+  R8_TEM_SENSOR |= RB_TEM_SEN_PWR_ON;
+  R8_ADC_CHANNEL = CH_INTE_VTEMP;
+  R8_ADC_CFG = RB_ADC_POWER_ON|( 2<<4 )	;
+  R8_ADC_CONVERT |= RB_ADC_START;
+  while( R8_ADC_CONVERT & RB_ADC_START );
+  adc_data = R16_ADC_DATA;
+  R8_TEM_SENSOR  = sensor;
+  R8_ADC_CHANNEL = channel;
+  R8_ADC_CFG = config;
+  return( adc_data );
+}
+
 /******************************** endfile @ mcu ******************************/

@@ -112,9 +112,9 @@ tmosEvents TEST_ProcessEvent( tmosTaskID task_id, tmosEvents events )
  *
  * @return      None.
  */
- void TEST_Init( tmosTaskID id )
+ void TEST_Init( )
 {
-  testTaskID = id;
+  testTaskID = TMOS_ProcessEventRegister(TEST_ProcessEvent);
 #if (defined HAL_KEY) && (HAL_KEY == TRUE)
   HAL_KEY_RegisterForKeys(testTaskID);
 #endif
