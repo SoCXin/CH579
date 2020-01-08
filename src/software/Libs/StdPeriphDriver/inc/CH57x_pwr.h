@@ -55,7 +55,7 @@ void LowPower_Halt_1( void );                               /* 低功耗-Halt_1模式
 void LowPower_Halt_2( void );                               /* 低功耗-Halt_2模式 */
 void LowPower_Sleep( UINT8 rm );                            /* 低功耗-Sleep模式 */
 void LowPower_Shutdown( UINT8 rm );                         /* 低功耗-Shutdown模式 */
-
+void EnterCodeUpgrade( void );								/* 跳入BOOT程序，准备代码升级 */
 
 	 
 	 

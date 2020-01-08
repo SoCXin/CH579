@@ -7,6 +7,9 @@
 *******************************************************************************/
 
 #include "CH57x_common.h"
+#include "CH579UFI.H"
+    
+__align(4) UINT8  Com_Buffer[ 128 ];            // 定义用户临时缓冲区,枚举时用于处理描述符,枚举结束也可以用作普通临时缓冲区    
     
 /*****************************************************************************
 * Function Name  : InitRootDevice
@@ -14,7 +17,7 @@
 * Input          : DataBuf: 枚举过程中存放的描述符信息缓存区
 * Return         :
 *******************************************************************************/
-UINT8 InitRootDevice( PUINT8 DataBuf ) 
+UINT8 InitRootDevice( void ) 
 {
     UINT8  i, s;
     UINT8  cfg, dv_cls, if_cls;
@@ -37,16 +40,16 @@ UINT8 InitRootDevice( PUINT8 DataBuf )
     SetUsbSpeed( ThisUsbDev.DeviceSpeed );  // 设置当前USB速度
 	
     PRINT( "GetDevDescr: " );
-    s = CtrlGetDeviceDescr( DataBuf );  		// 获取设备描述符
+    s = CtrlGetDeviceDescr();  		// 获取设备描述符
     if ( s == ERR_SUCCESS )
     {
         for ( i = 0; i < ((PUSB_SETUP_REQ)SetupGetDevDescr)->wLength; i ++ ) 		
-       PRINT( "x%02X ", (UINT16)( DataBuf[i] ) );
+       PRINT( "x%02X ", (UINT16)( Com_Buffer[i] ) );
        PRINT( "\n" ); 
 		
-       ThisUsbDev.DeviceVID = ((PUSB_DEV_DESCR)DataBuf)->idVendor; //保存VID PID信息
-       ThisUsbDev.DevicePID = ((PUSB_DEV_DESCR)DataBuf)->idProduct;
-       dv_cls = ( (PUSB_DEV_DESCR)DataBuf ) -> bDeviceClass;
+       ThisUsbDev.DeviceVID = ((PUSB_DEV_DESCR)Com_Buffer)->idVendor; //保存VID PID信息
+       ThisUsbDev.DevicePID = ((PUSB_DEV_DESCR)Com_Buffer)->idProduct;
+       dv_cls = ( (PUSB_DEV_DESCR)Com_Buffer ) -> bDeviceClass;
 		
        s = CtrlSetUsbAddress( ((PUSB_SETUP_REQ)SetupSetUsbAddr)->wValue );  
        if ( s == ERR_SUCCESS )
@@ -54,15 +57,15 @@ UINT8 InitRootDevice( PUINT8 DataBuf )
            ThisUsbDev.DeviceAddress = ( (PUSB_SETUP_REQ)SetupSetUsbAddr )->wValue;  // 保存USB地址
     
            PRINT( "GetCfgDescr: " );
-           s = CtrlGetConfigDescr( DataBuf );
+           s = CtrlGetConfigDescr( );
            if ( s == ERR_SUCCESS ) 
            {
-               for ( i = 0; i < ( (PUSB_CFG_DESCR)DataBuf )->wTotalLength; i ++ ) 
-               PRINT( "x%02X ", (UINT16)( DataBuf[i] ) );
+               for ( i = 0; i < ( (PUSB_CFG_DESCR)Com_Buffer )->wTotalLength; i ++ ) 
+               PRINT( "x%02X ", (UINT16)( Com_Buffer[i] ) );
                PRINT("\n");
 /* 分析配置描述符,获取端点数据/各端点地址/各端点大小等,更新变量endp_addr和endp_size等 */				
-               cfg = ( (PUSB_CFG_DESCR)DataBuf )->bConfigurationValue;
-               if_cls = ( (PUSB_CFG_DESCR_LONG)DataBuf )->itf_descr.bInterfaceClass;  // 接口类代码
+               cfg = ( (PUSB_CFG_DESCR)Com_Buffer )->bConfigurationValue;
+               if_cls = ( (PUSB_CFG_DESCR_LONG)Com_Buffer )->itf_descr.bInterfaceClass;  // 接口类代码
                               
                if ( (dv_cls == 0x00) && (if_cls == USB_DEV_CLASS_STORAGE)) {  // 是USB存储类设备,基本上确认是U盘
 #ifdef	FOR_ROOT_UDISK_ONLY
@@ -81,7 +84,7 @@ UINT8 InitRootDevice( PUINT8 DataBuf )
                       return( ERR_SUCCESS );
                   }
                }
-               else if ( (dv_cls == 0x00) && (if_cls == USB_DEV_CLASS_PRINTER) && ((PUSB_CFG_DESCR_LONG)DataBuf)->itf_descr.bInterfaceSubClass == 0x01 ) {  // 是打印机类设备
+               else if ( (dv_cls == 0x00) && (if_cls == USB_DEV_CLASS_PRINTER) && ((PUSB_CFG_DESCR_LONG)Com_Buffer)->itf_descr.bInterfaceSubClass == 0x01 ) {  // 是打印机类设备
                    s = CtrlSetUsbConfig( cfg );  // 设置USB设备配置
                    if ( s == ERR_SUCCESS ) {
 //	需保存端点信息以便主程序进行USB传输
@@ -92,10 +95,10 @@ UINT8 InitRootDevice( PUINT8 DataBuf )
                        return( ERR_SUCCESS );
                    }
                }
-               else if ( (dv_cls == 0x00) && (if_cls == USB_DEV_CLASS_HID) && ((PUSB_CFG_DESCR_LONG)DataBuf)->itf_descr.bInterfaceSubClass <= 0x01 ) {  // 是HID类设备,键盘/鼠标等
+               else if ( (dv_cls == 0x00) && (if_cls == USB_DEV_CLASS_HID) && ((PUSB_CFG_DESCR_LONG)Com_Buffer)->itf_descr.bInterfaceSubClass <= 0x01 ) {  // 是HID类设备,键盘/鼠标等
 //  从描述符中分析出HID中断端点的地址
 //  保存中断端点的地址,位7用于同步标志位,清0
-                   if_cls = ( (PUSB_CFG_DESCR_LONG)DataBuf ) -> itf_descr.bInterfaceProtocol;
+                   if_cls = ( (PUSB_CFG_DESCR_LONG)Com_Buffer ) -> itf_descr.bInterfaceProtocol;
                    s = CtrlSetUsbConfig( cfg );  // 设置USB设备配置
                    if ( s == ERR_SUCCESS ) {
 //	    					Set_Idle( );
@@ -123,7 +126,7 @@ UINT8 InitRootDevice( PUINT8 DataBuf )
                    if ( s == ERR_SUCCESS ) {
 //	需保存端点信息以便主程序进行USB传输
                        ThisUsbDev.DeviceStatus = ROOT_DEV_SUCCESS;
-                       ThisUsbDev.DeviceStatus = dv_cls ? dv_cls : if_cls;
+                       ThisUsbDev.DeviceType = DEV_TYPE_UNKNOW;
                        SetUsbSpeed( 1 );  // 默认为全速
                        return( ERR_SUCCESS );  /* 未知设备初始化成功 */
                    }
@@ -144,6 +147,138 @@ UINT8 InitRootDevice( PUINT8 DataBuf )
 }
 
 
+#if 0
+/*******************************************************************************
+* Function Name  : CtrlGetHIDDeviceReport
+* Description    : 获取HID设备报表描述符,返回在TxBuffer中
+* Input          : None
+* Output         : None
+* Return         : ERR_SUCCESS 成功
+                   其他        错误
+*******************************************************************************/
+UINT8   CtrlGetHIDDeviceReport( UINT8 infc )  
+{
+    UINT8   s;
+    UINT8  len;    
+
+	CopySetupReqPkg( SetupSetHIDIdle );		
+	pSetupReq -> wIndex = infc;
+    s = HostCtrlTransfer( Com_Buffer, &len );                            // 执行控制传输
+    if ( s != ERR_SUCCESS )
+    {
+        return( s );
+    }	
+	
+	CopySetupReqPkg( SetupGetHIDDevReport );	
+	pSetupReq -> wIndex = infc;	
+    s = HostCtrlTransfer( Com_Buffer, &len );                            // 执行控制传输
+    if ( s != ERR_SUCCESS )
+    {
+        return( s );
+    }
+	
+    return( ERR_SUCCESS );
+}
+#endif
+
+
+#if 0
+/*******************************************************************************
+* Function Name  : CtrlGetHubDescr
+* Description    : 获取HUB描述符,返回在Com_Buffer中
+* Input          : None
+* Output         : None
+* Return         : ERR_SUCCESS 成功
+                   ERR_USB_BUF_OVER 长度错误
+*******************************************************************************/
+UINT8   CtrlGetHubDescr( void )  
+{
+    UINT8   s;
+    UINT8  len;
+    
+    CopySetupReqPkg( SetupGetHubDescr );
+    s = HostCtrlTransfer( Com_Buffer, &len );                          // 执行控制传输
+    if ( s != ERR_SUCCESS )
+    {
+        return( s );
+    }
+    if ( len < ( (PUSB_SETUP_REQ)SetupGetHubDescr ) -> wLength )
+    {
+        return( ERR_USB_BUF_OVER );                                            // 描述符长度错误
+    }
+//  if ( len < 4 ) return( ERR_USB_BUF_OVER );                                 // 描述符长度错误
+    return( ERR_SUCCESS );
+}
+
+#endif
+
+/*******************************************************************************
+* Function Name  : HubGetPortStatus
+* Description    : 查询HUB端口状态,返回在Com_Buffer中
+* Input          : UINT8 HubPortIndex 
+* Output         : None
+* Return         : ERR_SUCCESS 成功
+                   ERR_USB_BUF_OVER 长度错误
+*******************************************************************************/
+UINT8   HubGetPortStatus( UINT8 HubPortIndex )   
+{
+    UINT8   s;
+    UINT8  len;
+    
+    pSetupReq -> bRequestType = HUB_GET_PORT_STATUS;
+    pSetupReq -> bRequest = HUB_GET_STATUS;
+    pSetupReq -> wValue = 0x0000;
+    pSetupReq -> wIndex = 0x0000|HubPortIndex;
+    pSetupReq -> wLength = 0x0004;
+    s = HostCtrlTransfer( Com_Buffer, &len );                           // 执行控制传输
+    if ( s != ERR_SUCCESS )
+    {
+        return( s );
+    }
+    if ( len < 4 )
+    {
+        return( ERR_USB_BUF_OVER );                                             // 描述符长度错误
+    }
+    return( ERR_SUCCESS );
+}
+
+/*******************************************************************************
+* Function Name  : HubSetPortFeature
+* Description    : 设置HUB端口特性
+* Input          : UINT8 HubPortIndex    //HUB端口
+                   UINT8 FeatureSelt     //HUB端口特性
+* Output         : None
+* Return         : ERR_SUCCESS 成功
+                   其他        错误
+*******************************************************************************/
+UINT8   HubSetPortFeature( UINT8 HubPortIndex, UINT8 FeatureSelt ) 
+{
+    pSetupReq -> bRequestType = HUB_SET_PORT_FEATURE;
+    pSetupReq -> bRequest = HUB_SET_FEATURE;
+    pSetupReq -> wValue = 0x0000|FeatureSelt;
+    pSetupReq -> wIndex = 0x0000|HubPortIndex;
+    pSetupReq -> wLength = 0x0000;
+    return( HostCtrlTransfer( NULL, NULL ) );                                 // 执行控制传输
+}
+
+/*******************************************************************************
+* Function Name  : HubClearPortFeature
+* Description    : 清除HUB端口特性
+* Input          : UINT8 HubPortIndex                                         //HUB端口
+                   UINT8 FeatureSelt                                          //HUB端口特性
+* Output         : None
+* Return         : ERR_SUCCESS 成功
+                   其他        错误
+*******************************************************************************/
+UINT8   HubClearPortFeature( UINT8 HubPortIndex, UINT8 FeatureSelt ) 
+{
+    pSetupReq -> bRequestType = HUB_CLEAR_PORT_FEATURE;
+    pSetupReq -> bRequest = HUB_CLEAR_FEATURE;
+    pSetupReq -> wValue = 0x0000|FeatureSelt;
+    pSetupReq -> wIndex = 0x0000|HubPortIndex;
+    pSetupReq -> wLength = 0x0000;
+    return( HostCtrlTransfer( NULL, NULL ) );                                // 执行控制传输
+}
 
 
 

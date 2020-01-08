@@ -20,16 +20,12 @@ void GetUniqueID(PUINT8 buf);                                           /* »ñÈ¡Ð
 // »ñÈ¡ÍøÂçMAC
 void GetMACAddress(PUINT8 buf);                                         /* »ñÈ¡ÍøÂçMAC£¬Ð¡¶ËÄ£Ê½£¬6B-MAC */    
 	 
-// CodeFlash ²Ù×÷
-UINT8 CodeFlash_BlockEarse(UINT32 addr);								/* CodeFlash ¿é²Á³ý£¬Ò»´Î²Á³ý512B */
-UINT8 CodeFlash_WriteDW(UINT32 addr, UINT32 dat);						/* CodeFlash 32bitÐ´£¬µØÖ·Ðè4×Ö½Ú¶ÔÆë */ 
-UINT8 CodeFlash_WriteBuf(UINT32 addr, PUINT32 pdat, UINT16 len);		/* CodeFlash Á¬Ðø¶à¸ö32bitÐ´£¬µØÖ·Ðè4×Ö½Ú¶ÔÆë */	 
-	 
-// DataFlash ²Ù×÷
-UINT8 DataFlash_BlockEarse(UINT32 addr);								/* DataFlash ¿é²Á³ý£¬Ò»´Î²Á³ý512B */	 
-UINT8 DataFlash_WriteDW(UINT32 addr, UINT32 dat);						/* DataFlash 32bitÐ´£¬µØÖ·Ðè4×Ö½Ú¶ÔÆë */
-	 
-	 
+
+void EnableCodeFlash(void);                                             /* ½âËø CodeFlash ÇøÓò²ÁÐ´È¨ÏÞ */
+void EnableDataFlash(void);                                             /* ½âËø DataFlash ÇøÓò²ÁÐ´È¨ÏÞ */
+void LockFlashALL(void);                                                /* Ëø¶¨ CodeFlash/DataFlash È«²¿ÇøÓò */
+UINT8 Flash_BlockErase(UINT32 addr);                                    /* ¿é²Á³ý£¬Ò»´Î²Á³ý512B¡£Ê¹ÓÃÊ±£¬ÐèÒªºÍ EnableFlashCode()/EnableDataFlash() + LockFlashALL() ÅäºÏÊ¹ÓÃ */
+UINT8 Flash_WriteDW(UINT32 addr, UINT32 dat);	                        /* Ë«×ÖÐ´£¬µØÖ·Ðè4×Ö½Ú¶ÔÆë¡£Ê¹ÓÃÊ±£¬ÐèÒªºÍ EnableFlashCode()/EnableDataFlash() + LockFlashALL() ÅäºÏÊ¹ÓÃ */
 	 
 	 
 #ifdef __cplusplus

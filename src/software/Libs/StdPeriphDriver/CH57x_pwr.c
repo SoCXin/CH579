@@ -31,7 +31,7 @@ void PWR_DCDCCfg( UINT8 s )
         R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
         R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
         R16_POWER_PLAN |= RB_PWR_DCDC_PRE;
-        DelsyUs(10);
+        DelayUs(10);
         R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
         R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
         R16_POWER_PLAN |= RB_PWR_DCDC_EN;		
@@ -55,7 +55,7 @@ void PWR_UnitModCfg( UINT8 s, UINT8 unit )
     {
     	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-        if(unit&UNIT_ETH_PHY)		R8_SLP_WAKE_CTRL &= ~RB_SLP_ETH_WAKE;
+        if(unit&UNIT_ETH_PHY)		R8_SLP_POWER_CTRL |= RB_SLP_ETH_PWR_DN;
         R8_HFCK_PWR_CTRL &= ~(unit&0x1c);
         R8_CK32K_CONFIG &= ~(unit&0x03);
     }
@@ -63,10 +63,11 @@ void PWR_UnitModCfg( UINT8 s, UINT8 unit )
     {
     	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-        if(unit&UNIT_ETH_PHY)		R8_SLP_WAKE_CTRL |= RB_SLP_ETH_WAKE;
+        if(unit&UNIT_ETH_PHY)		R8_SLP_POWER_CTRL &= ~RB_SLP_ETH_WAKE;
         R8_HFCK_PWR_CTRL |= (unit&0x1c);
         R8_CK32K_CONFIG |= (unit&0x03);
     }
+    R8_SAFE_ACCESS_SIG = 0;
 }
 
 /*******************************************************************************
@@ -93,6 +94,7 @@ void PWR_PeriphClkCfg( UINT8 s, UINT16 perph )
         R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
         R32_SLEEP_CONTROL &= ~perph;
     }
+    R8_SAFE_ACCESS_SIG = 0;
 }
 
 /*******************************************************************************
@@ -124,6 +126,7 @@ void PWR_PeriphWakeUpCfg( UINT8 s, UINT16 perph )
         R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
         R8_SLP_WAKE_CTRL |= perph;
     }
+    R8_SAFE_ACCESS_SIG = 0;
 }
 
 /*******************************************************************************
@@ -177,6 +180,7 @@ void LowPower_Halt_2( void )
 /*******************************************************************************
 * Function Name  : LowPower_Sleep
 * Description    : 低功耗-Sleep模式
+                   注意调用此函数，DCDC功能强制关闭，唤醒后可以手动再次打开
 * Input          : rm:
                     RB_PWR_RAM2K	-	最后2K SRAM 供电
                     RB_PWR_RAM14K	-	0x20004000 - 0x20007800 14K SRAM 供电
@@ -185,15 +189,10 @@ void LowPower_Halt_2( void )
 * Return         : None
 *******************************************************************************/
 void LowPower_Sleep( UINT8 rm )
-{	
-	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-    R16_CLK_SYS_CFG = (R16_CLK_SYS_CFG&0xff00)|8;
-	
+{	    
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-    R16_POWER_PLAN &= (RB_PWR_DCDC_EN|RB_PWR_DCDC_PRE);
-    R16_POWER_PLAN |= RB_PWR_PLAN_EN		\
+    R16_POWER_PLAN = RB_PWR_PLAN_EN		\
                     |RB_PWR_MUST_0010		\
                     |RB_PWR_MUST_1			\
                     |RB_PWR_CORE            \
@@ -208,21 +207,17 @@ void LowPower_Sleep( UINT8 rm )
 /*******************************************************************************
 * Function Name  : LowPower_Shutdown
 * Description    : 低功耗-Shutdown模式
+                   注意调用此函数，DCDC功能强制关闭，唤醒后可以手动再次打开
 * Input          : rm:
                     RB_PWR_RAM2K	-	最后2K SRAM 供电
                    NULL	-	以上单元都断电
 * Return         : None
 *******************************************************************************/
 void LowPower_Shutdown( UINT8 rm )
-{	
-	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-    R16_CLK_SYS_CFG = (R16_CLK_SYS_CFG&0xff00)|8;
-	
+{		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-    R16_POWER_PLAN &= (RB_PWR_DCDC_EN|RB_PWR_DCDC_PRE);
-    R16_POWER_PLAN |= RB_PWR_PLAN_EN		\
+    R16_POWER_PLAN = RB_PWR_PLAN_EN		\
                     |RB_PWR_MUST_0010		\
                     |RB_PWR_MUST_1			\
                     |rm;
@@ -233,7 +228,46 @@ void LowPower_Shutdown( UINT8 rm )
     R8_SAFE_ACCESS_SIG = 0; 
 }
 
+/*******************************************************************************
+* Function Name  : EnterCodeUpgrade
+* Description    : 跳入BOOT程序，准备代码升级
+* Input          : None
+* Return         : None
+*******************************************************************************/
+void EnterCodeUpgrade( void )
+{	
+/* RTC wakeup */	
+    UINT32 t;
 
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+    R8_SLP_WAKE_CTRL |= RB_SLP_RTC_WAKE;
+    R16_POWER_PLAN = RB_PWR_PLAN_EN		\
+                    |RB_PWR_MUST_0010		\
+                    |RB_PWR_MUST_1;
+    R8_SAFE_ACCESS_SIG = 0; 
+
+	do{
+    	t = R32_RTC_CNT_32K;
+    }while( t != R32_RTC_CNT_32K );
+    
+    t = t + 10;
+    if( t&0xFFFF )	t = t+0x10000;
+    if ( t>=((UINT32)MAX_2_SEC<<16))	t = t-((UINT32)MAX_2_SEC<<16);	
+
+	R8_RTC_FLAG_CTRL = RB_RTC_TRIG_CLR|RB_RTC_TMR_CLR;
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+    R32_RTC_TRIG = t;    
+    R8_RTC_MODE_CTRL = 0x2f;    // 进入boot下载必要条件
+    R8_SAFE_ACCESS_SIG = 0;
+    	
+/* ready to BOOT */	
+	__SEV();
+    __WFE();
+    __WFE();
+    while(1);
+}
 
 
 

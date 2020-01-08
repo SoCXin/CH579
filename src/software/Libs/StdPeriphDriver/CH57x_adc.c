@@ -10,6 +10,66 @@
 
 
 /*******************************************************************************
+* Function Name  : ADC_DataCalib_Rough
+* Description    : 采样数据粗调,获取偏差值
+*                  注意，使用粗调校准，必须保证 PA5(AIN1)设置为浮空输入模式，管脚外部不要有电压
+* Input          : None
+* Return         : 偏差值
+*******************************************************************************/
+signed short ADC_DataCalib_Rough( void )        // 采样数据粗调,获取偏差值
+{
+    UINT16  i;
+    UINT32  sum=0;
+    UINT8  ch=0;        // 备份通道
+    UINT8   ctrl=0;     // 备份控制寄存器
+    
+    ch = R8_ADC_CHANNEL;
+    ctrl = R8_ADC_CFG;
+    
+    ADC_ChannelCfg( 1 );
+    R8_ADC_CFG |= RB_ADC_OFS_TEST;      // 进入测试模式
+    R8_ADC_CONVERT = RB_ADC_START;
+    while( R8_ADC_CONVERT & RB_ADC_START );
+    for(i=0; i<16; i++)
+    {
+        R8_ADC_CONVERT = RB_ADC_START;
+        while( R8_ADC_CONVERT & RB_ADC_START );
+        sum += (~R16_ADC_DATA)&RB_ADC_DATA;
+    }    
+    sum = (sum+8)>>4;
+    R8_ADC_CFG &= ~RB_ADC_OFS_TEST;      // 关闭测试模式
+    
+    
+    R8_ADC_CHANNEL = ch;
+    R8_ADC_CFG = ctrl;
+    return (2048 - sum); 
+}
+
+void ADC_DataCalib_Fine( PUINT16 dat, ADC_SignalPGATypeDef ga )        // 采样数据细调
+{
+    UINT32  d = (UINT32)*dat;
+    
+	switch( ga )
+	{
+        case ADC_PGA_1_4:         // y=0.973x+55.188  
+            *dat = (996*d + 56513 + 512)>>10;
+			break;
+			
+		case ADC_PGA_1_2:         // y=0.974x+55.26 
+            *dat = (997*d + 56586 + 512)>>10;
+			break;
+        
+		case ADC_PGA_0:         // y=0.975x+53.63  
+            *dat = (998*d + 54917 + 512)>>10;
+			break;
+			
+		case ADC_PGA_2:         // y=0.975x+51.58  
+            *dat = (998*d + 52818 + 512)>>10;
+			break;
+	}    
+}
+
+/*******************************************************************************
 * Function Name  : ADC_ExtSingleChSampInit
 * Description    : 外部信号单通道采样初始化
 * Input          : sp:
@@ -23,7 +83,7 @@ void ADC_ExtSingleChSampInit( ADC_SampClkTypeDef sp, ADC_SignalPGATypeDef ga )
     R8_ADC_CFG = RB_ADC_POWER_ON			\
                 |RB_ADC_BUF_EN				\
                 |( sp<<6 )					\
-                |( ga<<4 )	;
+                |( ga<<4 )	;               
 }
 
 /*******************************************************************************
@@ -68,7 +128,7 @@ void ADC_InterBATSampInit( void )
     R8_ADC_CHANNEL = CH_INTE_VBAT;
     R8_ADC_CFG = RB_ADC_POWER_ON			\
                 |RB_ADC_BUF_EN				\
-                |( 2<<4 )	;
+                |( 0<<4 )	;       // 使用-12dB模式，
 }
 
 
@@ -92,10 +152,10 @@ void TouchKey_ChSampInit( void )
 *******************************************************************************/
 UINT16 ADC_ExcutSingleConver( void )
 {
-    R8_ADC_CONVERT |= RB_ADC_START;
+    R8_ADC_CONVERT = RB_ADC_START;
     while( R8_ADC_CONVERT & RB_ADC_START );
 
-    return ( R16_ADC_DATA );
+    return ( R16_ADC_DATA&RB_ADC_DATA );
 }
 
 /*******************************************************************************
@@ -110,7 +170,7 @@ UINT16 TouchKey_ExcutSingleConver( UINT8 d )
     R8_TKEY_CNT = d;
     while( R8_TKEY_CTRL &  RB_TKEY_ACTION );
 
-    return ( R16_ADC_DATA );
+    return ( R16_ADC_DATA&RB_ADC_DATA );
 }
 
 

@@ -33,7 +33,7 @@ void UART1_BaudRateCfg( UINT32 baudrate )
 {
     UINT32	x;
 
-    x = 10 * FREQ_SYS / 8 / baudrate;
+    x = 10 * GetSysClock() / 8 / baudrate;
     x = ( x + 5 ) / 10;
     R16_UART1_DL = (UINT16)x;
 }

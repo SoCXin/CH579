@@ -36,6 +36,7 @@ void SYS_ResetExecute( void )
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
     R8_RST_WDOG_CTRL |= RB_SOFTWARE_RESET;
+    R8_SAFE_ACCESS_SIG = 0;
 }
 
 /*******************************************************************************
@@ -73,12 +74,57 @@ UINT32 SYS_GetSysTickCnt( void )
 }
 
 /*******************************************************************************
-* Function Name  : DelsyUs
+* Function Name  : WWDG_ITCfg
+* Description    : 看门狗定时器溢出中断使能
+* Input          : DISABLE-溢出不中断      ENABLE-溢出中断
+* Return         : None
+*******************************************************************************/
+void  WWDG_ITCfg( UINT8 s )
+{
+	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+	if(s == DISABLE)		R8_RST_WDOG_CTRL&=~RB_WDOG_INT_EN;
+	else 					R8_RST_WDOG_CTRL|=RB_WDOG_INT_EN;
+	R8_SAFE_ACCESS_SIG = 0;	
+}
+
+/*******************************************************************************
+* Function Name  : WWDG_ResetCfg
+* Description    : 看门狗定时器复位功能
+* Input          : DISABLE-溢出不复位      ENABLE-溢出系统复位
+* Return         : None
+*******************************************************************************/
+void WWDG_ResetCfg( UINT8 s )
+{
+	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+	if(s == DISABLE)		R8_RST_WDOG_CTRL&=~RB_WDOG_RST_EN;
+	else 					R8_RST_WDOG_CTRL|=RB_WDOG_RST_EN;
+	R8_SAFE_ACCESS_SIG = 0;	
+}
+
+/*******************************************************************************
+* Function Name  : WWDG_ClearFlag
+* Description    : 清除看门狗中断标志，重新加载计数值也可清除
+* Input          : None
+* Return         : None
+*******************************************************************************/
+void WWDG_ClearFlag( void )
+{
+	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+	R8_RST_WDOG_CTRL |= RB_WDOG_INT_FLAG;
+	R8_SAFE_ACCESS_SIG = 0;	
+}
+
+
+/*******************************************************************************
+* Function Name  : mDelayuS
 * Description    : uS 延时
 * Input          : t: 时间参数
 * Return         : None
 *******************************************************************************/
-void DelsyUs( UINT16 t )
+void mDelayuS( UINT16 t )
 {
     UINT16 i, j;
 
@@ -112,18 +158,19 @@ void DelsyUs( UINT16 t )
 }
 
 /*******************************************************************************
-* Function Name  : DelsyMs
+* Function Name  : mDelaymS
 * Description    : mS 延时
 * Input          : t: 时间参数
 * Return         : None
 *******************************************************************************/
-void DelsyMs( UINT16 t )
+void mDelaymS( UINT16 t )
 {
     UINT16 i;
 
     for(i=0; i<t; i++)
-        DelsyUs(1000);
+        mDelayuS(1000);
 }
+
 
 #if( defined  DEBUG)
 int fputc( int c, FILE *f )

@@ -333,7 +333,7 @@ extern "C" {
 #define  RB_IF_SLV_CMD      0x20                      // RO, parallel slave command synchronous flag
 #define  RB_IF_SLV_WR       0x40                      // RW1, interrupt flag of parallel slave writing event
 #define  RB_IF_SLV_RD       0x80                      // RW1, interrupt flag of parallel slave reading event
-#define R8_SLV_RD_DATA      (*((PUINT8V)0x400010C0))  // RW, data for parallel slave read
+#define R8_SLV_RD_DATA      (*((PUINT8V)0x400010C8))  // RW, data for parallel slave read
 #define R8_SLV_RD_STAT      (*((PUINT8V)0x40001096))  // RW, status for parallel slave read
 #define R8_SLV_WR_DATA      (*((PUINT8V)0x40001097))  // RW, data or command from parallel slave write
 
@@ -410,7 +410,7 @@ extern "C" {
 
 /* System: 32MHz oscillator control register */
 #define R32_OSC32M_CTRL     (*((PUINT32V)0x4000104C)) // RWA, 32MHz oscillator control, SAM
-#define R8_INT32M_CALIB     (*((PUINT16V)0x4000104C)) // RWA, internal 32MHz oscillator tune control, SAM
+#define R8_INT32M_CALIB     (*((PUINT8V)0x4000104C))  // RWA, internal 32MHz oscillator tune control, SAM
 #define R8_XT32M_TUNE       (*((PUINT8V)0x4000104E))  // RWA, external 32MHz oscillator tune control, SAM
 #define  RB_XT32M_I_BIAS    0x03                      // RWA, external 32MHz oscillator bias current tune: 00=75% current, 01=standard current, 10=125% current, 11=150% current
 #define  RB_XT32M_C_LOAD    0x70                      // RWA, external 32MHz oscillator load capacitor tune: Cap = RB_XT32M_C_LOAD * 2 + 10pF
@@ -462,7 +462,8 @@ extern "C" {
 #define  RB_ROM_DATA_WE     0x04                      // RW, enable Flash ROM data area being erase/write: 0=writing protect, 1=enable program and erase
 #define  RB_ROM_CODE_WE     0x08                      // RW, enable Flash ROM code area being erase/write: 0=writing protect, 1=enable program and erase
 #define  RB_ROM_WE_MUST_10  0x80                      // RW, must write 10
-#define R16_FLASH_STATUS    (*((PUINT8V)0x4000180A))  // RO, Flash ROM operation status
+#define R16_FLASH_STATUS    (*((PUINT16V)0x4000180A))  // RO, Flash ROM operation status
+#define R8_FLASH_STATUS    (*((PUINT8V)0x4000180A))  // RO, Flash ROM operation status
 #define  RB_ROM_CMD_TOUT    0x01                      // RO, Flash ROM operation result: 0=success, 1=operation time out
 #define  RB_ROM_CMD_ERR     0x02                      // RO, Flash ROM operation command error flag: 0=command accepted, 1=unknown command
 #define  RB_ROM_ADDR_OK     0x40                      // RO, Flash ROM erase/write operation address valid flag, can be reviewed before or after operation: 0=invalid parameter, 1=address valid
@@ -1233,7 +1234,7 @@ extern "C" {
 #define INT_ADDR_WDOG_BAT   (INT_ID_WDOG_BAT*INT_VEC_ENTRY_SZ+64) // interrupt vector address for Watch-Dog timer and Battery low voltage
 
 #ifndef	TABLE_IRQN
-#define __NVIC_PRIO_BITS          4 /*!< uses 4 Bits for the Priority Levels    */
+#define __NVIC_PRIO_BITS          2 /*!< uses 2 Bits for the Priority Levels    */
 #define __Vendor_SysTickConfig    0 /*!< Set to 1 if different SysTick Config is used */
 typedef enum IRQn
 {
@@ -1249,11 +1250,11 @@ typedef enum IRQn
   SysTick_IRQn                  =  -1,      /*!< 15 System Tick Interrupt           */
 
 /* ----------------------  ARMCM0 Specific Interrupt Numbers  --------------------- */
-  TMR0_IRQn /*WDT_IRQn */      =   0,      /*!< Timer0 Interrupt           */
-  GPIO_IRQn /*RTC_IRQn */      =   1,      /*!< Real Time Clock Interrupt          */
+  TMR0_IRQn                    =   0,      /*!< Timer0 Interrupt           */
+  GPIO_IRQn                    =   1,      /*!< Real Time Clock Interrupt          */
   SLAVE_IRQn                   =   2,      /*!< Timer0 / Timer1 Interrupt          */
   SPI0_IRQn                    =   3,      /*!< Timer2 / Timer3 Interrupt          */
-  BLEB_IRQn  /*MCIB_IRQn*/     =   4,      /*!< MCIbb  Interrupt                     */
+  BLEB_IRQn                    =   4,      /*!< MCIbb  Interrupt                     */
   BLEL_IRQn    				   =   5,      /*!< MCIble Interrupt                     */
   USB_IRQn                     =   6,      /*!< UART0 Interrupt                    */
   ETH_IRQn                     =   7,      /*!< Flexray Interrupt                  */
@@ -1336,12 +1337,12 @@ extern "C" {
 #define R16_ETH_ERXST       (*((PUINT16V)(0x4000900C)))             /* RW 接收 DMA 缓冲区起始地址 */
 #define R16_ETH_ERXLN       (*((PUINT16V)(0x4000900E)))             /* RO 接收长度 */
 
-#define	R32_ETH_HTL			(*((PUINT8V)(0x40009010)))
+#define	R32_ETH_HTL			(*((PUINT32V)(0x40009010)))
 #define R8_ETH_EHT0         (*((PUINT8V)(0x40009010)))              /* RW Hash Table Byte0 */
 #define R8_ETH_EHT1         (*((PUINT8V)(0x40009011)))              /* RW Hash Table Byte1 */
 #define R8_ETH_EHT2         (*((PUINT8V)(0x40009012)))              /* RW Hash Table Byte2 */
 #define R8_ETH_EHT3         (*((PUINT8V)(0x40009013)))              /* RW Hash Table Byte3 */
-#define	R32_ETH_HTH			(*((PUINT8V)(0x40009014)))
+#define	R32_ETH_HTH			(*((PUINT32V)(0x40009014)))
 #define R8_ETH_EHT4         (*((PUINT8V)(0x40009014)))              /* RW Hash Table Byte4 */
 #define R8_ETH_EHT5         (*((PUINT8V)(0x40009015)))              /* RW Hash Table Byte5 */
 #define R8_ETH_EHT6         (*((PUINT8V)(0x40009016)))              /* RW Hash Table Byte6 */
@@ -1803,17 +1804,12 @@ extern "C" {
 #define USB_BO_CBW_SIZE			0x1F	/* 命令块CBW的总长度 */
 #define USB_BO_CSW_SIZE			0x0D	/* 命令状态块CSW的总长度 */
 #endif
-#ifndef USB_BO_CBW_SIG0
-#define USB_BO_CBW_SIG0         0x55    /* 命令块CBW识别标志'USBC' */
-#define USB_BO_CBW_SIG1         0x53
-#define USB_BO_CBW_SIG2         0x42
-#define USB_BO_CBW_SIG3         0x43
-#define USB_BO_CSW_SIG0         0x55    /* 命令状态块CSW识别标志'USBS' */
-#define USB_BO_CSW_SIG1         0x53
-#define USB_BO_CSW_SIG2         0x42
-#define USB_BO_CSW_SIG3         0x53
+#ifndef USB_BO_CBW_SIG
+#define USB_BO_CBW_SIG         0x43425355    /* 命令块CBW识别标志'USBC' */
+#define USB_BO_CSW_SIG         0x53425355    /* 命令状态块CSW识别标志'USBS' */
 #endif
 
+//#define	__PACKED
 #ifndef __PACKED
 #define	__PACKED			__packed	
 #endif
@@ -1880,12 +1876,13 @@ __PACKED typedef struct _USB_ENDPOINT_DESCR {
 } USB_ENDP_DESCR, *PUSB_ENDP_DESCR;
 
 
-__packed typedef struct _USB_CONFIG_DESCR_LONG {
+__PACKED typedef struct _USB_CONFIG_DESCR_LONG {
     USB_CFG_DESCR   cfg_descr;
     USB_ITF_DESCR   itf_descr;
     USB_ENDP_DESCR  endp_descr[1];
 } USB_CFG_DESCR_LONG, *PUSB_CFG_DESCR_LONG;
 
+typedef USB_CFG_DESCR_LONG *PXUSB_CFG_DESCR_LONG;
 
 __PACKED typedef struct _USB_HUB_DESCR {
     UINT8 bDescLength;
@@ -1899,6 +1896,7 @@ __PACKED typedef struct _USB_HUB_DESCR {
     UINT8 PortPwrCtrlMask;
 } USB_HUB_DESCR, *PUSB_HUB_DESCR;
 
+typedef USB_HUB_DESCR  *PXUSB_HUB_DESCR;
 
 __PACKED typedef struct _USB_HID_DESCR {
     UINT8 bLength;
@@ -1911,6 +1909,8 @@ __PACKED typedef struct _USB_HID_DESCR {
     UINT8 wDescriptorLengthH;
 } USB_HID_DESCR, *PUSB_HID_DESCR;
 
+typedef USB_HID_DESCR *PXUSB_HID_DESCR;
+
 
 __PACKED typedef struct _UDISK_BOC_CBW {         /* command of BulkOnly USB-FlashDisk */
     UINT32 mCBW_Sig;
@@ -1922,13 +1922,16 @@ __PACKED typedef struct _UDISK_BOC_CBW {         /* command of BulkOnly USB-Flas
     UINT8 mCBW_CB_Buf[16];              /* command block buffer */
 } UDISK_BOC_CBW, *PUDISK_BOC_CBW;
 
+typedef UDISK_BOC_CBW  *PXUDISK_BOC_CBW;
 
 __PACKED typedef struct _UDISK_BOC_CSW {         /* status of BulkOnly USB-FlashDisk */
-    UINT32 mCBW_Sig;
-    UINT32 mCBW_Tag;
+    UINT32 mCSW_Sig;
+    UINT32 mCSW_Tag;
     UINT32 mCSW_Residue;                /* return: remainder bytes */                /* uppest byte of remainder length, always is 0 */
     UINT8 mCSW_Status;                  /* return: result status */
 } UDISK_BOC_CSW, *PUDISK_BOC_CSW;
+
+typedef UDISK_BOC_CSW  *PXUDISK_BOC_CSW;
 
 
 #ifdef __cplusplus

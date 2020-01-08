@@ -19,6 +19,7 @@ void SystemInit(void)
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
     R16_CLK_SYS_CFG = (2<<6)|0x08;			// 32M -> Fsys
+    R8_SAFE_ACCESS_SIG = 0;
 }
 
 /*******************************************************************************
@@ -102,8 +103,33 @@ void SetSysClock( SYS_CLKTypeDef sc)
         default :
             break;		
     }	
+    R8_SAFE_ACCESS_SIG = 0;
 }
 
+/*******************************************************************************
+* Function Name  : GetSysClock
+* Description    : 获取当前系统时钟
+* Input          : None
+* Return         : Hz
+*******************************************************************************/
+UINT32 GetSysClock( void )
+{
+	UINT16  rev;
+	
+	rev = R16_CLK_SYS_CFG & 0xff;		
+	if( (rev & RB_CLK_SYS_MOD) == (2<<6) ){				// 32M做主频
+	    return (32000000);
+	}
+	else if( (rev & RB_CLK_SYS_MOD) == (1<<6) ){		// PLL进行分频
+	    return (480000000/(rev&0x1f));		
+	}
+	else if( (rev & RB_CLK_SYS_MOD) == (0<<6) ){		// 32M进行分频
+		return (32000000/(rev&0x1f));	
+	}
+	else {												// 32K做主频
+		return (32000);
+	}	
+}
 
 /*******************************************************************************
 * Function Name  : HClk32M_Select
@@ -121,14 +147,15 @@ void HClk32M_Select( HClk32MTypeDef hc)
         R16_CLK_SYS_CFG &= ~RB_CLK_OSC32M_XT;
     else
         R16_CLK_SYS_CFG |= RB_CLK_OSC32M_XT;
+    R8_SAFE_ACCESS_SIG = 0;
 }
 
 /*******************************************************************************
 * Function Name  : LClk32K_Select
 * Description    : 32K 低频时钟来源
 * Input          : hc: 
-					Clk32K_LSI   -   选择内部32M
-					Clk32K_LSE   -   选择外部32M
+					Clk32K_LSI   -   选择内部32K
+					Clk32K_LSE   -   选择外部32K
 * Return         : None
 *******************************************************************************/
 void LClk32K_Select( LClk32KTypeDef hc)
@@ -136,21 +163,52 @@ void LClk32K_Select( LClk32KTypeDef hc)
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;	
     if( hc == Clk32K_LSI)
-        R16_CLK_SYS_CFG &= ~RB_CLK_OSC32M_XT;
+        R8_CK32K_CONFIG &= ~RB_CLK_OSC32K_XT;
     else
-        R16_CLK_SYS_CFG |= RB_CLK_OSC32M_XT;
+        R8_CK32K_CONFIG |= RB_CLK_OSC32K_XT;
+    R8_SAFE_ACCESS_SIG = 0;
 }
 
 /*******************************************************************************
-* Function Name  : HSE_Calibration_LSI
-* Description    : 外部32M时钟校准内部32K时钟
+* Function Name  : GetCalibrationBaseValue
+* Description    : 获取内部32K校准标称值
+* Input          : None
+* Return         : Hz
+*******************************************************************************/
+UINT16 GetCalibrationBaseValue( void )
+{
+	UINT16  rev;
+    UINT32  calv;
+	
+	rev = R16_CLK_SYS_CFG & 0xff;	
+
+	if( (rev & RB_CLK_SYS_MOD) == (2<<6) ){				// 32M做主频
+	    calv = ((5*32000000+(CAB_LSIFQ>>1))/CAB_LSIFQ);
+	}
+	else if( (rev & RB_CLK_SYS_MOD) == (1<<6) ){		// PLL进行分频
+	    calv = (((UINT32)5*480000000/(rev&0x1f)+(CAB_LSIFQ>>1))/CAB_LSIFQ);		
+	}
+	else if( (rev & RB_CLK_SYS_MOD) == (0<<6) ){		// 32M进行分频
+		calv = ((5*32000000/(rev&0x1f)+(CAB_LSIFQ>>1))/CAB_LSIFQ);	
+	}
+	else {												// 32K做主频
+		calv = (5);
+	}	
+
+    return( calv &0xfff );
+}
+
+/*******************************************************************************
+* Function Name  : Calibration_LSI
+* Description    : 校准内部32K时钟
 * Input          : None
 * Return         : None
 *******************************************************************************/
-void HSE_Calibration_LSI( void )
+void Calibration_LSI( void )
 {
-	UINT16  a1, a2, a, cnt;
+	UINT16  a1, a2, a, cnt, basev;
 	
+	basev = GetCalibrationBaseValue();
 	cnt = 0;
 	a = 0;
     a2 = 0;
@@ -158,11 +216,11 @@ void HSE_Calibration_LSI( void )
     {  
     	cnt ++;
         a1 = a2;
-        SingleCalibrat(3);     // 粗调
+        SingleCalibrat(3, basev);     // 粗调
         a2 = R16_INT32K_TUNE;   
         if((a1>a2)?((a1-a2)<=3):((a2-a1)<=3)) a++;
         else    a = 0;
-        if( a>3 || cnt>10 )   break;
+        if( a>3 || cnt>5 )   break;
     }             
     
     cnt = 0;
@@ -170,11 +228,11 @@ void HSE_Calibration_LSI( void )
     {  
     	cnt ++;
         a1 = a2;
-        SingleCalibrat(1);     // 微调
+        SingleCalibrat(1, basev);     // 微调
         a2 = R16_INT32K_TUNE;    
         if((a1>a2)?((a1-a2)<=1):((a2-a1)<=1)) a++;
         else    a = 0;
-        if( a>2 || cnt>10 )   break;
+        if( a>2 || cnt>5 )   break;
     }                    
 }
 
@@ -184,24 +242,19 @@ void HSE_Calibration_LSI( void )
 * Input          : step：步进大小
 * Return         : None
 *******************************************************************************/
-void SingleCalibrat( UINT8 step )
+void SingleCalibrat( UINT8 step, UINT16 v )
 {
     UINT16  i, j;
     UINT16  c1, c2;
-    UINT16  rev;
     UINT8   st = step;
 
-	rev = R16_CLK_SYS_CFG;
-    j = 5*16000000/32000;				// 标称值(需要降频)
-    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-    R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT|(0<<6)|0x02;		// 16M
+	j = v;
 
     /* 校准 */
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
     R8_OSC_CAL_CTRL = RB_OSC_CNT_EN;
-    c2 = 0xffff;
+    c2 = 0xfff;
 
     while(1)
     {	
@@ -213,7 +266,7 @@ void SingleCalibrat( UINT8 step )
         i = R16_OSC_CAL_CNT;			// 实时校准后采样值		
 
         R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-        R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+        R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;        
         if( i > j )
         {
             R16_INT32K_TUNE += st;			// 说明 RC 频率偏低
@@ -222,7 +275,7 @@ void SingleCalibrat( UINT8 step )
         }
         else
         {
-            R16_INT32K_TUNE += st;			// 说明 RC 频率偏高
+            R16_INT32K_TUNE -= st;			// 说明 RC 频率偏高
             c1 = c2;
             c2 = j-i;
         }
@@ -231,7 +284,7 @@ void SingleCalibrat( UINT8 step )
         {
             R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
             R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-            if( i > j )     R16_INT32K_TUNE += st;			// 反向校回去
+            if( i > j )     R16_INT32K_TUNE -= st;			// 反向校回去
             else            R16_INT32K_TUNE += st;			// 反向校回去			
             break;
         }
@@ -239,8 +292,8 @@ void SingleCalibrat( UINT8 step )
 
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-    R16_CLK_SYS_CFG = rev;
     R8_OSC_CAL_CTRL = 0;
+    R8_SAFE_ACCESS_SIG = 0;
 }
 
 
@@ -248,22 +301,22 @@ void SingleCalibrat( UINT8 step )
 /*******************************************************************************
 * Function Name  : RTCInitTime
 * Description    : RTC时钟初始化当前时间
-* Input          : ph: 配置时间 - 小时
+* Input          : h: 配置时间 - 小时
 					MAX_H = 393192
-				   pm: 配置时间 - 分钟
+				   m: 配置时间 - 分钟
 					MAX_M = 59
-				   ps: 配置时间 - 秒
+				   s: 配置时间 - 秒
 				    MAX_S = 59
 * Return         : None
 *******************************************************************************/
-void RTC_InitTime( PUINT32 ph, PUINT16 pm, PUINT16 ps )
+void RTC_InitTime( UINT32 h, UINT16 m, UINT16 s )
 {
     UINT32  t;
     UINT16  day, sec2, t32k;
 
-    day = *ph/24;
-    sec2 = (*ph%24)*1800+*pm*30+*ps/2;
-    t32k = (*ps&1)?(0x8000):(0);
+    day = h/24;
+    sec2 = (h%24)*1800+m*30+s/2;
+    t32k = (s&1)?(0x8000):(0);
     t = sec2;
     t = t<<16 | t32k;
 
@@ -273,7 +326,7 @@ void RTC_InitTime( PUINT32 ph, PUINT16 pm, PUINT16 ps )
     R8_RTC_MODE_CTRL |= RB_RTC_LOAD_HI;
     R32_RTC_TRIG = t;	
     R8_RTC_MODE_CTRL |= RB_RTC_LOAD_LO;
-    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG0;
+    R8_SAFE_ACCESS_SIG = 0;
 }
 
 /*******************************************************************************
@@ -312,9 +365,10 @@ void RTC_GetTime( PUINT32 ph, PUINT16 pm, PUINT16 ps )
 void RTC_SetCycle32k( UINT32 cyc )
 {
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;		
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;   
     R32_RTC_TRIG = cyc;
     R8_RTC_MODE_CTRL |= RB_RTC_LOAD_LO;
+    R8_SAFE_ACCESS_SIG = 0;
 }
 
 /*******************************************************************************
@@ -327,11 +381,11 @@ UINT32 RTC_GetCycle32k( void )
 {
     UINT32 i;
     
-    i = R32_RTC_CNT_32K;
-    if( i!=R32_RTC_CNT_32K )
-        return (R32_RTC_CNT_32K);
-    else
-        return (i);
+    do{
+    	i = R32_RTC_CNT_32K;
+    }while( i != R32_RTC_CNT_32K );
+    
+    return (i);
 }
 
 /*******************************************************************************
@@ -347,6 +401,7 @@ void RTC_TMRFunCfg( RTC_TMRCycTypeDef t )
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
     R8_RTC_MODE_CTRL &= ~(RB_RTC_TMR_EN|RB_RTC_TMR_MODE);
     R8_RTC_MODE_CTRL |= RB_RTC_TMR_EN | (t);
+    R8_SAFE_ACCESS_SIG = 0;
 }
 
 /*******************************************************************************
@@ -367,6 +422,26 @@ void RTC_TRIGFunCfg( UINT32 cyc )
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
     R32_RTC_TRIG = t;
     R8_RTC_MODE_CTRL |= RB_RTC_TRIG_EN;
+    R8_SAFE_ACCESS_SIG = 0;
+}
+
+/*******************************************************************************
+* Function Name  : RTC_ModeFunDisable
+* Description    : RTC 模式功能关闭
+* Input          : m: 需要关闭的当前模式
+* Return         : None
+*******************************************************************************/
+void RTC_ModeFunDisable( RTC_MODETypeDef m )
+{
+    UINT8  i=0;
+    
+    if( m & RTC_TRIG_MODE )    i |= RB_RTC_TRIG_EN;
+    if( m & RTC_TMR_MODE )     i |= RB_RTC_TMR_EN;
+    
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+    R8_RTC_MODE_CTRL &= ~(i);
+    R8_SAFE_ACCESS_SIG = 0;
 }
 
 /*******************************************************************************

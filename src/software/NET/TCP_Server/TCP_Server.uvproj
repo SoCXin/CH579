@@ -373,7 +373,7 @@
               <MiscControls>--diag_suppress=231</MiscControls>
               <Define>CLK32MSYS,DEBUG</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\SRC\CMSIS\Include;..\LIB;..\..\SRC\StdPeriphDriver;..\..\SRC\CMSIS\Include;..\..\SRC\StdPeriphDriver\inc</IncludePath>
+              <IncludePath>..\..\Libs\CMSIS\Include;..\LIB;..\..\Libs\StdPeriphDriver;..\..\Libs\CMSIS\Include;..\..\Libs\StdPeriphDriver\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -430,27 +430,27 @@
             <File>
               <FileName>CH57x_clk.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\SRC\StdPeriphDriver\CH57x_clk.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_clk.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_pwr.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\SRC\StdPeriphDriver\CH57x_pwr.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_pwr.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_gpio.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\SRC\StdPeriphDriver\CH57x_gpio.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_gpio.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_uart1.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\SRC\StdPeriphDriver\CH57x_uart1.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_uart1.c</FilePath>
             </File>
             <File>
               <FileName>CH57x_sys.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\SRC\StdPeriphDriver\CH57x_sys.c</FilePath>
+              <FilePath>..\..\Libs\StdPeriphDriver\CH57x_sys.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -460,7 +460,7 @@
             <File>
               <FileName>startup_ARMCM0.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\SRC\Startup\startup_ARMCM0.s</FilePath>
+              <FilePath>..\..\Libs\Startup\startup_ARMCM0.s</FilePath>
             </File>
           </Files>
         </Group>

@@ -34,9 +34,11 @@
 #define  FREQ_SYS		32000000   
 #endif   
 
+#define CAB_LSIFQ     	32768
+
 #include <string.h>
 #include "CH57x_clk.h"
-#include "CH57x_uart1.h"
+#include "CH57x_uart.h"
 #include "CH57x_gpio.h"
 #include "CH57x_lcd.h"
 #include "CH57x_flash.h"
@@ -44,12 +46,19 @@
 #include "CH57x_pwm.h"	 
 #include "CH57x_adc.h"
 #include "CH57x_sys.h"
-#include "CH57x_timer0.h"	 
-#include "CH57x_spi0.h"
+#include "CH57x_timer.h"	 
+#include "CH57x_spi.h"
 #include "CH57x_usbdev.h"
 #include "CH57x_usbhost.h"
-	 
-	 
+
+
+
+
+  
+#define DelayMs(x)      mDelaymS(x)	  
+#define DelayUs(x)      mDelayuS(x)	  
+
+
 #ifdef __cplusplus
 }
 #endif

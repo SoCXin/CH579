@@ -75,7 +75,6 @@ typedef enum
 }ADC_SignalPGATypeDef;
 
 
-
 // refer to ADC_SingleChannelTypeDef
 #define		ADC_ChannelCfg( d )		(R8_ADC_CHANNEL = d)												/* 设置 ADC 采样通道 */
 // refer to ADC_SampClkTypeDef
@@ -91,13 +90,15 @@ void ADC_InterTSSampInit( void );																	/* 内置温度传感器采样初始化 */
 void ADC_InterBATSampInit( void );																	/* 内置电池电压采样初始化 */
 
 UINT16 ADC_ExcutSingleConver( void );																/* ADC执行单次转换 */
+signed short ADC_DataCalib_Rough( void ); 
+void ADC_DataCalib_Fine( PUINT16 dat, ADC_SignalPGATypeDef ga );
 UINT16 TouchKey_ExcutSingleConver( UINT8 d );														/* TouchKey转换后数据 */
 UINT8 ADC_GetCurrentTS( UINT16 ts_v );                                                              /* 获取当前采样的温度值（℃） */
 
 #define ADC_ReadConverValue()       (R16_ADC_DATA)                                                  /* 读取转换后的数值 */
-#define ADC_StartUp()               (R8_ADC_CONVERT |= RB_ADC_START)								/* ADC启动转换 */
+#define ADC_StartUp()               (R8_ADC_CONVERT = RB_ADC_START)									/* ADC启动转换 */
 #define ADC_GetITStatus()           ( R8_ADC_INT_FLAG & RB_ADC_IF_EOC )								/* 获取ADC转换完成标志 */
-#define ADC_ClearITFlag()           (R8_ADC_CONVERT |= RB_ADC_START)								/* 清除ADC转换完成标志 */
+#define ADC_ClearITFlag()           (R8_ADC_CONVERT = 0)											/* 清除ADC转换完成标志 */
 
 #define TouchKey_GetITStatus()      ( R8_ADC_INT_FLAG & RB_ADC_IF_EOC )							    /* 获取TouchKey转换完成标志 */
 #define TouchKey_ClearITFlag()      (R8_TKEY_CTRL |= RB_TKEY_PWR_ON)								/* 清除TouchKey转换完成标志 */

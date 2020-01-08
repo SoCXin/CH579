@@ -15,7 +15,7 @@
 ".\obj\rtc.o"
 ".\obj\sleep.o"
 ".\obj\key.o"
-"..\..\LIB\CH57xBLE.LIB"
+"..\..\..\Libs\LIB\CH57xBLE.LIB"
 --library_type=microlib --scatter ".\obj\BLE.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

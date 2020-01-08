@@ -76,15 +76,25 @@ typedef enum
 
 }RTC_EVENTTypeDef;	 
 
+/**
+  * @brief  rtc interrupt event define
+  */
+typedef enum
+{
+	RTC_TRIG_MODE = 0,			// RTC 触发模式
+	RTC_TMR_MODE,				// RTC 周期定时模式
 
+}RTC_MODETypeDef;
 
 
 void SystemInit(void);							/* 系统时钟初始化 */	 
-void SetSysClock( SYS_CLKTypeDef sc);			/* 重设系统运行时钟 */	
+void SetSysClock( SYS_CLKTypeDef sc);			/* 重设系统运行时钟 */
+UINT32 GetSysClock( void );						/* 获取当前系统时钟 */	
+UINT16 GetCalibrationBaseValue( void );			/* 获取内部32K校准标称值 */
 void HClk32M_Select( HClk32MTypeDef hc);		/* 32M 高频时钟来源 */
 void LClk32K_Select( LClk32KTypeDef hc);		/* 32K 低频时钟来源 */
-void SingleCalibrat( UINT8 step );				/* 单次校准 */
-void HSE_Calibration_LSI( void );				/* 外部32M时钟校准内部32K时钟 */
+void SingleCalibrat( UINT8 step, UINT16 v );	/* 单次校准 */
+void Calibration_LSI( void );				/* 外部32M时钟校准内部32K时钟 */
 
 
 /* 内部 32KHz 时钟校准 */
@@ -94,7 +104,7 @@ void HSE_Calibration_LSI( void );				/* 外部32M时钟校准内部32K时钟 */
 /* PLL 配置 */	 
 	 
 	 
-void RTC_InitTime( PUINT32 h, PUINT16 m, PUINT16 s );		/* RTC时钟初始化当前时间 */
+void RTC_InitTime( UINT32 h, UINT16 m, UINT16 s );			/* RTC时钟初始化当前时间 */
 void RTC_GetTime( PUINT32 ph, PUINT16 pm, PUINT16 ps );		/* 获取当前时间 */
 	 
 void RTC_SetCycle32k( UINT32 cyc );							/* 基于LSE/LSI时钟，配置当前RTC 周期数 */	 
@@ -102,6 +112,7 @@ UINT32 RTC_GetCycle32k( void );				                /* 基于LSE/LSI时钟，获取当前R
 
 void RTC_TRIGFunCfg( UINT32 cyc );							/* RTC触发模式配置间隔时间,基于LSE/LSI时钟，匹配周期数 */
 void RTC_TMRFunCfg( RTC_TMRCycTypeDef t );					/* RTC定时模式配置 */
+void RTC_ModeFunDisable( RTC_MODETypeDef m );               /* RTC 模式功能关闭 */
 
 UINT8 RTC_GetITFlag( RTC_EVENTTypeDef f );					/* 获取RTC中断标志 */	 
 void RTC_ClearITFlag( RTC_EVENTTypeDef f );					/* 清除RTC中断标志 */ 

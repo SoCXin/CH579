@@ -95,7 +95,7 @@
         <tRmem>1</tRmem>
         <tRfunc>0</tRfunc>
         <tRbox>1</tRbox>
-        <tRtrace>0</tRtrace>
+        <tRtrace>1</tRtrace>
         <sRSysVw>1</sRSysVw>
         <tRSysVw>1</tRSysVw>
         <sRunDeb>0</sRunDeb>
@@ -120,7 +120,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>UL2CM3</Key>
-          <Name>UL2CM3(-S0 -C0 -P0  -FC1000 -FD20000000</Name>
+          <Name>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <Breakpoint/>
@@ -258,7 +258,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\SRC\Startup\startup_ARMCM0.s</PathWithFileName>
+      <PathWithFileName>..\..\..\Libs\Startup\startup_ARMCM0.s</PathWithFileName>
       <FilenameWithoutPath>startup_ARMCM0.s</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -270,7 +270,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\SRC\StdPeriphDriver\CH57x_clk.c</PathWithFileName>
+      <PathWithFileName>..\..\..\Libs\StdPeriphDriver\CH57x_clk.c</PathWithFileName>
       <FilenameWithoutPath>CH57x_clk.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -282,7 +282,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\SRC\StdPeriphDriver\CH57x_gpio.c</PathWithFileName>
+      <PathWithFileName>..\..\..\Libs\StdPeriphDriver\CH57x_gpio.c</PathWithFileName>
       <FilenameWithoutPath>CH57x_gpio.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -294,7 +294,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\SRC\StdPeriphDriver\CH57x_pwr.c</PathWithFileName>
+      <PathWithFileName>..\..\..\Libs\StdPeriphDriver\CH57x_pwr.c</PathWithFileName>
       <FilenameWithoutPath>CH57x_pwr.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -306,7 +306,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\SRC\StdPeriphDriver\CH57x_sys.c</PathWithFileName>
+      <PathWithFileName>..\..\..\Libs\StdPeriphDriver\CH57x_sys.c</PathWithFileName>
       <FilenameWithoutPath>CH57x_sys.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -318,7 +318,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\SRC\StdPeriphDriver\CH57x_uart1.c</PathWithFileName>
+      <PathWithFileName>..\..\..\Libs\StdPeriphDriver\CH57x_uart1.c</PathWithFileName>
       <FilenameWithoutPath>CH57x_uart1.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -330,7 +330,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\SRC\StdPeriphDriver\CH57x_timer0.c</PathWithFileName>
+      <PathWithFileName>..\..\..\Libs\StdPeriphDriver\CH57x_timer0.c</PathWithFileName>
       <FilenameWithoutPath>CH57x_timer0.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
@@ -406,7 +406,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\LIB\CH57xBLE.LIB</PathWithFileName>
+      <PathWithFileName>..\..\..\Libs\LIB\CH57xBLE.LIB</PathWithFileName>
       <FilenameWithoutPath>CH57xBLE.LIB</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>

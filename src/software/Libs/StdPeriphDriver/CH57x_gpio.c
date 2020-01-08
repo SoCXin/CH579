@@ -247,6 +247,6 @@ void GPIOPinRemap( UINT8 s, UINT16 perph )
 *******************************************************************************/
 void GPIOAGPPCfg( UINT8 s, UINT16 perph )
 {
-    if( s )     R16_PIN_ANALOG_IE |= perph;
-    else        R16_PIN_ANALOG_IE &= ~perph;
+    if( s )     R16_PIN_ANALOG_IE &= ~perph;
+    else        R16_PIN_ANALOG_IE |= perph;
 }
