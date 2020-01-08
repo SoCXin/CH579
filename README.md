@@ -1,14 +1,16 @@
 ﻿# [CH579](https://github.com/sochub/CH579)
-[![sites](SoC/SoC.png)](http://www.qitas.cn) 
-#### 厂商：[WCH](https://github.com/sochub/WCH)
-#### 内核：[Cortex M0](https://github.com/sochub/CM0) 
-#### 芯片定级：[Level](https://github.com/sochub/Level)
+
+[![sites](http://182.61.61.133/link/resources/docs.png)](https://stop.stops.top) 
+
+#### [Vendor](https://github.com/sochub/Vendor)：[WCH](https://github.com/sochub/WCH)
+#### [STM8](https://github.com/sochub/STM8)：[Cortex M0](https://github.com/sochub/CM0) 
+#### [Level](https://github.com/sochub/Level)：40MHz 
 
 ## [CH579描述](https://github.com/sochub/CH579/wiki) 
 
 [CH579](https://github.com/sochub/CH579) 采用 Cortex M0内核，片上集成低功耗蓝牙BLE(4.2)/Zigbee通讯模块、以太网控制器及收发器、全速USB主机和设备控制器及收发器、段式LCD驱动模块、ADC、触摸按键检测模块、RTC等丰富的外设资源。
 
-[![sites](SoC/CH579.png)](http://www.wch.cn/products/CH579.html) 
+[![sites](docs/CH579.png)](http://www.wch.cn/products/CH579.html) 
 
 ### 关键参数：
 
@@ -37,15 +39,15 @@
 
 CH579目前提供两种QFN封装规格
 
-[![sites](SoC/CH579.jpg)](http://www.wch.cn/products/CH579.html) 
+[![sites](docs/CH579.jpg)](http://www.wch.cn/products/CH579.html) 
 
 * CH579M 封装：QFN48 （5mm x 5mm）
 
-[![sites](SoC/CH579-48.png)](http://www.qitas.cn)
+[![sites](docs/CH579-48.png)](http://www.qitas.cn)
 
 * CH579F 封装：QFN28 （4mm x 4mm）
 
-[![sites](SoC/CH579-28.png)](http://www.qitas.cn)
+[![sites](docs/CH579-28.png)](http://www.qitas.cn)
 
 * [kicad库资源](src/kicad/)
 
