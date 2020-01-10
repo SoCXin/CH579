@@ -64,10 +64,10 @@ UINT8 IPMask[4]  = {255,255,255,0};                                             
 UINT8 DESIP[4]   = {182,61,61,133};                                              /* 目的IP地址 */
 UINT16 aport=1000;											                     			/* CH579源端口 */
 
-char *username =  "";							                               /* 设备名，每个设备唯一，可用”/“做分级 */
-char *password =  "";								                             /* 服务器登陆密码 */
-char *sub_topic = "";								                             /* 订阅的会话名，为了自发自收，应与发布的会话名相同 */
-char *pub_topic = "";									                         		/* 发布的会话*/
+char *username =  "CH579";							                         /* 设备名，每个设备唯一，可用”/“做分级 */
+char *password =  "123456";								                             /* 服务器登陆密码 */
+char *sub_topic = "TESTSUB";								                             /* 订阅的会话名，为了自发自收，应与发布的会话名相同 */
+char *pub_topic = "TESTPUB";									                         		/* 发布的会话*/
 
 UINT8 SocketId;                                                                  /* 保存socket索引，可以不用定义 */
 UINT8 SocketRecvBuf[RECE_BUF_LEN];                                               /* socket接收缓冲区 */
