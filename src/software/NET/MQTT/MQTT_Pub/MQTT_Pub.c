@@ -1,13 +1,9 @@
-/********************************** (C) COPYRIGHT ******************************
+/********************************** (C) QITAS ******************************
 * File Name          : MQTT_Pub.c
-* Author             : WCH
+* Author             : Qitas
 * Version            : V1.0
-* Date               : 2018/12/01
-* Description        : 基于TCP/IP的MQTT协议通讯例程，实现以MQTT方式，通过百度、阿里云物联网服务器实现设备互通；使用前需设置帐号和密码
-*					(1)、CH579 Examples by KEIL;
-*					(2)、串口1输出监控信息,115200bps,打开或者关闭调试信息输出在IDE宏定义中设置;
-*					(3)、本程序用于演示基于TCP/IP的MQTT协议通讯，
-					     此程序演示PUB的过程
+* Date               : 2019/12/04
+* Description        : 基于TCP/IP的MQTT协议通讯例程，实现以MQTT方式
 *******************************************************************************/
 
 
@@ -62,16 +58,16 @@ __align(4)UINT8 Mem_ArpTable[CH57xNET_RAM_ARP_TABLE_SIZE];
 
 /* CH579MQTT相关定义，需要根据实际情况修改 */
 UINT8 MACAddr[6] = {0x84,0xc2,0xe4,0x02,0x03,0x04};                              /* CH579MAC地址 */
-UINT8 IPAddr[4]  = {192,168,1,200};                                              /* CH579IP地址 */
-UINT8 GWIPAddr[4]= {192,168,1,1};                                                /* CH579网关 */
+UINT8 IPAddr[4]  = {192,168,0,123};                                              /* CH579IP地址 */
+UINT8 GWIPAddr[4]= {192,168,0,1};                                                /* CH579网关 */
 UINT8 IPMask[4]  = {255,255,255,0};                                              /* CH579子网掩码 */
-UINT8 DESIP[4]   = {58,213,74,190};                                              /* 目的IP地址 */
-UINT16 aport=1000;											                     /* CH579源端口 */
+UINT8 DESIP[4]   = {182,61,61,133};                                              /* 目的IP地址 */
+UINT16 aport=1000;											                     			/* CH579源端口 */
 
-char *username =  "";							                                 /* 设备名，每个设备唯一，可用”/“做分级 */
+char *username =  "";							                               /* 设备名，每个设备唯一，可用”/“做分级 */
 char *password =  "";								                             /* 服务器登陆密码 */
 char *sub_topic = "";								                             /* 订阅的会话名，为了自发自收，应与发布的会话名相同 */
-char *pub_topic = "";									                         /* 发布的会话*/
+char *pub_topic = "";									                         		/* 发布的会话*/
 
 UINT8 SocketId;                                                                  /* 保存socket索引，可以不用定义 */
 UINT8 SocketRecvBuf[RECE_BUF_LEN];                                               /* socket接收缓冲区 */
