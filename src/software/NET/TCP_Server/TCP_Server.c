@@ -60,10 +60,10 @@ __align(4)UINT8 Mem_ArpTable[CH57xNET_RAM_ARP_TABLE_SIZE];
 
 /* CH579相关定义 */
 UINT8 MACAddr[6]= {0x84,0xc2,0xe4,0x02,0x03,0x04};                              /* CH579MAC地址 */
-UINT8 IPAddr[4] = {192,168,1,200};                                              /* CH579IP地址 */
-UINT8 GWIPAddr[4]={192,168,1,1};                                                /* CH579网关 */
+UINT8 IPAddr[4] = {192,168,0,120};                                              /* CH579IP地址 */
+UINT8 GWIPAddr[4]={192,168,0,1};                                                /* CH579网关 */
 UINT8 IPMask[4] = {255,255,255,0};                                              /* CH579子网掩码 */
-UINT8 DESIP[4] =  {192,168,1,100};                                              /* 目的IP地址 */
+UINT8 DESIP[4] =  {192,168,0,100};                                              /* 目的IP地址 */
 
 UINT8 SocketId;                                                                 /* 保存socket索引，可以不用定义 */
 UINT8 SocketRecvBuf[4][RECE_BUF_LEN];                                              /* socket接收缓冲区 */
@@ -312,12 +312,11 @@ void SystemClock_UART1_init(void)
 *******************************************************************************/
 int main(void) 
 {
-    UINT8 i = 0;
-      
-    SystemClock_UART1_init();                                                   /* 系统时钟和串口1初始化 */  
-    i = CH57xNET_LibInit(IPAddr,GWIPAddr,IPMask,MACAddr);                       /* 库初始化 */
-    mStopIfError(i);                                                            /* 检查错误 */
-    PRINT("CH57xNETLibInit Success\r\n");   
+  UINT8 i = 0;      
+  SystemClock_UART1_init();                                                   /* 系统时钟和串口1初始化 */  
+  i = CH57xNET_LibInit(IPAddr,GWIPAddr,IPMask,MACAddr);                       /* 库初始化 */
+  mStopIfError(i);                                                            /* 检查错误 */
+  PRINT("CH57x NETLib Init Success\r\n");   
 	Timer0Init( 10000 );		                                                /* 初始化定时器:10ms */
 	NVIC_EnableIRQ(ETH_IRQn);	
 	while ( CH57xInf.PHYStat < 2 ) {

@@ -66,8 +66,8 @@ UINT16 aport=1000;											                     			/* CH579源端口 */
 
 char *username =  "CH579";							                         /* 设备名，每个设备唯一，可用”/“做分级 */
 char *password =  "123456";								                             /* 服务器登陆密码 */
-char *sub_topic = "TESTSUB";								                             /* 订阅的会话名，为了自发自收，应与发布的会话名相同 */
-char *pub_topic = "TESTPUB";									                         		/* 发布的会话*/
+char *sub_topic = "TEST";								                             /* 订阅的会话名，为了自发自收，应与发布的会话名相同 */
+char *pub_topic = "TEST";									                         		/* 发布的会话*/
 
 UINT8 SocketId;                                                                  /* 保存socket索引，可以不用定义 */
 UINT8 SocketRecvBuf[RECE_BUF_LEN];                                               /* socket接收缓冲区 */
@@ -198,7 +198,7 @@ void MQTT_Connect(char *username,char *password)
 	UINT32 len;
 	UINT8 buf[200];
 
-	data.clientID.cstring = "11";
+	data.clientID.cstring = "QITAS";
 	data.keepAliveInterval = 20;
 	data.cleansession = 1;
 	data.username.cstring = username;																		
@@ -534,16 +534,17 @@ void SystemClock_UART1_init(void)
 *******************************************************************************/
 int main(void) 
 {
-    UINT32 i = 0;
-    UINT16 TimeDelay=0;
+	UINT32 i = 0;
+	UINT32 TimeDelay=0;
 	char payload[500];	
-	for(i=0;i<500;i++)
-	payload[i]='a';
+	memcpy(payload,"qitas test",strlen("qitas test"));
+//	for(i=0;i<500;i++)
+//	payload[i]='qitas test';
 
 	SystemClock_UART1_init();
-    i = CH57xNET_LibInit(IPAddr,GWIPAddr,IPMask,MACAddr);                       /* 库初始化 */
-    mStopIfError(i);                                                            /* 检查错误 */
-    PRINT("CH57xNETLibInit Success\r\n");   
+	i = CH57xNET_LibInit(IPAddr,GWIPAddr,IPMask,MACAddr);                       /* 库初始化 */
+	mStopIfError(i);                                                            /* 检查错误 */
+	PRINT("CH57x NETLib Init Success\r\n");   
 	Timer0Init( 10000 );		                                                /* 初始化定时器:10ms */
 	NVIC_EnableIRQ(ETH_IRQn);
 	Transport_Open();    
@@ -553,14 +554,15 @@ int main(void)
     PRINT("CH579 MQTT socket create!Publishing\r\n");   	
     while(1)
     {
-        CH57xNET_MainTask();                                                    /* CH57xNET库主任务函数，需要在主循环中不断调用 */
-        if(CH57xNET_QueryGlobalInt())CH57xNET_HandleGlobalInt();                /* 查询中断，如果有中断，则调用全局中断处理函数 */
-        DelsyMs(1);
-		TimeDelay++;
-		if (TimeDelay>500) {
-			TimeDelay=0;
-			if(con_flag) MQTT_Publish(pub_topic,payload);
-		}   
+			CH57xNET_MainTask();                                                    /* CH57xNET库主任务函数，需要在主循环中不断调用 */
+			if(CH57xNET_QueryGlobalInt())CH57xNET_HandleGlobalInt();                /* 查询中断，如果有中断，则调用全局中断处理函数 */
+			DelsyMs(1);
+			TimeDelay++;
+			if (TimeDelay>5000) 
+			{
+				TimeDelay=0;
+				if(con_flag) MQTT_Publish(pub_topic,payload);
+			}   
     }
 }
 /*********************************** endfile **********************************/

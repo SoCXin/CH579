@@ -62,16 +62,16 @@ __align(4)UINT8 Mem_ArpTable[CH57xNET_RAM_ARP_TABLE_SIZE];
 
 /* CH579MQTT相关定义，需要根据实际情况修改 */
 UINT8 MACAddr[6] = {0x84,0xc2,0xe4,0x02,0x03,0x04};                            /* CH579MAC地址 */
-UINT8 IPAddr[4]  = {192,168,1,200};                                            /* CH579IP地址 */
-UINT8 GWIPAddr[4]= {192,168,1,1};                                              /* CH579网关 */
+UINT8 IPAddr[4]  = {192,168,0,123};                                            /* CH579IP地址 */
+UINT8 GWIPAddr[4]= {192,168,0,1};                                              /* CH579网关 */
 UINT8 IPMask[4]  = {255,255,255,0};                                            /* CH579子网掩码 */
-UINT8 DESIP[4]   = {58,213,74,190};                                            /* 目的IP地址 */
+UINT8 DESIP[4]   = {182,61,61,133};                                            /* 目的IP地址 */
 UINT16 aport=1000;											                   /* CH579源端口 */
 
-char *username  = "";							                               /* 设备名，每个设备唯一，可用”/“做分级 */
-char *password  = "";								                           /* 服务器登陆密码 */
-char *sub_topic = "";								                           /* 订阅的会话名，为了自发自收，应与发布的会话名相同 */
-char *pub_topic = "";									                       /* 发布的会话*/
+char *username  = "CH579";							                               /* 设备名，每个设备唯一，可用”/“做分级 */
+char *password  = "123456";								                           /* 服务器登陆密码 */
+char *sub_topic = "TEST";								                           /* 订阅的会话名，为了自发自收，应与发布的会话名相同 */
+char *pub_topic = "TEST";									                       /* 发布的会话*/
 
 UINT8 SocketId;                                                                /* 保存socket索引，可以不用定义 */
 UINT8 SocketRecvBuf[RECE_BUF_LEN];                                             /* socket接收缓冲区 */
@@ -202,7 +202,7 @@ void MQTT_Connect(char *username,char *password)
 	UINT32 len;
 	UINT8 buf[200];
 
-	data.clientID.cstring = "11";
+	data.clientID.cstring = "QITAS";
 	data.keepAliveInterval = 20;
 	data.cleansession = 1;
 	data.username.cstring = username;																		
@@ -458,7 +458,7 @@ void CH57xNET_HandleSockInt(UINT8 sockeid,UINT8 initstat)
     }
     if(initstat & SINT_STAT_TIM_OUT)                                            /* TCP超时中断 */
     {                                                                           /* 产生此中断，CH579库内部会将此socket清除，置为关闭*/
-        PRINT("TCP Timout\n");                                                  /* 应用曾需可以重新创建连接 */
+        PRINT("TCP Timout \n");                                                  /* 应用曾需可以重新创建连接 */
         Transport_Open();
     }
 }
@@ -546,25 +546,24 @@ void SystemClock_UART1_init(void)
 *******************************************************************************/
 int main(void) 
 {
-    UINT32 i = 0;
-
+  UINT32 i = 0;
 	SystemClock_UART1_init();
-    i = CH57xNET_LibInit(IPAddr,GWIPAddr,IPMask,MACAddr);                       /* 库初始化 */
-    mStopIfError(i);                                                            /* 检查错误 */
-    PRINT("CH57xNETLibInit Success\r\n");  
+  i = CH57xNET_LibInit(IPAddr,GWIPAddr,IPMask,MACAddr);                       /* 库初始化 */
+  mStopIfError(i);                                                            /* 检查错误 */
+  PRINT("CH57x NETLib Init Success\r\n");  
 	Timer0Init( 10000 );		                                                /* 初始化定时器:10ms */
 	NVIC_EnableIRQ(ETH_IRQn);
-	Transport_Open();
-    
-	while ( CH57xInf.PHYStat < 2 ) {
+	Transport_Open();    
+	while( CH57xInf.PHYStat < 2 ) 
+	{
 		DelsyMs(50);
 	}	
-    PRINT("CH579 MQTT socket create!Subscribed\r\n");  	
-    while(1)
-    {
-        CH57xNET_MainTask();                                                    /* CH57xNET库主任务函数，需要在主循环中不断调用 */
-        if(CH57xNET_QueryGlobalInt())CH57xNET_HandleGlobalInt();                /* 查询中断，如果有中断，则调用全局中断处理函数 */
-    }
+  PRINT("CH579 MQTT socket create! Subscribed\r\n");  	
+  while(1)
+	{
+			CH57xNET_MainTask();                                                    /* CH57xNET库主任务函数，需要在主循环中不断调用 */
+			if(CH57xNET_QueryGlobalInt())CH57xNET_HandleGlobalInt();                /* 查询中断，如果有中断，则调用全局中断处理函数 */
+	}
 }
 
 /*********************************** endfile **********************************/
