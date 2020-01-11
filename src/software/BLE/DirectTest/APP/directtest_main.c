@@ -37,7 +37,7 @@ int main( void )
   GPIOA_ModeCfg(GPIO_Pin_9, GPIO_ModeOut_PP_5mA);
   UART1_DefInit( );
 #endif   
-  PRINT("%s\n",VER_LIB);
+  PRINT("BLE %s\n",VER_LIB);
   CH57X_BLEInit( );
 	HAL_Init( );
 	GAPRole_CentralInit( );
