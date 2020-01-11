@@ -1,5 +1,5 @@
 Dependencies for Project 'BLE', Target 'BLE': (DO NOT MODIFY !)
-F (..\APP\centPeri_main.c)(0x5DCB9232)(--c99 -c --cpu Cortex-M0 -D__MICROLIB --li -g -O0 --apcs=interwork -I ..\APP\include -I ..\Profile\include -I ..\..\HAL\include -I ..\..\..\Libs\CMSIS\Include -I ..\..\..\Libs\StdPeriphDriver\inc -I ..\..\..\Libs\LIB-I.\RTE\_BLE-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\Device\ARM\ARMCM0\Include-D__UVISION_VERSION="527" -D_RTE_ -DARMCM0 -DDEBUG="1" -DCLK_OSC32K_RC="FALSE"-o .\obj\centperi_main.o --omf_browse .\obj\centperi_main.crf --depend .\obj\centperi_main.d)
+F (..\APP\centPeri_main.c)(0x5E193BC7)(--c99 -c --cpu Cortex-M0 -D__MICROLIB --li -g -O0 --apcs=interwork -I ..\APP\include -I ..\Profile\include -I ..\..\HAL\include -I ..\..\..\Libs\CMSIS\Include -I ..\..\..\Libs\StdPeriphDriver\inc -I ..\..\..\Libs\LIB-I.\RTE\_BLE-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\Device\ARM\ARMCM0\Include-D__UVISION_VERSION="527" -D_RTE_ -DARMCM0 -DDEBUG="1" -DCLK_OSC32K_RC="FALSE"-o .\obj\centperi_main.o --omf_browse .\obj\centperi_main.crf --depend .\obj\centperi_main.d)
 I (..\..\HAL\include\CONFIG.h)(0x5DCE6390)
 I (..\..\..\Libs\LIB\CH57xBLE_LIB.H)(0x5DD5F606)
 I (..\..\..\Libs\StdPeriphDriver\inc\CH57x_common.h)(0x5DD788A4)
