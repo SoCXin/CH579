@@ -77,11 +77,11 @@ UINT8 SocketId;                                                                /
 UINT8 SocketRecvBuf[RECE_BUF_LEN];                                             /* socket接收缓冲区 */
 UINT8 MyBuf[RECE_BUF_LEN];                                                     /* 定义一个临时缓冲区 */
 
-UINT8 con_flag=0;										                       /* 已连接MQTT服务器标志位 */
-UINT8 pub_flag=1;											                   /* 已发布会话消息标志位 */
-UINT8 sub_flag=0;											                   /* 已订阅会话标志位 */
-UINT8 tout_flag=0;											                   /* 超时标志位 */
-UINT16 packetid=0;											                   /* 包ID */
+UINT8 con_flag=0;										                       	/* 已连接MQTT服务器标志位 */
+UINT8 pub_flag=1;											                   		/* 已发布会话消息标志位 */
+UINT8 sub_flag=0;											                   		/* 已订阅会话标志位 */
+UINT8 tout_flag=0;											                   	/* 超时标志位 */
+UINT16 packetid=0;											                   	/* 包ID */
 
 
 
