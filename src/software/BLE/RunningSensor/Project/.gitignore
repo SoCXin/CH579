@@ -1,0 +1,16 @@
+list/
+obj/
+listing/
+RTE/
+DebugConfig/
+.pio/
+.vscode/
+*.crf
+*.dep
+*.map
+*.hex
+*.bin
+*.bak
+*.txt
+*.uvgu*
+*.uvop*

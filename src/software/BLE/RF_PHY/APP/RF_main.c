@@ -48,7 +48,8 @@ int main( void )
   HAL_Init(  );
   RF_RoleInit( );
   RF_Init( );
-	while(1){
+	while(1)
+	{
 		TMOS_SystemProcess( );
 	}
 }
