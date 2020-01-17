@@ -1,6 +1,8 @@
 list/
 obj/
+listing/
 RTE/
+DebugConfig/
 .pio/
 .vscode/
 *.crf
@@ -12,7 +14,3 @@ RTE/
 *.txt
 *.uvgu*
 *.uvop*
-obj/
-listing/
-RTE/
-DebugConfig/
