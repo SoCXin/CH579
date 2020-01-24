@@ -3,12 +3,12 @@
 [![sites](http://182.61.61.133/link/resources/docs.png)](https://stop.stops.top) 
 
 #### [Vendor](https://github.com/sochub/Vendor)：[WCH](https://github.com/sochub/WCH)
-#### [STM8](https://github.com/sochub/STM8)：[Cortex M0](https://github.com/sochub/CM0) 
+#### [ARM Cortex](https://github.com/sochub/cortex)：[Cortex M0](https://github.com/sochub/CM0) 
 #### [Level](https://github.com/sochub/Level)：40MHz 
 
 ## [CH579描述](https://github.com/sochub/CH579/wiki) 
 
-[CH579](https://github.com/sochub/CH579) 采用 Cortex M0内核，片上集成低功耗蓝牙BLE(4.2)/Zigbee通讯模块、以太网控制器及收发器、全速USB主机和设备控制器及收发器、段式LCD驱动模块、ADC、触摸按键检测模块、RTC等丰富的外设资源。
+[CH579](https://github.com/sochub/CH579) 是一款高度集成的通信类SoC芯片，采用40MHz的Cortex M0内核，片上集成低功耗蓝牙BLE(4.2)/Zigbee通讯模块、以太网控制器及收发器、全速USB主机和设备控制器及收发器、段式LCD驱动模块、ADC、触摸按键检测模块、RTC等丰富的外设资源。
 
 [![sites](docs/CH579.png)](http://www.wch.cn/products/CH579.html) 
 
@@ -30,7 +30,6 @@
 ### [资源收录](https://github.com/sochub/CH579)
 
 * [文档](docs/) 
-    * [芯片手册](docs/) 
 * [资源](src/) 
     * [软件资源](src/software) 
     * [硬件资源](src/hardware) 
@@ -53,7 +52,7 @@ CH579目前提供两种QFN封装规格
 
 ### [选型建议](https://github.com/sochub)
 
-[CH579](https://github.com/sochub/CH579)的片上资源相对独特，集成以太网通信和无线通信，对[W7500P](https://github.com/sochub/W7500P)和蓝牙芯片市场有一定影响，目前还未引爆市场。
+[CH579](https://github.com/sochub/CH579)的片上资源相对独特，集成以太网通信和无线通信，对[W7500P](https://github.com/sochub/W7500P)和蓝牙SOC芯片市场有一定影响，目前还未引爆市场。
 
 * 单纯的BLE通信替换可采用[NRF51822](https://github.com/sochub/NRF51822) 或 [CC2540](https://github.com/sochub/CC2540)及接近的产品。
 
