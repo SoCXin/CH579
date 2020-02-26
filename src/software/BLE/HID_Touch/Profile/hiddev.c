@@ -15,7 +15,6 @@
 
 #include "CONFIG.h"
 #include "CH57x_common.h"
-#include "CH57xBLE_LIB.h"
 #include "battservice.h"
 #include "scanparamservice.h"
 #include "devinfoservice.h"
@@ -37,8 +36,8 @@
 #define HID_INITIAL_ADV_INT_MAX               80
 #define HID_HIGH_ADV_INT_MIN                  32
 #define HID_HIGH_ADV_INT_MAX                  48
-#define HID_LOW_ADV_INT_MIN                   1600
-#define HID_LOW_ADV_INT_MAX                   1600
+#define HID_LOW_ADV_INT_MIN                   160
+#define HID_LOW_ADV_INT_MAX                   160
 
 // Advertising timeouts in sec
 #define HID_INITIAL_ADV_TIMEOUT               60

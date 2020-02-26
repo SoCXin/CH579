@@ -11,7 +11,6 @@
  * INCLUDES
  */
 #include "CONFIG.h"
-#include "CH57xBLE_LIB.h"
 #include "hidkbdservice.h"
 #include "hiddev.h"
 #include "battservice.h"

@@ -12,7 +12,6 @@
  */
 #include "CONFIG.h"
 #include "CH57x_common.h"
-#include "CH57xBLE_LIB.h"
 #include "devinfoservice.h"
 #include "battservice.h"
 #include "hidkbdservice.h"
@@ -375,7 +374,12 @@ static void hidEmuStateCB( gapRole_States_t newState , gapRoleEvent_t * pEvent )
   switch ( newState )
   {
     case GAPROLE_STARTED:
-      PRINT( "Initialized..\n" );
+			{
+				uint8 ownAddr[6];
+				GAPRole_GetParameter( GAPROLE_BD_ADDR, ownAddr );
+				GAP_ConfigDeviceAddr( ADDRTYPE_STATIC, ownAddr);
+				PRINT( "Initialized..\n" );
+			}
       break;
 
     case GAPROLE_ADVERTISING:
@@ -404,7 +408,7 @@ static void hidEmuStateCB( gapRole_States_t newState , gapRoleEvent_t * pEvent )
       }
       else if( pEvent->gap.opcode == GAP_LINK_TERMINATED_EVENT )
       {
-        PRINT( "Disconnected..\n" );
+        PRINT( "Disconnected.. Reason:%x\n",pEvent->linkTerminate.reason );
       }
       break;
 
