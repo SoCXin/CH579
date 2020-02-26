@@ -30,7 +30,7 @@ tmosTaskID halTaskID;
  */
 void CH57X_BLEInit( void )
 {
-  UINT8 i;
+  uint8 i;
   bleConfig_t cfg;
 
   if( tmos_memcmp( VER_LIB,VER_FILE,strlen(VER_FILE)) == FALSE ){
@@ -46,17 +46,21 @@ void CH57X_BLEInit( void )
   tmos_memset(&cfg,0,sizeof(bleConfig_t));
 	cfg.MEMAddr  		= (u32)MEM_BUF;
 	cfg.MEMLen   		= (u32)BLE_MEMHEAP_SIZE;
-	cfg.SNVAddr			= (u32)BLE_SNV_ADDR;
-	cfg.SNVNum			= (u32)BLE_SNV_NUM;
 	cfg.BufMaxLen		= (u32)BLE_BUFF_MAX_LEN;
 	cfg.BufNumber		= (u32)BLE_BUFF_NUM;
 	cfg.TxNumEvent  = (u32)BLE_TX_NUM_EVENT;
 	cfg.TxPower			= (u32)BLE_TX_POWER;
+#if (defined (BLE_SNV)) && (BLE_SNV == TRUE)
+	cfg.SNVAddr			= (u32)BLE_SNV_ADDR;
+#endif
+#if( CLK_OSC32K )	
+	cfg.SelRTCClock	= (u32)CLK_OSC32K;
+#endif
 	cfg.ConnectNumber  = (PERIPHERAL_MAX_CONNECTION&3)|(CENTRAL_MAX_CONNECTION<<2);
   cfg.srandCB = SYS_GetSysTickCnt;
 #if (defined TEM_SAMPLE)  && (TEM_SAMPLE == TRUE)
   cfg.tsCB = HAL_GetInterTempValue;
-#if( CLK_OSC32K_RC )
+#if( CLK_OSC32K )
   cfg.rcCB = Calibration_LSI; // 内部32K时钟校准  
 #endif
 #endif
@@ -76,7 +80,7 @@ void CH57X_BLEInit( void )
 #endif
   i = BLE_LibInit( &cfg );
   if(i){
-    PRINT("LIB init error...\n");
+    PRINT("LIB init error code: %x ...\n",i);
     while(1);
   }
 }
@@ -198,10 +202,10 @@ void LLE_IRQHandler(void)
  *
  * @return      None.
  */
-u16 HAL_GetInterTempValue( void )
+uint16 HAL_GetInterTempValue( void )
 {
-  u8 sensor,channel,config;
-  u16 adc_data;
+  uint8 sensor,channel,config;
+  uint16 adc_data;
   
   sensor  = R8_TEM_SENSOR;
   channel = R8_ADC_CHANNEL;

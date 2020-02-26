@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : broadcaster.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/10
+* Author             : 
+* Version            : 
+* Date               : 
 * Description        : 广播应用程序，初始化广播连接参数，然后处于广播态一直广播
             
 *******************************************************************************/
@@ -12,7 +12,6 @@
  */
 #include "CONFIG.h"
 #include "CH57x_common.h"
-#include "CH57xBLE_LIB.h"
 #include "battservice.h"
 #include "devinfoservice.h"
 #include "broadcaster.h"
@@ -96,18 +95,20 @@ static uint8 advertData[] =
   'b',
   'l',
   'e',
-  0x04,
+  0x06,
   GAP_ADTYPE_LOCAL_NAME_SHORT,
-  'a',	
-  'b',	
-  'c'
+  'q',	
+  'i',	
+	't',	
+  'a',
+  's'
 };
 
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
 static void Broadcaster_ProcessTMOSMsg( tmos_event_hdr_t *pMsg );
-static void peripheralStateNotificationCB( gapRole_States_t newState );
+static void Broadcaster_StateNotificationCB( gapRole_States_t newState );
 
 /*********************************************************************
  * PROFILE CALLBACKS
@@ -116,7 +117,7 @@ static void peripheralStateNotificationCB( gapRole_States_t newState );
 // GAP Role Callbacks
 static gapRolesBroadcasterCBs_t Broadcaster_BroadcasterCBs =
 {
-  peripheralStateNotificationCB,  // Profile State Change Callbacks
+  Broadcaster_StateNotificationCB,  // Profile State Change Callbacks
   NULL                           
 };
 
@@ -127,7 +128,7 @@ static gapRolesBroadcasterCBs_t Broadcaster_BroadcasterCBs =
 /*********************************************************************
  * @fn      Broadcaster_Init
  *
- * @brief   Initialization function for the Simple BLE Broadcaster App
+ * @brief   Initialization function for the Broadcaster App
  *          Task. This is called during initialization and should contain
  *          any application specific initialization (ie. hardware
  *          initialization/setup, table initialization, power up
@@ -169,7 +170,7 @@ void Broadcaster_Init( )
 /*********************************************************************
  * @fn      Broadcaster_ProcessEvent
  *
- * @brief   Simple BLE Broadcaster Application Task event processor. This
+ * @brief   Broadcaster Application Task event processor. This
  *          function is called to process all events for the task. Events
  *          include timers, messages and any other user defined events.
  *
@@ -228,7 +229,7 @@ static void Broadcaster_ProcessTMOSMsg( tmos_event_hdr_t *pMsg )
 }
 
 /*********************************************************************
- * @fn      peripheralStateNotificationCB
+ * @fn      Broadcaster_StateNotificationCB
  *
  * @brief   Notification from the profile of a state change.
  *
@@ -236,11 +237,26 @@ static void Broadcaster_ProcessTMOSMsg( tmos_event_hdr_t *pMsg )
  *
  * @return  none
  */
-static void peripheralStateNotificationCB( gapRole_States_t newState )
+static void Broadcaster_StateNotificationCB( gapRole_States_t newState )
 {
-	printf("%x \n",newState);
   switch ( newState )
   {     
+    case GAPROLE_STARTED:
+      PRINT( "Initialized..\n" );
+      break;
+
+    case GAPROLE_ADVERTISING:
+      PRINT( "Advertising..\n" );
+      break;
+
+    case GAPROLE_WAITING:
+      PRINT( "Waiting for advertising..\n" );
+      break;
+
+    case GAPROLE_ERROR:
+			PRINT( "Error..\n" );
+      break;
+
     default:
       break; 
   }

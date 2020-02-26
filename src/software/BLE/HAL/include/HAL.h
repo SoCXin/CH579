@@ -53,7 +53,7 @@ typedef struct  tag_uart_package
 extern void HAL_Init( void );
 extern tmosEvents HAL_ProcessEvent( tmosTaskID task_id, tmosEvents events );
 extern void CH57X_BLEInit( void );
-extern u16 HAL_GetInterTempValue( void );
+extern uint16 HAL_GetInterTempValue( void );
 
 
 /*********************************************************************

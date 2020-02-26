@@ -1,6 +1,6 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : Main.c
-* Author             : WCH
+* Author             : QITAS
 * Version            : V1.0
 * Date               : 2018/12/15
 * Description        : 自定义USB设备（CH372设备），提供8个非0通道(上传+下传)，实现数据先下传，然后数据内容取反上传
@@ -31,7 +31,7 @@ const UINT8  MyCfgDescr[] = {
 // 语言描述符
 const UINT8  MyLangDescr[] = { 0x04, 0x03, 0x09, 0x04 };
 // 厂家信息
-const UINT8  MyManuInfo[] = { 0x0E, 0x03, 'w', 0, 'c', 0, 'h', 0, '.', 0, 'c', 0, 'n', 0 };
+const UINT8  MyManuInfo[] = { 0x0E, 0x03, 'q', 0, 'i', 0, 't', 0, 'a', 0, 's', 0, 't', 0 };
 // 产品信息
 const UINT8  MyProdInfo[] = { 0x0C, 0x03, 'C', 0, 'H', 0, '5', 0, '7', 0, 'x', 0 };
 
@@ -315,10 +315,11 @@ int main()
 {
     SetSysClock( CLK_SOURCE_HSE_32MHz );
     PWR_UnitModCfg( ENABLE, UNIT_SYS_PLL );		// 打开PLL
-    DelayMs(5);
+    DelayMs(50);
     
     DebugInit();
-    printf("start\n");
+	
+    printf("vender usb start\r\n");
 
     pEP0_RAM_Addr = EP0_Databuf;
     pEP1_RAM_Addr = EP1_Databuf;

@@ -36,14 +36,16 @@ int main( void )
 #ifdef DEBUG
   GPIOA_SetBits(GPIO_Pin_9);
   GPIOA_ModeCfg(GPIO_Pin_9, GPIO_ModeOut_PP_5mA);
-  UART1_DefInit( );
-#endif   
-  PRINT("%s\n",VER_LIB);
+  UART1_DefInit();
+  PRINT("QITAS:%s\n",VER_LIB);
+#endif  	
+	
   CH57X_BLEInit( );
 	HAL_Init( );
 	GAPRole_PeripheralInit( );
 	SimpleBLEPeripheral_Init( ); 
-	while(1){
+	while(1)
+	{
 		TMOS_SystemProcess( );
 	}
 }

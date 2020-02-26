@@ -1,16 +1,25 @@
 /********************************** (C) COPYRIGHT ******************************
-* File Name         : CH57xBLE_LIB.H
+* File Name         : CH57xBLE_ROM.H
 * Author            : WCH
 * Version           : V1.40
 * Date              : 2019/12/25
 * Description       : head file
+*                    Address Space CH579
+*                       CODE:   00026800H - 0003E7FFH   96K
+*                       DATA:   20003800H -             
+*                    Address Space CH578
+*                       CODE:   00010000H - 00027FFFH   96K
+*                       DATA:   20003800H -             
+*                    Address Space CH577
+*                       CODE:   00008000H - 0001FFFFH   96K
+*                       DATA:   20004000H -             
 *******************************************************************************/
 
 
 
 /******************************************************************************/
-#ifndef __CH57xBLE_LIB_H
-#define __CH57xBLE_LIB_H
+#ifndef __CH57xBLE_ROM_H
+#define __CH57xBLE_ROM_H
 
 #ifdef __cplusplus
 extern "C"
@@ -1910,56 +1919,84 @@ typedef struct  tag_rf_config
 }rfConfig_t;
 
 /* end define@RF-PHY */
+
+
+/********************************************************************/
+
+#if (defined CHIP_ID )
+  #if( CHIP_ID == ID_CH577 )
+  #define RAM_BASE_ADDRESSS         0x20004000
+  #define UUID_BASE_ADDRESSS        0x00008090
+  #define FUNCITON_BASE_ADDRESSS    0x000080BC
+  #elif( CHIP_ID == ID_CH578 )
+  #define RAM_BASE_ADDRESSS         0x20003800
+  #define UUID_BASE_ADDRESSS        0x00010090
+  #define FUNCITON_BASE_ADDRESSS    0x000100BC
+  #elif( CHIP_ID == ID_CH579 )
+  #define RAM_BASE_ADDRESSS         0x20003800
+  #define UUID_BASE_ADDRESSS        0x00026890
+  #define FUNCITON_BASE_ADDRESSS    0x000268BC
+  #else
+  #error "CHIP_ID error."
+  #endif
+#else
+  #error "CHIP_ID undefined."
+#endif
+#define  BLE_LIB_UUID(n) ( UUID_BASE_ADDRESSS+n*2 )
+#define  BLE_LIB_JT(n) (*(u32*)( FUNCITON_BASE_ADDRESSS+n*4 ))
+#define    VER_LIB  ((  const uint8*)      BLE_LIB_JT(0))
+
 /*********************************************************************
  * UUID defined
  */
 /**
  * GATT Services
  */
-extern CONST uint8 gapServiceUUID[];
-extern CONST uint8 gattServiceUUID[];
-
+#define  gapServiceUUID  ((const uint8*)  BLE_LIB_UUID(0)) 
+#define  gattServiceUUID  ((const uint8*)  BLE_LIB_UUID(1))
+  
 /**
  * GATT Attribute Types
  */
-extern CONST uint8 primaryServiceUUID[];
-extern CONST uint8 secondaryServiceUUID[];
-extern CONST uint8 includeUUID[];
-extern CONST uint8 characterUUID[];
+#define  primaryServiceUUID  ((const uint8*)   BLE_LIB_UUID(2))
+#define  secondaryServiceUUID  ((const uint8*)   BLE_LIB_UUID(3))
+#define  includeUUID  ((const uint8*)   BLE_LIB_UUID(4))
+#define  characterUUID  ((const uint8*)   BLE_LIB_UUID(5))
 
 /**
  * GATT Characteristic Descriptors
  */
-extern CONST uint8 charExtPropsUUID[];
-extern CONST uint8 charUserDescUUID[];
-extern CONST uint8 clientCharCfgUUID[];
-extern CONST uint8 servCharCfgUUID[];
-extern CONST uint8 charFormatUUID[];
-extern CONST uint8 charAggFormatUUID[];
-extern CONST uint8 validRangeUUID[];
-extern CONST uint8 extReportRefUUID[];
-extern CONST uint8 reportRefUUID[];
+#define  charExtPropsUUID  ((const uint8*)   BLE_LIB_UUID(6))
+#define  charUserDescUUID  ((const uint8*)   BLE_LIB_UUID(7))
+#define  clientCharCfgUUID  ((const uint8*)   BLE_LIB_UUID(8))
+#define  servCharCfgUUID  ((const uint8*)   BLE_LIB_UUID(9))
+#define  charFormatUUID  ((const uint8*)   BLE_LIB_UUID(10))
+#define  charAggFormatUUID  ((const uint8*)   BLE_LIB_UUID(11))
+#define  validRangeUUID  ((const uint8*)   BLE_LIB_UUID(12))
+#define  extReportRefUUID  ((const uint8*)   BLE_LIB_UUID(13))
+#define  reportRefUUID  ((const uint8*)   BLE_LIB_UUID(14))
 
 /**
  * GATT Characteristic Types
  */
-extern CONST uint8 deviceNameUUID[];
-extern CONST uint8 appearanceUUID[];
-extern CONST uint8 periPrivacyFlagUUID[];
-extern CONST uint8 reconnectAddrUUID[];
-extern CONST uint8 periConnParamUUID[];
-extern CONST uint8 serviceChangedUUID[];
-extern CONST uint8 centAddrResUUID[];
+#define  deviceNameUUID  ((const uint8*)   BLE_LIB_UUID(15))
+#define  appearanceUUID  ((const uint8*)   BLE_LIB_UUID(16))
+#define  periPrivacyFlagUUID  ((const uint8*)   BLE_LIB_UUID(17))
+#define  reconnectAddrUUID  ((const uint8*)   BLE_LIB_UUID(18))
+#define  periConnParamUUID  ((const uint8*)   BLE_LIB_UUID(19))
+#define  serviceChangedUUID  ((const uint8*)   BLE_LIB_UUID(10))
+#define  centAddrResUUID  ((const uint8*)   BLE_LIB_UUID(21))
+
 
 /*********************************************************************
  * PUBLIC FUNCTIONS
  */
-extern u32   tmos_rand( void  );                                          
-extern BOOL  tmos_memcmp( const void *src1, const void *src2, u32 len );
-extern BOOL  tmos_isbufset( u8 *buf, u8 val, u32 len );
-extern u32   tmos_strlen( char *pString );
-extern void  tmos_memset( void * pDst, u8 Value, u32 len );               
-extern void  tmos_memcpy( void *dst, const void *src, u32 len ); 
+#define    tmos_rand           ((  u32  (*)  ( void  ))  BLE_LIB_JT(1))
+#define    tmos_memcmp  ((  u8  (*)  ( const void *src1, const void *src2, u32 len ))  BLE_LIB_JT(2))
+#define    tmos_isbufset     ((  u8  (*)  ( u8 *buf, u8 val, u32 len ))  BLE_LIB_JT(3))
+#define    tmos_strlen  ((  u32  (*)  ( char *pString ))  BLE_LIB_JT(4))
+#define    tmos_memset         ((  void  (*)  ( void * pDst, u8 Value, u32 len ))  BLE_LIB_JT(5))
+#define    tmos_memcpy  ((  void  (*)  ( void *dst, const void *src, u32 len ))  BLE_LIB_JT(6))
 
 /*******************************************************************************
  * @fn          tmos_set_event
@@ -1977,7 +2014,7 @@ extern void  tmos_memcpy( void *dst, const void *src, u32 len );
  *
  * @return      0 - success.
  */
-extern bStatus_t tmos_set_event( tmosTaskID taskID, tmosEvents event );
+#define    tmos_set_event  ((  bStatus_t  (*)  ( tmosTaskID taskID, tmosEvents event ))  BLE_LIB_JT(7))
 
 /*******************************************************************************
  * @fn          tmos_clear_event
@@ -1995,7 +2032,7 @@ extern bStatus_t tmos_set_event( tmosTaskID taskID, tmosEvents event );
  *
  * @return      0 - success.
  */
-extern bStatus_t tmos_clear_event( tmosTaskID taskID, tmosEvents event );
+#define    tmos_clear_event  ((  bStatus_t  (*)  ( tmosTaskID taskID, tmosEvents event ))  BLE_LIB_JT(8))
 
 /*******************************************************************************
  * @fn          tmos_start_task
@@ -2014,7 +2051,7 @@ extern bStatus_t tmos_clear_event( tmosTaskID taskID, tmosEvents event );
  *
  * @return      TRUE - success.
  */
-extern bStatus_t tmos_start_task( tmosTaskID taskID, tmosEvents event, tmosTimer time  );
+#define    tmos_start_task  ((  bStatus_t  (*)  ( tmosTaskID taskID, tmosEvents event, tmosTimer time  ))  BLE_LIB_JT(9))
 
 /*******************************************************************************
  * @fn          tmos_stop_task
@@ -2032,7 +2069,7 @@ extern bStatus_t tmos_start_task( tmosTaskID taskID, tmosEvents event, tmosTimer
  *
  * @return      0 - success. 
  */
-extern bStatus_t tmos_stop_task( tmosTaskID taskID, tmosEvents event );
+#define    tmos_stop_task  ((  bStatus_t  (*)  ( tmosTaskID taskID, tmosEvents event ))  BLE_LIB_JT(10))
 
 /*******************************************************************************
  * @fn          tmos_get_task_timer
@@ -2050,7 +2087,7 @@ extern bStatus_t tmos_stop_task( tmosTaskID taskID, tmosEvents event );
  *
  * @return      the timer's tick count if found, zero otherwise.
  */
-extern tmosTimer tmos_get_task_timer( tmosTaskID taskID, tmosEvents event );
+#define    tmos_get_task_timer   ((  tmosTimer  (*)  ( tmosTaskID taskID, tmosEvents event ))  BLE_LIB_JT(11))
 
 /*******************************************************************************
  * @fn          tmos_msg_send
@@ -2068,7 +2105,7 @@ extern tmosTimer tmos_get_task_timer( tmosTaskID taskID, tmosEvents event );
  *
  * @return      0 - success. 
  */
-extern bStatus_t tmos_msg_send( tmosTaskID taskID, u8 *msg_ptr );
+#define    tmos_msg_send  ((  bStatus_t  (*)  ( tmosTaskID taskID, u8 *msg_ptr ))  BLE_LIB_JT(12))
 
 /*******************************************************************************
  * @fn          tmos_msg_deallocate
@@ -2085,7 +2122,7 @@ extern bStatus_t tmos_msg_send( tmosTaskID taskID, u8 *msg_ptr );
  *
  * @return      0 - success. 
  */
-extern bStatus_t tmos_msg_deallocate( u8 *msg_ptr );
+#define    tmos_msg_deallocate  ((  bStatus_t  (*)  ( u8 *msg_ptr ))  BLE_LIB_JT(13))
 
 /*******************************************************************************
  * @fn          tmos_msg_receive
@@ -2102,7 +2139,7 @@ extern bStatus_t tmos_msg_deallocate( u8 *msg_ptr );
  *
  * @return      *u8 - message information or NULL if no message
  */
-extern u8   *tmos_msg_receive( tmosTaskID taskID );
+#define    tmos_msg_receive  ((  u8*  (*)  ( tmosTaskID taskID ))  BLE_LIB_JT(14))
 
 /*******************************************************************************
  * @fn          tmos_msg_allocate
@@ -2119,7 +2156,7 @@ extern u8   *tmos_msg_receive( tmosTaskID taskID );
  *
  * @return      pointer to allocated buffer or NULL if allocation failed.
  */
-extern u8   *tmos_msg_allocate( u16 len );
+#define    tmos_msg_allocate  ((  u8*  (*)  ( u16 len ))  BLE_LIB_JT(15))
 
 /*******************************************************************************
  * @fn          TMOS_TimerInit
@@ -2136,7 +2173,7 @@ extern u8   *tmos_msg_allocate( u16 len );
  *
  * @return      pfnTIMHandleCB_t.
  */
-extern pfnTIMHandleCB_t TMOS_TimerInit( u8 enable_rtc_irq );
+#define    TMOS_TimerInit  ((  pfnTIMHandleCB_t  (*)  ( u8 enable_rtc_irq ))  BLE_LIB_JT(16))
 
 /*******************************************************************************
  * @fn          TMOS_SystemProcess
@@ -2153,7 +2190,7 @@ extern pfnTIMHandleCB_t TMOS_TimerInit( u8 enable_rtc_irq );
  *
  * @return      None.
  */
-extern void TMOS_SystemProcess( void );
+#define    TMOS_SystemProcess  ((  void  (*)  ( void ))  BLE_LIB_JT(17))
 
 /*******************************************************************************
  * @fn          TMOS_GetSystemClock
@@ -2170,7 +2207,7 @@ extern void TMOS_SystemProcess( void );
  *
  * @return      current system clock (in 0.625ms)
  */
-extern u32 TMOS_GetSystemClock( void );
+#define    TMOS_GetSystemClock  ((  u32    (*)  ( void ))  BLE_LIB_JT(18))
 
 /*******************************************************************************
  * @fn          TMOS_ProcessEventRegister
@@ -2187,7 +2224,7 @@ extern u32 TMOS_GetSystemClock( void );
  *
  * @return      0xFF - error,others-task id
  */
-extern tmosTaskID TMOS_ProcessEventRegister( pTaskEventHandlerFn eventCb );
+#define    TMOS_ProcessEventRegister  ((  tmosTaskID (*)  ( pTaskEventHandlerFn eventCb ))  BLE_LIB_JT(19))
 
 /*******************************************************************************
  * @fn          LL_AddWhiteListDevice
@@ -2205,7 +2242,7 @@ extern tmosTaskID TMOS_ProcessEventRegister( pTaskEventHandlerFn eventCb );
  *
  * @return      Command Status.
  */
-extern bStatus_t LL_AddWhiteListDevice( u8 addrType, u8 *devAddr );
+#define    LL_AddWhiteListDevice  ((  bStatus_t  (*)  ( u8 addrType, u8 *devAddr ))  BLE_LIB_JT(20))
 
 /*******************************************************************************
  * @fn          LL_RemoveWhiteListDevice API
@@ -2223,7 +2260,7 @@ extern bStatus_t LL_AddWhiteListDevice( u8 addrType, u8 *devAddr );
  *
  * @return      Command Status.
  */
-extern bStatus_t LL_RemoveWhiteListDevice( u8 addrType, u8 *devAddr);
+#define    LL_RemoveWhiteListDevice  ((  bStatus_t  (*)  ( u8 addrType, u8 *devAddr ))  BLE_LIB_JT(21))
 
 /*******************************************************************************
  * @fn          LL_ClearWhiteList
@@ -2240,7 +2277,7 @@ extern bStatus_t LL_RemoveWhiteListDevice( u8 addrType, u8 *devAddr);
  *
  * @return      Command Status.
  */
-extern bStatus_t LL_ClearWhiteList( void );
+#define    LL_ClearWhiteList  ((  bStatus_t  (*)  ( void ))  BLE_LIB_JT(22))
 
 /*******************************************************************************
  * @fn          LL_Encrypt
@@ -2259,7 +2296,7 @@ extern bStatus_t LL_ClearWhiteList( void );
  *
  * @return      Command Status.
  */
-extern bStatus_t LL_Encrypt( uint8 *key, uint8 *plaintextData, uint8 *encryptData );
+#define    LL_Encrypt  ((  bStatus_t  (*)  ( uint8 *key, uint8 *plaintextData, uint8 *encryptData ))  BLE_LIB_JT(23))
 
 /*******************************************************************************
  * @fn          LL_Decrypt
@@ -2279,7 +2316,7 @@ extern bStatus_t LL_Encrypt( uint8 *key, uint8 *plaintextData, uint8 *encryptDat
  *
  * @return      Command Status.
  */
-extern bStatus_t LL_Decrypt( uint8 *key, uint8 *plaintextData, uint8 *decryptData );
+#define    LL_Decrypt  ((  bStatus_t  (*)  ( uint8 *key, uint8 *plaintextData, uint8 *decryptData ))  BLE_LIB_JT(24))
 
 /*******************************************************************************
  * @fn          LL_GetNumberOfUnAckPacket
@@ -2297,7 +2334,7 @@ extern bStatus_t LL_Decrypt( uint8 *key, uint8 *plaintextData, uint8 *decryptDat
  *
  * @return      Command Status.
  */
-extern u32 LL_GetNumberOfUnAckPacket( u16 handle );
+#define    LL_GetNumberOfUnAckPacket  ((  u32  (*)  ( u16 handle ))  BLE_LIB_JT(25))
 
 /*******************************************************************************
  * @fn          LL_ConnectEventRegister
@@ -2315,7 +2352,7 @@ extern u32 LL_GetNumberOfUnAckPacket( u16 handle );
  *
  * @return      None.
  */
-extern void  LL_ConnectEventRegister( pfnConnectEventCB connectEventCB );
+#define    LL_ConnectEventRegister  ((  void  (*)  ( pfnConnectEventCB connectEventCB ))  BLE_LIB_JT(26))
 
 /*******************************************************************************
  * @fn          LL_SetTxPowerLevel
@@ -2333,7 +2370,7 @@ extern void  LL_ConnectEventRegister( pfnConnectEventCB connectEventCB );
  *
  * @return      Command Status.
  */
- extern bStatus_t  LL_SetTxPowerLevel( u8 power );
+#define    LL_SetTxPowerLevel  ((  bStatus_t  (*)  ( u8 power ))  BLE_LIB_JT(27))
 
 /*******************************************************************************
  * @fn          BLE_LibInit
@@ -2350,7 +2387,7 @@ extern void  LL_ConnectEventRegister( pfnConnectEventCB connectEventCB );
  *
  * @return      0-success. error defined @ ERR_LIB_INIT
  */
-extern bStatus_t  BLE_LibInit( bleConfig_t* pCfg );  
+#define    BLE_LibInit  ((  bStatus_t  (*)  ( bleConfig_t* pCfg ))  BLE_LIB_JT(28))
 
 /*******************************************************************************
  * @fn          BLE_IRQHandler
@@ -2367,25 +2404,25 @@ extern bStatus_t  BLE_LibInit( bleConfig_t* pCfg );
  *
  * @return      None.
  */
-extern void BLE_IRQHandler( void );
+#define    BLE_IRQHandler  ((  void  (*)  ( void ))  BLE_LIB_JT(29))
 
 /*
  * linkDB_Register - Register with this function to receive a callback when
  *              status changes on a connection.
  */
-extern uint8 linkDB_Register( pfnLinkDBCB_t pFunc );
+#define    linkDB_Register  ((  uint8  (*)  ( pfnLinkDBCB_t pFunc ))  BLE_LIB_JT(30) )
 
 /*
  * linkDB_State - Check to see if a physical link is in a specific state.
  * 
  *    returns TRUE is the link is in state. FALSE, otherwise.
  */
-extern uint8 linkDB_State( uint16 connectionHandle, uint8 state );
+#define     linkDB_State  ((  uint8  (*)  ( uint16 connectionHandle, uint8 state ))  BLE_LIB_JT(31) )
 
 /*
  * linkDB_PerformFunc - Perform a function of each connection in the link database.
  */
-extern void linkDB_PerformFunc( pfnPerformFuncCB_t cb );
+#define     linkDB_PerformFunc  ((  void  (*)  ( pfnPerformFuncCB_t cb ))  BLE_LIB_JT(32) )
 /*
  * linkDB_Up - Check to see if a physical link is up (connected).
  *    Use like:  uint8 linkDB_Up( uint16 connectionHandle );
@@ -2401,7 +2438,7 @@ extern void linkDB_PerformFunc( pfnPerformFuncCB_t cb );
  *
  * @return  connection MTU size.<BR>
  */
-extern uint16 ATT_GetMTU( uint16 connHandle );
+#define     ATT_GetMTU  ((  uint16  (*)  ( uint16 connHandle ))  BLE_LIB_JT(33) )
 
 /**
  * @brief   Send Handle Value Confirmation.
@@ -2414,13 +2451,12 @@ extern uint16 ATT_GetMTU( uint16 connHandle );
  *          bleNotConnected: Connection is down.<BR>
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  */
-extern bStatus_t ATT_HandleValueCfm( uint16 connHandle );
+#define     ATT_HandleValueCfm  ((  bStatus_t  (*)  ( uint16 connHandle ))  BLE_LIB_JT(34) )
 
 /*
  * Compare two UUIDs. The UUIDs are converted if necessary.
  */
-extern uint8 ATT_CompareUUID( const uint8 *pUUID1, uint16 len1, 
-                              const uint8 *pUUID2, uint16 len2 );
+#define     ATT_CompareUUID  ((  uint8  (*)  ( const uint8 *pUUID1, uint16 len1, const uint8 *pUUID2, uint16 len2 ))   BLE_LIB_JT(35) )
 
 
 /**
@@ -2429,7 +2465,7 @@ extern uint8 ATT_CompareUUID( const uint8 *pUUID1, uint16 len1,
  * @return  SUCCESS: Client initialized successfully.<BR>
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  */
-extern bStatus_t GATT_InitClient( void );
+#define     GATT_InitClient  ((  bStatus_t  (*)  ( void ))  BLE_LIB_JT(36) )
 
 /**
  * @brief   Register to receive incoming ATT Indications or Notifications
@@ -2439,7 +2475,7 @@ extern bStatus_t GATT_InitClient( void );
  *
  * @return  void
  */
-extern void GATT_RegisterForInd( uint8 taskId );
+#define     GATT_RegisterForInd  ((  void  (*)  ( uint8 taskId ))  BLE_LIB_JT(37) )
 
 /**
  * @brief   Find the attribute record for a given handle
@@ -2449,7 +2485,7 @@ extern void GATT_RegisterForInd( uint8 taskId );
  * 
  * @return  Pointer to attribute record. NULL, otherwise.
  */
-extern gattAttribute_t *GATT_FindHandle( uint16 handle, uint16 *pHandle );
+#define    GATT_FindHandle  ((  gattAttribute_t *  (*)  ( uint16 handle, uint16 *pHandle ))  BLE_LIB_JT(38) )
 
 /**
  * @brief   This sub-procedure is used when a server is configured to 
@@ -2480,7 +2516,7 @@ extern gattAttribute_t *GATT_FindHandle( uint16 handle, uint16 *pHandle );
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_Indication( uint16 connHandle, attHandleValueInd_t *pInd, uint8 authenticated, uint8 taskId );
+#define     GATT_Indication  ((  bStatus_t  (*)  ( uint16 connHandle, attHandleValueInd_t *pInd, uint8 authenticated, uint8 taskId ))  BLE_LIB_JT(39) )
 /**
  * @brief   This sub-procedure is used when a server is configured to 
  *          notify a characteristic value to a client without expecting
@@ -2506,7 +2542,7 @@ extern bStatus_t GATT_Indication( uint16 connHandle, attHandleValueInd_t *pInd, 
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_Notification( uint16 connHandle, attHandleValueNoti_t *pNoti, uint8 authenticated );
+#define     GATT_Notification  ((  bStatus_t  (*)  ( uint16 connHandle, attHandleValueNoti_t *pNoti,uint8 authenticated ))  BLE_LIB_JT(40) )
 
 /**
  * @brief   This sub-procedure is used by the client to set the ATT_MTU
@@ -2538,7 +2574,7 @@ extern bStatus_t GATT_Notification( uint16 connHandle, attHandleValueNoti_t *pNo
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_ExchangeMTU( uint16 connHandle, attExchangeMTUReq_t *pReq, uint8 taskId );
+#define     GATT_ExchangeMTU  ((  bStatus_t  (*)  ( uint16 connHandle, attExchangeMTUReq_t *pReq, uint8 taskId ))  BLE_LIB_JT(41) )
 
 /**
  * @brief   This sub-procedure is used by a client to discover all 
@@ -2570,7 +2606,7 @@ extern bStatus_t GATT_ExchangeMTU( uint16 connHandle, attExchangeMTUReq_t *pReq,
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_DiscAllPrimaryServices( uint16 connHandle, uint8 taskId );
+#define    GATT_DiscAllPrimaryServices  ((  bStatus_t  (*)  ( uint16 connHandle, uint8 taskId ))  BLE_LIB_JT(42) )
 
 /**
  * @brief   This sub-procedure is used by a client to discover a specific
@@ -2607,7 +2643,7 @@ extern bStatus_t GATT_DiscAllPrimaryServices( uint16 connHandle, uint8 taskId );
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_DiscPrimaryServiceByUUID( uint16 connHandle, uint8 *pUUID, uint8 len, uint8 taskId );
+#define     GATT_DiscPrimaryServiceByUUID  ((  bStatus_t  (*)  ( uint16 connHandle, uint8 *pUUID, uint8 len, uint8 taskId ))  BLE_LIB_JT(43) )
 /**
  * @brief   This sub-procedure is used by a client to find include
  *          service declarations within a service definition on a 
@@ -2642,7 +2678,7 @@ extern bStatus_t GATT_DiscPrimaryServiceByUUID( uint16 connHandle, uint8 *pUUID,
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_FindIncludedServices( uint16 connHandle, uint16 startHandle, uint16 endHandle, uint8 taskId );
+#define     GATT_FindIncludedServices  ((  bStatus_t  (*)  ( uint16 connHandle, uint16 startHandle, uint16 endHandle, uint8 taskId ))  BLE_LIB_JT(44) )
 /**
  * @brief   This sub-procedure is used by a client to find all the 
  *          characteristic declarations within a service definition on
@@ -2677,7 +2713,7 @@ extern bStatus_t GATT_FindIncludedServices( uint16 connHandle, uint16 startHandl
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_DiscAllChars( uint16 connHandle, uint16 startHandle, uint16 endHandle, uint8 taskId );
+#define     GATT_DiscAllChars  ((  bStatus_t  (*)  ( uint16 connHandle, uint16 startHandle, uint16 endHandle, uint8 taskId ))  BLE_LIB_JT(45) )
 /**
  * @brief   This sub-procedure is used by a client to discover service 
  *          characteristics on a server when only the service handle 
@@ -2712,7 +2748,7 @@ extern bStatus_t GATT_DiscAllChars( uint16 connHandle, uint16 startHandle, uint1
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_DiscCharsByUUID( uint16 connHandle, attReadByTypeReq_t *pReq, uint8 taskId );
+#define     GATT_DiscCharsByUUID  ((  bStatus_t  (*)  ( uint16 connHandle, attReadByTypeReq_t *pReq, uint8 taskId ))  BLE_LIB_JT(46) )
 
 /**
  * @brief   This sub-procedure is used by a client to find all the 
@@ -2748,7 +2784,7 @@ extern bStatus_t GATT_DiscCharsByUUID( uint16 connHandle, attReadByTypeReq_t *pR
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_DiscAllCharDescs( uint16 connHandle, uint16 startHandle, uint16 endHandle, uint8 taskId );
+#define     GATT_DiscAllCharDescs  ((  bStatus_t  (*)  ( uint16 connHandle, uint16 startHandle, uint16 endHandle, uint8 taskId ))  BLE_LIB_JT(47) )
 /**
  * @brief   This sub-procedure is used to read a Characteristic Value
  *          from a server when the client knows the Characteristic Value
@@ -2784,7 +2820,7 @@ extern bStatus_t GATT_DiscAllCharDescs( uint16 connHandle, uint16 startHandle, u
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_ReadCharValue( uint16 connHandle, attReadReq_t *pReq, uint8 taskId );
+#define     GATT_ReadCharValue  ((  bStatus_t  (*)  ( uint16 connHandle, attReadReq_t *pReq, uint8 taskId ))  BLE_LIB_JT(48) )
 
 /**
  * @brief   This sub-procedure is used to read a Characteristic Value
@@ -2819,7 +2855,7 @@ extern bStatus_t GATT_ReadCharValue( uint16 connHandle, attReadReq_t *pReq, uint
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_ReadUsingCharUUID( uint16 connHandle, attReadByTypeReq_t *pReq, uint8 taskId );
+#define     GATT_ReadUsingCharUUID  ((  bStatus_t  (*)  ( uint16 connHandle, attReadByTypeReq_t *pReq, uint8 taskId ))  BLE_LIB_JT(49) )
 /**
  * @brief   This sub-procedure is used to read a Characteristic Value from
  *          a server when the client knows the Characteristic Value Handle
@@ -2849,7 +2885,7 @@ extern bStatus_t GATT_ReadUsingCharUUID( uint16 connHandle, attReadByTypeReq_t *
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_ReadLongCharValue( uint16 connHandle, attReadBlobReq_t *pReq, uint8 taskId );
+#define     GATT_ReadLongCharValue  ((  bStatus_t  (*)  ( uint16 connHandle, attReadBlobReq_t *pReq, uint8 taskId ))  BLE_LIB_JT(50) )
 
 /**
  * @brief   This sub-procedure is used to read multiple Characteristic Values
@@ -2882,7 +2918,7 @@ extern bStatus_t GATT_ReadLongCharValue( uint16 connHandle, attReadBlobReq_t *pR
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_ReadMultiCharValues( uint16 connHandle, attReadMultiReq_t *pReq, uint8 taskId );
+#define     GATT_ReadMultiCharValues  ((  bStatus_t  (*)  ( uint16 connHandle, attReadMultiReq_t *pReq, uint8 taskId ))  BLE_LIB_JT(51) )
 
 /**
  * @brief   This sub-procedure is used to write a Characteristic Value
@@ -2915,7 +2951,7 @@ extern bStatus_t GATT_ReadMultiCharValues( uint16 connHandle, attReadMultiReq_t 
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_WriteNoRsp( uint16 connHandle, attWriteReq_t *pReq );
+#define     GATT_WriteNoRsp  ((  bStatus_t  (*)  ( uint16 connHandle, attWriteReq_t *pReq ))  BLE_LIB_JT(52) )
 
 /**
  * @brief   This sub-procedure is used to write a Characteristic Value
@@ -2953,7 +2989,7 @@ extern bStatus_t GATT_WriteNoRsp( uint16 connHandle, attWriteReq_t *pReq );
  *          bleLinkEncrypted: Connection is already encrypted.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_SignedWriteNoRsp( uint16 connHandle, attWriteReq_t *pReq );
+#define     GATT_SignedWriteNoRsp  ((  bStatus_t  (*)  ( uint16 connHandle, attWriteReq_t *pReq ))  BLE_LIB_JT(53) )
 
 /**
  * @brief   This sub-procedure is used to write a characteristic value
@@ -2989,7 +3025,7 @@ extern bStatus_t GATT_SignedWriteNoRsp( uint16 connHandle, attWriteReq_t *pReq )
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_WriteCharValue( uint16 connHandle, attWriteReq_t *pReq, uint8 taskId );
+#define     GATT_WriteCharValue  ((  bStatus_t  (*)  ( uint16 connHandle, attWriteReq_t *pReq, uint8 taskId ))  BLE_LIB_JT(54) )
 
 /**
  * @brief   This sub-procedure is used to write a Characteristic Value to
@@ -3026,7 +3062,7 @@ extern bStatus_t GATT_WriteCharValue( uint16 connHandle, attWriteReq_t *pReq, ui
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_WriteLongCharValue( uint16 connHandle, attPrepareWriteReq_t *pReq, uint8 taskId );
+#define     GATT_WriteLongCharValue  ((  bStatus_t  (*)  ( uint16 connHandle, attPrepareWriteReq_t *pReq, uint8 taskId ))  BLE_LIB_JT(55) )
 
 /**
  * @brief   This sub-procedure is used to write a Characteristic Value to
@@ -3074,7 +3110,7 @@ extern bStatus_t GATT_WriteLongCharValue( uint16 connHandle, attPrepareWriteReq_
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_ReliableWrites( uint16 connHandle, attPrepareWriteReq_t *pReqs, uint8 numReqs, uint8 flags, uint8 taskId );
+#define     GATT_ReliableWrites  ((  bStatus_t  (*)  ( uint16 connHandle, attPrepareWriteReq_t *pReqs,uint8 numReqs, uint8 flags, uint8 taskId ))  BLE_LIB_JT(56) )
 /**
  * @brief   This sub-procedure is used to read a characteristic descriptor
  *          from a server when the client knows the characteristic descriptor
@@ -3106,7 +3142,7 @@ extern bStatus_t GATT_ReliableWrites( uint16 connHandle, attPrepareWriteReq_t *p
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_ReadCharDesc( uint16 connHandle, attReadReq_t *pReq, uint8 taskId );
+#define     GATT_ReadCharDesc  ((  bStatus_t  (*)  ( uint16 connHandle, attReadReq_t *pReq, uint8 taskId ))  BLE_LIB_JT(57) )
 
 /**
  * @brief   This sub-procedure is used to read a characteristic descriptor
@@ -3141,7 +3177,7 @@ extern bStatus_t GATT_ReadCharDesc( uint16 connHandle, attReadReq_t *pReq, uint8
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_ReadLongCharDesc( uint16 connHandle, attReadBlobReq_t *pReq, uint8 taskId );
+#define     GATT_ReadLongCharDesc  ((  bStatus_t  (*)  ( uint16 connHandle, attReadBlobReq_t *pReq, uint8 taskId ))  BLE_LIB_JT(58) )
 
 /**
  * @brief   This sub-procedure is used to write a characteristic
@@ -3174,7 +3210,7 @@ extern bStatus_t GATT_ReadLongCharDesc( uint16 connHandle, attReadBlobReq_t *pRe
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_WriteCharDesc( uint16 connHandle, attWriteReq_t *pReq, uint8 taskId );
+#define     GATT_WriteCharDesc  ((  bStatus_t  (*)  ( uint16 connHandle, attWriteReq_t *pReq, uint8 taskId ))  BLE_LIB_JT(59) )
 
 /**
  * @brief   This sub-procedure is used to write a Characteristic Value to
@@ -3211,7 +3247,7 @@ extern bStatus_t GATT_WriteCharDesc( uint16 connHandle, attWriteReq_t *pReq, uin
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleTimeout: Previous transaction timed out.<BR>
  */
-extern bStatus_t GATT_WriteLongCharDesc( uint16 connHandle, attPrepareWriteReq_t *pReq, uint8 taskId );
+#define    GATT_WriteLongCharDesc  ((  bStatus_t  (*)  ( uint16 connHandle, attPrepareWriteReq_t *pReq, uint8 taskId ))  BLE_LIB_JT(60) )
 
 /**
  * @brief   GATT implementation of the allocator functionality.
@@ -3227,7 +3263,7 @@ extern bStatus_t GATT_WriteLongCharDesc( uint16 connHandle, attPrepareWriteReq_t
  *
  * @return  pointer to the heap allocation; NULL if error or failure.
  */
-extern void *GATT_bm_alloc( uint16 connHandle, uint8 opcode, uint16 size, uint16 *pSizeAlloc, u8 flag );
+#define     GATT_bm_alloc  ((  void*  (*)  ( uint16 connHandle, uint8 opcode, uint16 size, uint16 *pSizeAlloc, u8 flag ))  BLE_LIB_JT(61) )
 
 /**
  * @brief   GATT implementation of the de-allocator functionality.
@@ -3237,7 +3273,7 @@ extern void *GATT_bm_alloc( uint16 connHandle, uint8 opcode, uint16 size, uint16
  *
  * @return  none
  */
-extern void GATT_bm_free( gattMsg_t *pMsg, uint8 opcode );
+#define     GATT_bm_free  ((  void  (*)  ( gattMsg_t *pMsg, uint8 opcode ))  BLE_LIB_JT(62) )
 
 /**
  * @brief   Register a service's attribute list and callback functions with
@@ -3254,9 +3290,7 @@ extern void GATT_bm_free( gattMsg_t *pMsg, uint8 opcode );
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  *          bleInvalidRange: Encryption key size's out of range.<BR>
  */
-extern bStatus_t GATTServApp_RegisterService( gattAttribute_t *pAttrs,
-                                              uint16 numAttrs, uint8 encKeySize,
-                                              gattServiceCBs_t *pServiceCBs );
+#define     GATTServApp_RegisterService  ((  bStatus_t  (*)  ( gattAttribute_t *pAttrs,uint16 numAttrs, uint8 encKeySize,gattServiceCBs_t *pServiceCBs ))  BLE_LIB_JT(63) )
 
 /**
  * @brief   Add function for the GATT Service.
@@ -3269,22 +3303,7 @@ extern bStatus_t GATTServApp_RegisterService( gattAttribute_t *pAttrs,
  *          FAILURE: Not enough attribute handles available.<BR>
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  */
-extern bStatus_t GATTServApp_AddService( uint32 services );
-
-/**
- * @brief   Deregister a service's attribute list and callback functions from
- *          the GATT Server Application.
- *
- *          NOTE: It's the caller's responsibility to free the service attribute
- *          list returned from this API.
- *
- * @param   handle - handle of service to be deregistered
- * @param   p2pAttrs - pointer to array of attribute records (to be returned)
- *
- * @return  SUCCESS: Service deregistered successfully.<BR>
- *          FAILURE: Service not found.<BR>
- */
-extern bStatus_t GATTServApp_DeregisterService( uint16 handle, gattAttribute_t **p2pAttrs );
+#define     GATTServApp_AddService  ((  bStatus_t  (*)  ( uint32 services ))  BLE_LIB_JT(64) )
 
 /**
  * @brief   Initialize the client characteristic configuration table.
@@ -3299,7 +3318,7 @@ extern bStatus_t GATTServApp_DeregisterService( uint16 handle, gattAttribute_t *
  *
  * @return  none
  */
-extern void GATTServApp_InitCharCfg( uint16 connHandle, gattCharCfg_t *charCfgTbl );
+#define     GATTServApp_InitCharCfg  ((  void  (*)  ( uint16 connHandle, gattCharCfg_t *charCfgTbl ))  BLE_LIB_JT(65) )
 
 /**
  * @brief   Read the client characteristic configuration for a given
@@ -3315,7 +3334,7 @@ extern void GATTServApp_InitCharCfg( uint16 connHandle, gattCharCfg_t *charCfgTb
  *
  * @return  attribute value
  */
-extern uint16 GATTServApp_ReadCharCfg( uint16 connHandle, gattCharCfg_t *charCfgTbl );
+#define     GATTServApp_ReadCharCfg  ((  uint16  (*)  ( uint16 connHandle, gattCharCfg_t *charCfgTbl ))  BLE_LIB_JT(66) )
 
 /**
  * @brief   Write the client characteristic configuration for a given
@@ -3332,7 +3351,7 @@ extern uint16 GATTServApp_ReadCharCfg( uint16 connHandle, gattCharCfg_t *charCfg
  *
  * @return  Success or Failure
  */
-extern uint8 GATTServApp_WriteCharCfg( uint16 connHandle, gattCharCfg_t *charCfgTbl, uint16 value );
+#define     GATTServApp_WriteCharCfg  ((  uint8  (*)  ( uint16 connHandle, gattCharCfg_t *charCfgTbl, uint16 value ))  BLE_LIB_JT(67) )
 
 /**
  * @brief   Process the client characteristic configuration
@@ -3347,9 +3366,7 @@ extern uint8 GATTServApp_WriteCharCfg( uint16 connHandle, gattCharCfg_t *charCfg
  *
  * @return  Success or Failure
  */
-extern bStatus_t GATTServApp_ProcessCCCWriteReq( uint16 connHandle, gattAttribute_t *pAttr,
-                                          uint8 *pValue, uint16 len, uint16 offset,
-                                          uint16 validCfg );
+#define     GATTServApp_ProcessCCCWriteReq  ((  bStatus_t  (*)  ( uint16 connHandle, gattAttribute_t *pAttr, uint8 *pValue, uint16 len, uint16 offset,uint16 validCfg ))  BLE_LIB_JT(68) )
 
 
 /**
@@ -3364,7 +3381,7 @@ extern bStatus_t GATTServApp_ProcessCCCWriteReq( uint16 connHandle, gattAttribut
  *
  * @return  bStatus_t
  */
-extern bStatus_t GGS_SetParameter( uint8 param, uint8 len, void *value );
+#define     GGS_SetParameter  ((  bStatus_t  (*)  ( uint8 param, uint8 len, void *value ))  BLE_LIB_JT(69) )
 
 /**
  * @brief   Get a GAP GATT Server parameter.
@@ -3377,7 +3394,7 @@ extern bStatus_t GGS_SetParameter( uint8 param, uint8 len, void *value );
  *
  * @return  bStatus_t
  */
-extern bStatus_t GGS_GetParameter( uint8 param, void *value );
+#define     GGS_GetParameter  ((  bStatus_t  (*)  ( uint8 param, void *value ))  BLE_LIB_JT(70) )
 
 /**
  * @brief   Add function for the GAP GATT Service.
@@ -3390,7 +3407,7 @@ extern bStatus_t GGS_GetParameter( uint8 param, void *value );
  *          FAILURE: Not enough attribute handles available.<BR>
  *          bleMemAllocError: Memory allocation error occurred.<BR>
  */
-extern bStatus_t GGS_AddService( uint32 services );
+#define     GGS_AddService  ((  bStatus_t  (*)  ( uint32 services ))  BLE_LIB_JT(71) )
 
 /*-------------------------------------------------------------------
  * FUNCTIONS - Initialization and Configuration
@@ -3413,7 +3430,7 @@ extern bStatus_t GGS_AddService( uint32 services );
  *
  * @return      SUCCESS or INVALIDPARAMETER (invalid paramID)
  */
-extern bStatus_t GAP_SetParamValue( uint16 paramID, u16 paramValue );
+#define     GAP_SetParamValue  ((  bStatus_t  (*)  ( uint16 paramID, u16 paramValue ))  BLE_LIB_JT(72) )
 
 /*******************************************************************************
  * @fn          GAP_GetParamValue
@@ -3433,7 +3450,7 @@ extern bStatus_t GAP_SetParamValue( uint16 paramID, u16 paramValue );
  *
  * @return      GAP Parameter value or 0xFFFF if invalid
  */
-extern uint16 GAP_GetParamValue( uint16 paramID );
+#define     GAP_GetParamValue  ((  uint16  (*)  ( uint16 paramID ))  BLE_LIB_JT(73) )
 
 /*******************************************************************************
  * @fn          GAP_ConfigDeviceAddr
@@ -3462,7 +3479,7 @@ extern uint16 GAP_GetParamValue( uint16 paramID );
  *              If return value isn't SUCCESS, the address type remains
  *              the same as before this call.
  */
-extern bStatus_t GAP_ConfigDeviceAddr( u8 addrType, u8 *pStaticAddr );
+#define     GAP_ConfigDeviceAddr  ((  bStatus_t  (*)  ( u8 addrType, u8 *pStaticAddr ))  BLE_LIB_JT(74) )
 
 /*******************************************************************************
  * @fn          GAP_ResolvePrivateAddr
@@ -3483,7 +3500,7 @@ extern bStatus_t GAP_ConfigDeviceAddr( u8 addrType, u8 *pStaticAddr );
  *              FAILURE: don't match,<BR>
  *              INVALIDPARAMETER: parameters invalid<BR>
  */
-extern bStatus_t GAP_ResolvePrivateAddr( u8 *pIRK, u8 *pAddr );
+#define     GAP_ResolvePrivateAddr  ((  bStatus_t  (*)  ( u8 *pIRK, u8 *pAddr ))  BLE_LIB_JT(75) )
 
 /*******************************************************************************
  * @fn          GAP_UpdateAdvertisingData
@@ -3508,7 +3525,7 @@ extern bStatus_t GAP_ResolvePrivateAddr( u8 *pIRK, u8 *pAddr );
  * @return      SUCCESS: data accepted,<BR>
  *              bleIncorrectMode: invalid profile role,<BR>
  */
-extern bStatus_t GAP_UpdateAdvertisingData( u8 taskID,u8 adType,u8 dataLen,u8 *pAdvertData );
+#define     GAP_UpdateAdvertisingData  ((  bStatus_t  (*)  ( u8 taskID,u8 adType,u8 dataLen,u8 *pAdvertData ))  BLE_LIB_JT(76) )
 
 /*-------------------------------------------------------------------
  * FUNCTIONS - GAP Bond API
@@ -3530,7 +3547,7 @@ extern bStatus_t GAP_UpdateAdvertisingData( u8 taskID,u8 adType,u8 dataLen,u8 *p
  *
  * @return      SUCCESS or INVALIDPARAMETER (invalid paramID)
  */
-extern bStatus_t GAPBondMgr_SetParameter( uint16 param, uint8 len, void *pValue );
+#define     GAPBondMgr_SetParameter  ((  bStatus_t  (*)  ( uint16 param, uint8 len, void *pValue ))  BLE_LIB_JT(77) )
 
 /**
  * @brief       Get a GAP Bond Manager parameter.
@@ -3547,7 +3564,7 @@ extern bStatus_t GAPBondMgr_SetParameter( uint16 param, uint8 len, void *pValue 
  *
  * @return      SUCCESS or INVALIDPARAMETER (invalid paramID)
  */
-extern bStatus_t GAPBondMgr_GetParameter( uint16 param, void *pValue );
+#define     GAPBondMgr_GetParameter  ((  bStatus_t  (*)  ( uint16 param, void *pValue ))  BLE_LIB_JT(78) )
 
 /**
  * @brief       Respond to a passcode request.
@@ -3560,12 +3577,12 @@ extern bStatus_t GAPBondMgr_GetParameter( uint16 param, void *pValue );
  * @return      SUCCESS - bond record found and changed,<BR>
  *              bleIncorrectMode - Link not found.
  */
-extern bStatus_t GAPBondMgr_PasscodeRsp( uint16 connectionHandle, uint8 status, uint32 passcode );
+#define     GAPBondMgr_PasscodeRsp  ((  bStatus_t  (*)  ( uint16 connectionHandle, uint8 status, uint32 passcode ))  BLE_LIB_JT(79) )
 
 /*-------------------------------------------------------------------
  * FUNCTIONS - GAPRole API
  */
-extern bStatus_t GAPRole_SetParameter( uint16 param, uint8 len, void *pValue );
+#define     GAPRole_SetParameter  ((  bStatus_t  (*)  ( uint16 param, uint8 len, void *pValue ))  BLE_LIB_JT(80) )
 
 /**
  * @brief       Get a GAP Role parameter.
@@ -3582,14 +3599,14 @@ extern bStatus_t GAPRole_SetParameter( uint16 param, uint8 len, void *pValue );
  *
  * @return      SUCCESS or INVALIDPARAMETER (invalid paramID)
  */
-extern bStatus_t GAPRole_GetParameter( uint16 param, void *pValue );
+#define     GAPRole_GetParameter  ((  bStatus_t  (*)  ( uint16 param, void *pValue ))  BLE_LIB_JT(81) )
 
 /**
  * @brief       Terminates the existing connection.
  *
  * @return      SUCCESS or bleIncorrectMode
  */
-extern bStatus_t GAPRole_TerminateLink( uint16 connHandle );
+#define     GAPRole_TerminateLink  ((  bStatus_t  (*)  ( uint16 connHandle ))  BLE_LIB_JT(82) )
 
 /**
  * @brief   Read Rssi Cmd.
@@ -3599,7 +3616,7 @@ extern bStatus_t GAPRole_TerminateLink( uint16 connHandle );
  * @return  bStatus_t: HCI Error Code.<BR>
  *          
  */
-extern bStatus_t GAPRole_ReadRssiCmd( uint16 connHandle );
+#define     GAPRole_ReadRssiCmd  ((  bStatus_t  (*)  ( uint16 connHandle ))  BLE_LIB_JT(83) )
 
 /**
  * @brief   Update the link connection parameters.
@@ -3613,9 +3630,7 @@ extern bStatus_t GAPRole_ReadRssiCmd( uint16 connHandle );
  * @return  SUCCESS: Connection update started started.<BR>
  *          bleIncorrectMode: No connection to update.<BR>
  */
-extern bStatus_t GAPRole_UpdateLink( uint16 connHandle, uint16 connIntervalMin,
-                                            uint16 connIntervalMax, uint16 connLatency,
-                                            uint16 connTimeout );
+#define     GAPRole_UpdateLink  ((  bStatus_t  (*)  ( uint16 connHandle, uint16 connIntervalMin,uint16 connIntervalMax, uint16 connLatency, uint16 connTimeout ))  BLE_LIB_JT(84) )
 
 /*-------------------------------------------------------------------
  * FUNCTIONS - BROADCASTER_PROFILE_API Broadcaster Profile API
@@ -3630,7 +3645,7 @@ extern bStatus_t GAPRole_UpdateLink( uint16 connHandle, uint16 connIntervalMin,
  *
  * @return      SUCCESS,bleInvalidRange
  */
-extern bStatus_t GAPRole_BroadcasterInit( void );
+#define     GAPRole_BroadcasterInit  ((  bStatus_t  (*)  ( void ))  BLE_LIB_JT(85) )
 
 /**
  * @brief       Does the device initialization.  Only call this function once.
@@ -3639,7 +3654,7 @@ extern bStatus_t GAPRole_BroadcasterInit( void );
  *
  * @return      SUCCESS or bleAlreadyInRequestedMode
  */
-extern bStatus_t GAPRole_BroadcasterStartDevice( gapRolesBroadcasterCBs_t *pAppCallbacks );
+#define     GAPRole_BroadcasterStartDevice  ((  bStatus_t  (*)  ( gapRolesBroadcasterCBs_t *pAppCallbacks ))  BLE_LIB_JT(86) )
 
 /*-------------------------------------------------------------------
  * FUNCTIONS - OBSERVER_PROFILE_API Observer Profile API
@@ -3653,7 +3668,7 @@ extern bStatus_t GAPRole_BroadcasterStartDevice( gapRolesBroadcasterCBs_t *pAppC
  *
  * @return  SUCCESS,bleInvalidRange
  */
-extern bStatus_t GAPRole_ObserverInit( void );
+#define     GAPRole_ObserverInit  ((  bStatus_t  (*)  ( uint8 taskId ))  BLE_LIB_JT(87) )
 
 /**
  * @brief   Start the device in Observer role.  This function is typically
@@ -3664,7 +3679,7 @@ extern bStatus_t GAPRole_ObserverInit( void );
  * @return  SUCCESS: Operation successful.<BR>
  *          bleAlreadyInRequestedMode: Device already started.<BR>
  */
-extern bStatus_t GAPRole_ObserverStartDevice( gapRoleObserverCB_t *pAppCallbacks );
+#define     GAPRole_ObserverStartDevice  ((  bStatus_t  (*)  ( gapRoleObserverCB_t *pAppCallbacks ))  BLE_LIB_JT(88) )
 
 /**
  * @brief   Start a device discovery scan.
@@ -3677,7 +3692,7 @@ extern bStatus_t GAPRole_ObserverStartDevice( gapRoleObserverCB_t *pAppCallbacks
  *          bleIncorrectMode: Invalid profile role.<BR>
  *          bleAlreadyInRequestedMode: Not available.<BR>
  */
-extern bStatus_t GAPRole_ObserverStartDiscovery( uint8 mode, uint8 activeScan, uint8 whiteList );
+#define     GAPRole_ObserverStartDiscovery  ((  bStatus_t  (*)  ( uint8 mode, uint8 activeScan, uint8 whiteList ))  BLE_LIB_JT(89) )
 
 /**
  * @brief   Cancel a device discovery scan.
@@ -3686,7 +3701,7 @@ extern bStatus_t GAPRole_ObserverStartDiscovery( uint8 mode, uint8 activeScan, u
  *          bleInvalidTaskID: Not the task that started discovery.<BR>
  *          bleIncorrectMode: Not in discovery mode.<BR>
  */
-extern bStatus_t GAPRole_ObserverCancelDiscovery( void );
+#define     GAPRole_ObserverCancelDiscovery  ((  bStatus_t  (*)  ( void ))  BLE_LIB_JT(90) )
 
 /*-------------------------------------------------------------------
  * FUNCTIONS - PERIPHERAL_PROFILE_API Peripheral Profile API
@@ -3705,7 +3720,7 @@ extern bStatus_t GAPRole_ObserverCancelDiscovery( void );
  *
  * @return      SUCCESS,bleInvalidRange
  */
-extern bStatus_t GAPRole_PeripheralInit( void );
+#define     GAPRole_PeripheralInit  ((  bStatus_t  (*)  ( void ))  BLE_LIB_JT(91) )
 
 /**
  * @brief       Does the device initialization.  Only call this function once.
@@ -3714,7 +3729,7 @@ extern bStatus_t GAPRole_PeripheralInit( void );
  *
  * @return      SUCCESS or bleAlreadyInRequestedMode  
  */
-extern bStatus_t GAPRole_PeripheralStartDevice( uint8 taskid, gapBondCBs_t *pCB,gapRolesCBs_t *pAppCallbacks );
+#define    GAPRole_PeripheralStartDevice  ((  bStatus_t  (*)  ( uint8 taskid, gapBondCBs_t *pCB,gapRolesCBs_t *pAppCallbacks ))  BLE_LIB_JT(92) )
 
 /**
  * @brief       Update the parameters of an existing connection
@@ -3727,9 +3742,7 @@ extern bStatus_t GAPRole_PeripheralStartDevice( uint8 taskid, gapBondCBs_t *pCB,
  *
  * @return      SUCCESS, bleNotConnected or bleInvalidRange
  */
-extern bStatus_t GAPRole_PeripheralConnParamUpdateReq( uint16 connHandle, 
-                                    uint16 minConnInterval, uint16 maxConnInterval,
-                                    uint16 latency, uint16 connTimeout,uint8 taskId);
+#define     GAPRole_PeripheralConnParamUpdateReq  ((  bStatus_t  (*)  ( uint16 connHandle, uint16 minConnInterval, uint16 maxConnInterval,uint16 latency, uint16 connTimeout,uint8 taskId ))  BLE_LIB_JT(93) )
 
 /*-------------------------------------------------------------------
  * FUNCTIONS - CENTRAL_PROFILE_API Central Profile API
@@ -3743,7 +3756,7 @@ extern bStatus_t GAPRole_PeripheralConnParamUpdateReq( uint16 connHandle,
  *
  * @return  SUCCESS,bleInvalidRange
  */
-extern bStatus_t GAPRole_CentralInit( void );
+#define     GAPRole_CentralInit  ((  bStatus_t  (*)  ( void ))  BLE_LIB_JT(94) )
 
 /**
  * @brief   Start the device in Central role.  This function is typically
@@ -3754,7 +3767,7 @@ extern bStatus_t GAPRole_CentralInit( void );
  * @return  SUCCESS: Operation successful.<BR>
  *          bleAlreadyInRequestedMode: Device already started.<BR>
  */
-extern bStatus_t GAPRole_CentralStartDevice( uint8 taskid, gapBondCBs_t *pCB, gapCentralRoleCB_t *pAppCallbacks );
+#define     GAPRole_CentralStartDevice  ((  bStatus_t  (*)  ( uint8 taskid, gapBondCBs_t *pCB, gapCentralRoleCB_t *pAppCallbacks ))  BLE_LIB_JT(95) )
 
 /**
  * @brief   Start a device discovery scan.
@@ -3767,7 +3780,7 @@ extern bStatus_t GAPRole_CentralStartDevice( uint8 taskid, gapBondCBs_t *pCB, ga
  *          bleIncorrectMode: Invalid profile role.<BR>
  *          bleAlreadyInRequestedMode: Not available.<BR>
  */
-extern bStatus_t GAPRole_CentralStartDiscovery( uint8 mode, uint8 activeScan, uint8 whiteList );
+#define     GAPRole_CentralStartDiscovery  ((  bStatus_t  (*)  ( uint8 mode, uint8 activeScan, uint8 whiteList ))  BLE_LIB_JT(96) )
 
 /**
  * @brief   Cancel a device discovery scan.
@@ -3776,7 +3789,7 @@ extern bStatus_t GAPRole_CentralStartDiscovery( uint8 mode, uint8 activeScan, ui
  *          bleInvalidTaskID: Not the task that started discovery.<BR>
  *          bleIncorrectMode: Not in discovery mode.<BR>
  */
-extern bStatus_t GAPRole_CentralCancelDiscovery( void );
+#define     GAPRole_CentralCancelDiscovery  ((  bStatus_t  (*)  ( void ))  BLE_LIB_JT(97) )
 
 /**
  * @brief   Establish a link to a peer device.
@@ -3792,7 +3805,7 @@ extern bStatus_t GAPRole_CentralCancelDiscovery( void );
  *          bleAlreadyInRequestedMode: can't process now.<BR>
  *          bleNoResources: too many links.<BR>
  */
-extern bStatus_t GAPRole_CentralEstablishLink( uint8 highDutyCycle, uint8 whiteList, uint8 addrTypePeer, uint8 *peerAddr );
+#define     GAPRole_CentralEstablishLink  ((  bStatus_t  (*)  ( uint8 highDutyCycle, uint8 whiteList,uint8 addrTypePeer, uint8 *peerAddr ))  BLE_LIB_JT(98) )
 
 /*-------------------------------------------------------------------
  * FUNCTIONS - RF_PHY Profile API
@@ -3812,8 +3825,7 @@ extern bStatus_t GAPRole_CentralEstablishLink( uint8 highDutyCycle, uint8 whiteL
  *
  * @return      0 - success.
  */
-extern bStatus_t RF_RoleInit( void );
-
+#define    RF_RoleInit  ((  bStatus_t  (*)  ( void )£©  BLE_LIB_JT(99) )
 /*******************************************************************************
  * @fn          RF_Config
  *
@@ -3829,8 +3841,7 @@ extern bStatus_t RF_RoleInit( void );
  *
  * @return      0 - success.
  */
-extern bStatus_t RF_Config( rfConfig_t *pConfig );
-
+#define    RF_Config  ((  bStatus_t  (*)  ( rfConfig_t *pConfig )£©  BLE_LIB_JT(100) )
 /*******************************************************************************
  * @fn          RF_Rx
  *
@@ -3853,7 +3864,7 @@ extern bStatus_t RF_Config( rfConfig_t *pConfig );
  *
  * @return      0 - success.
  */
-extern bStatus_t RF_Rx( u8 *txBuf, u8 txLen, u8 pktRxType, u8 pktTxType );
+#define    RF_Rx  ((  bStatus_t  (*)  ( u8 *txBuf, u8 txLen )£©  BLE_LIB_JT(101) )
 
 /*******************************************************************************
  * @fn          RF_Tx
@@ -3877,7 +3888,7 @@ extern bStatus_t RF_Rx( u8 *txBuf, u8 txLen, u8 pktRxType, u8 pktTxType );
  *
  * @return      0 - success.
  */
-extern bStatus_t RF_Tx( u8 *txBuf, u8 txLen, u8 pktTxType, u8 pktRxType );
+#define    RF_Tx  ((  bStatus_t  (*)  ( u8 *txBuf, u8 txLen )£©  BLE_LIB_JT(102) )
 
 /*******************************************************************************
  * @fn          RF_Shut
@@ -3894,7 +3905,7 @@ extern bStatus_t RF_Tx( u8 *txBuf, u8 txLen, u8 pktTxType, u8 pktRxType );
  *
  * @return      0 - success.
  */
-extern bStatus_t RF_Shut( void );
+#define    RF_Shut  ((  bStatus_t  (*)  ( void ))  BLE_LIB_JT(103) )
 
  /*******************************************************************************
  * @fn          LL_SingleChannel
@@ -3911,7 +3922,7 @@ extern bStatus_t RF_Shut( void );
  *
  * @return      0 - success.
  */
-extern bStatus_t LL_SingleChannel( u8 ch );
+#define    LL_SingleChannel  ((  bStatus_t  (*)  ( u8 ch ))  BLE_LIB_JT(104) )
 
  /*******************************************************************************
  * @fn          LL_TestEnd
@@ -3928,7 +3939,7 @@ extern bStatus_t LL_SingleChannel( u8 ch );
  *
  * @return      0 - success.
  */
-extern bStatus_t LL_TestEnd( u8 *pPktNum );
+#define    LL_TestEnd  ((  bStatus_t  (*)  (u8 *pPktNum ))  BLE_LIB_JT(105) )
 
 /*
  * END @ Profile API

@@ -34,12 +34,7 @@ u32 CH57X_LowPower( u32 time )
 
   SYS_DisableAllIrq( &irq_status );
   tmp = RTC_GetCycle32k();
-  if( time - tmp > 0x51F40 ){ // 检测睡眠的最长时间 10.24s,可以去掉
-    SYS_RecoverIrq( irq_status );
-    PRINT("! t1:%x %x...\n",time,tmp);
-    return 1;
-  }
-  if( (time < tmp) || ((time - tmp) < 10) ){ // 检测睡眠的最短时间
+  if( (time < tmp) || ((time - tmp) < 30) ){ // 检测睡眠的最短时间
     SYS_RecoverIrq( irq_status );
     return 2;
   }    

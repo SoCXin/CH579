@@ -11,7 +11,6 @@
  * INCLUDES
  */
 #include "CONFIG.h"
-#include "CH57xBLE_LIB.h"
 #include "devinfoservice.h"
 
 /*********************************************************************
