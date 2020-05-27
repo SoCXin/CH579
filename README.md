@@ -1,14 +1,14 @@
-﻿# [CH579](https://github.com/sochub/CH579)
+﻿# [CH579](https://github.com/SoCXin/CH579)
 
-[![sites](http://182.61.61.133/link/resources/docs.png)](https://stop.stops.top) 
+[![sites](http://182.61.61.133/link/resources/SoC.png)](http://www.SoC.Xin) 
 
-#### [Vendor](https://github.com/sochub/Vendor)：[WCH](https://github.com/sochub/WCH)
-#### [ARM Cortex](https://github.com/sochub/cortex)：[Cortex M0](https://github.com/sochub/CM0) 
-#### [Level](https://github.com/sochub/Level)：40MHz 
+#### [Vendor](https://github.com/SoCXin/Vendor)：[WCH](https://github.com/SoCXin/WCH)
+#### [Core](https://github.com/SoCXin/Cortex)：[Cortex M0](https://github.com/SoCXin/CM0) 
+#### [Level](https://github.com/SoCXin/Level)：40MHz 
 
-## [CH579描述](https://github.com/sochub/CH579/wiki) 
+## [CH579描述](https://github.com/SoCXin/CH579/wiki) 
 
-[CH579](https://github.com/sochub/CH579) 是一款高度集成的通信类SoC芯片，采用40MHz的Cortex M0内核，片上集成低功耗蓝牙BLE(4.2)/Zigbee通讯模块、以太网控制器及收发器、全速USB主机和设备控制器及收发器、段式LCD驱动模块、ADC、触摸按键检测模块、RTC等丰富的外设资源。
+[CH579](https://github.com/SoCXin/CH579) 是一款高度集成的通信类SoC芯片，采用40MHz的Cortex M0内核，片上集成低功耗蓝牙BLE(4.2)/Zigbee通讯模块、以太网控制器及收发器、全速USB主机和设备控制器及收发器、段式LCD驱动模块、ADC、触摸按键检测模块、RTC等丰富的外设资源。
 
 [![sites](docs/CH579.png)](http://www.wch.cn/products/CH579.html) 
 
@@ -27,18 +27,16 @@
 * 提供2组独立SPI，内置FIFO ，SPI0支持Master和Slave模式，支持DMA
 * 内置AES-128加解密单元
 
-### [资源收录](https://github.com/sochub/CH579)
+### [资源收录](https://github.com/SoCXin/CH579)
 
 * [文档](docs/) 
 * [资源](src/) 
-    * [软件资源](src/software) 
-    * [硬件资源](src/hardware) 
 
-#### [硬件开发](https://github.com/sochub/CH579)
+#### [硬件开发](https://github.com/SoCXin/CH579)
 
 CH579目前提供两种QFN封装规格
 
-[![sites](docs/CH579.jpg)](http://www.wch.cn/products/CH579.html) 
+[![sites](docs/CH579P.jpg)](http://www.wch.cn/products/CH579.html) 
 
 * CH579M 封装：QFN48 （5mm x 5mm）
 
@@ -50,17 +48,17 @@ CH579目前提供两种QFN封装规格
 
 * [kicad库资源](src/kicad/)
 
-### [选型建议](https://github.com/sochub)
+### [选型建议](https://github.com/SoCXin)
 
-[CH579](https://github.com/sochub/CH579)的片上资源相对独特，集成以太网通信和无线通信，对[W7500P](https://github.com/sochub/W7500P)和蓝牙SOC芯片市场有一定影响，目前还未引爆市场。
+[CH579](https://github.com/SoCXin/CH579)的片上资源相对独特，集成以太网通信和无线通信，对[W7500P](https://github.com/SoCXin/W7500P)和蓝牙SOC芯片市场有一定影响，目前还未引爆市场。
 
-* 单纯的BLE通信替换可采用[NRF51822](https://github.com/sochub/NRF51822) 或 [CC2540](https://github.com/sochub/CC2540)及接近的产品。
+* 单纯的BLE通信替换可采用[NRF51822](https://github.com/SoCXin/NRF51822) 或 [CC2540](https://github.com/SoCXin/CC2540)及接近的产品。
 
-* [CH578](https://github.com/sochub/CH578)降低了多无线协议支持，规格降低。
-* [CH563](https://github.com/sochub/CH563)更偏向有线连接，使用ARM9内核主频更高。
+* [CH578](https://github.com/SoCXin/CH578)降低了多无线协议支持，规格降低。
+* [CH563](https://github.com/SoCXin/CH563)更偏向有线连接，使用ARM9内核主频更高。
 
 在单纯的USB转以太网通信的应用场景下，可以使用非SoC芯片，例如Exar推出USB转以太网的接口芯片XR22800-804，USB接口为高速480M的USB2.0（支持USB CDC-ECM, CDC-ACM, & HID）,芯片内部集成了10/100M以太网MAC和PHY，支持IEEE802.3/IEEE802.3U。另外还有UART接口、I2C主设备接口，增强型I/O口。
 
-而在单纯的串口转以太网应用场景，拥有大量基于各种方案的成熟模块，CH579的存在感不强。
+而在单纯的串口转以太网应用场景，拥有大量基于各种方案的成熟模块，CH579由于较新，所以存在感不强。
 
-###  [SoC资源平台](http://www.qitas.cn)
+###  [SoC芯平台](http://www.SoC.Xin) 
