@@ -175,6 +175,81 @@ void LClk32K_Select( LClk32KTypeDef hc)
 
 
 /*******************************************************************************
+* Function Name  : HSECFG_Current
+* Description    : HSE晶体 偏置电流配置
+* Input          : c: 75%,100%,125%,150%
+* Return         : None
+*******************************************************************************/
+void HSECFG_Current( HSECurrentTypeDef c )
+{
+    UINT8  x32M_c;
+    
+    x32M_c = R8_XT32M_TUNE;
+    x32M_c = (x32M_c&0xfc)|(c&0x03);
+    
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;	
+    R8_XT32M_TUNE = x32M_c;
+    R8_SAFE_ACCESS_SIG = 0;
+}
+
+/*******************************************************************************
+* Function Name  : HSECFG_Capacitance
+* Description    : HSE晶体 负载电容配置
+* Input          : c: refer to HSECapTypeDef
+* Return         : None
+*******************************************************************************/
+void HSECFG_Capacitance( HSECapTypeDef c )
+{
+    UINT8  x32M_c;
+    
+    x32M_c = R8_XT32M_TUNE;
+    x32M_c = (x32M_c&0x8f)|(c<<4);
+    
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;	
+    R8_XT32M_TUNE = x32M_c;
+    R8_SAFE_ACCESS_SIG = 0;
+}
+
+/*******************************************************************************
+* Function Name  : LSECFG_Current
+* Description    : LSE晶体 偏置电流配置
+* Input          : c: 70%,100%,140%,200%
+* Return         : None
+*******************************************************************************/
+void LSECFG_Current( LSECurrentTypeDef c )
+{
+    UINT8  x32K_c;
+    
+    x32K_c = R8_XT32K_TUNE;
+    x32K_c = (x32K_c&0xfc)|(c&0x03);
+    
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;	
+    R8_XT32K_TUNE = x32K_c;
+    R8_SAFE_ACCESS_SIG = 0;
+}
+
+/*******************************************************************************
+* Function Name  : LSECFG_Capacitance
+* Description    : LSE晶体 负载电容配置
+* Input          : c: refer to LSECapTypeDef
+* Return         : None
+*******************************************************************************/
+void LSECFG_Capacitance( LSECapTypeDef c )
+{
+    UINT8  x32K_c;
+    
+    x32K_c = R8_XT32K_TUNE;
+    x32K_c = (x32K_c&0x0f)|(c<<4);
+    
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;	
+    R8_XT32K_TUNE = x32K_c;
+    R8_SAFE_ACCESS_SIG = 0;
+}
+/*******************************************************************************
 * Function Name  : Calibration_LSI
 * Description    : 校准内部32K时钟
 * Input          : None

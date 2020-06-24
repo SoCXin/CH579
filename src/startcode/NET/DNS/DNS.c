@@ -295,7 +295,7 @@ UINT8 DnsQuery(UINT8 s, UINT8 * name, UINT8 * pSip)
     UINT32 len;
     if(status >1 ){
         count++;
-        DelsyMs(10);
+        DelayMs(10);
         if( count>20000 ){
 #if CH57xNET_DBG
             printf("DNS Fail!!!!!\n");

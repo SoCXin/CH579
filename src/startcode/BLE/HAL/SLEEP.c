@@ -46,6 +46,9 @@ u32 CH57X_LowPower( u32 time )
 // LOW POWER-sleepģʽ
   if( !RTCTigFlag ){
 		LowPower_Sleep(RB_PWR_RAM2K|RB_PWR_RAM14K|RB_PWR_EXTEND );
+		SetSysClock( CLK_SOURCE_HSI_32MHz );
+		DelayUs(1500);
+		SetSysClock( CLK_SOURCE_HSE_32MHz );
   }
   else{
     return 3;

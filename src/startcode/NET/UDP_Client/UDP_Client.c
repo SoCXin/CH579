@@ -58,13 +58,17 @@ __align(4)UINT8 Mem_ArpTable[CH57xNET_RAM_ARP_TABLE_SIZE];
 /* 建议RX_QUEUE_ENTRIES要大于( 窗口/MSS ),如果多个socket同时进行大批量发送数据，则 */ 
 /* 建议RX_QUEUE_ENTRIES要大于(( 窗口/MSS )*socket个数) 在多个socket同时进行大批数据收发时 */
 /* 为了节约RAM，请将接收缓冲区的长度设置为MSS */
-
+									  																			
 /* CH579相关定义 */
 UINT8 MACAddr[6] = {0x84,0xc2,0xe4,0x02,0x03,0x04};                            /* CH579MAC地址 */
 UINT8 IPAddr[4]  = {192,168,1,200};                                            /* CH579IP地址 */
 UINT8 GWIPAddr[4]= {192,168,1,1};                                              /* CH579网关 */
 UINT8 IPMask[4]  = {255,255,255,0};                                            /* CH579子网掩码 */
 UINT8 DESIP[4]   = {192,168,1,100};                                            /* 目的IP地址 */
+
+/* 网口灯定义 PB口低十六位有效 */
+UINT16 CH57xNET_LEDCONN=0x0010;                                                 /* 连接指示灯 PB4 */
+UINT16 CH57xNET_LEDDATA=0x0080;                                                 /* 通讯指示灯 PB7 */ 
 
 UINT8 SocketId;                                                                 /* 保存socket索引，可以不用定义 */
 UINT8 SocketRecvBuf[RECE_BUF_LEN];                                              /* socket接收缓冲区 */
@@ -289,7 +293,7 @@ void Timer0Init(UINT32 time)
 void SystemClock_UART1_init(void)
 {
     PWR_UnitModCfg(ENABLE, UNIT_SYS_PLL);                                      /* PLL上电 */
-    DelsyMs(3); 
+    DelayMs(3); 
     SetSysClock(CLK_SOURCE_HSE_32MHz);                                          /* 外部晶振 PLL 输出32MHz */
     GPIOA_SetBits( GPIO_Pin_9 );
     GPIOA_ModeCfg( GPIO_Pin_9, GPIO_ModeOut_PP_5mA );                           /* 串口1的IO口设置 */
@@ -314,7 +318,7 @@ int main(void)
 	Timer0Init( 10000 );		                                                /*初始化定时器:10ms*/
 	NVIC_EnableIRQ(ETH_IRQn);	
 	while ( CH57xInf.PHYStat < 2 ) {
-		DelsyMs(50);
+		DelayMs(50);
 	}	
     CH57xNET_CreatUdpSocket();                                                  /* 创建TCP Socket */
     PRINT("CH579 UDP socket create！\r\n");  	

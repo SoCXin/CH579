@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT ******************************
 * File Name         : CH57xBLE_LIB.H
 * Author            : WCH
-* Version           : V1.43
-* Date              : 2020/04/11
+* Version           : V1.44
+* Date              : 2020/05/20
 * Description       : head file
 *******************************************************************************/
 
@@ -132,6 +132,16 @@ typedef struct  tag_ble_config
   pfnLibStatusErrorCB staCB;         // Register a program that library status callback
 } bleConfig_t;                       // Library init call BLE_LibInit function
 
+/* BLE pa control config struct */
+typedef struct  tag_ble_pa_control_config
+{
+	u32 txEnableGPIO;        // tx enable gpio register
+	u32 txDisableGPIO;       // tx disable gpio register
+	u32 tx_pin;              // tx pin define
+	u32 rxEnableGPIO;        // rx enable gpio register
+	u32 rxDisableGPIO;       // rx disable gpio register
+	u32 rx_pin;              // tx pin define
+}blePaControlConfig_t;
 
 // defined for all task
 #define SYS_EVENT_MSG                   (0x8000)  // A message is waiting event
@@ -945,6 +955,24 @@ extern const u8 VER_LIB[];    // LIB version
 #define GAPBOND_FAIL_TERMINATE_LINK               0x02 //!< Terminate link upon unsuccessful bonding
 #define GAPBOND_FAIL_TERMINATE_ERASE_BONDS        0x03 //!< Terminate link and erase all existing bonds on device upon unsuccessful bonding
 
+#define GAP_BOND_REC_ID_OFFSET              0 //!< NV ID for the main bonding record
+#define GAP_BOND_LOCAL_LTK_OFFSET           1 //!< NV ID for the bonding record's local LTK information
+#define GAP_BOND_DEV_LTK_OFFSET             2 //!< NV ID for the bonding records' device LTK information
+#define GAP_BOND_DEV_IRK_OFFSET             3 //!< NV ID for the bonding records' device IRK
+#define GAP_BOND_DEV_CSRK_OFFSET            4 //!< NV ID for the bonding records' device CSRK
+#define GAP_BOND_DEV_SIGN_COUNTER_OFFSET    5 //!< NV ID for the bonding records' device Sign Counter
+
+#define GAP_BOND_REC_IDS                    6
+
+// Macros to calculate the index/offset in to NV space
+#define calcNvID(Idx, offset)               (((((Idx) * GAP_BOND_REC_IDS) + (offset))) + BLE_NVID_GAP_BOND_START)
+#define mainRecordNvID(bondIdx)             (calcNvID((bondIdx), GAP_BOND_REC_ID_OFFSET))
+#define localLTKNvID(bondIdx)               (calcNvID((bondIdx), GAP_BOND_LOCAL_LTK_OFFSET))
+#define devLTKNvID(bondIdx)                 (calcNvID((bondIdx), GAP_BOND_DEV_LTK_OFFSET))
+#define devIRKNvID(bondIdx)                 (calcNvID((bondIdx), GAP_BOND_DEV_IRK_OFFSET))
+#define devCSRKNvID(bondIdx)                (calcNvID((bondIdx), GAP_BOND_DEV_CSRK_OFFSET))
+#define devSignCounterNvID(bondIdx)         (calcNvID((bondIdx), GAP_BOND_DEV_SIGN_COUNTER_OFFSET))
+
 /*********************************************************************
  * TYPEDEFS
  */
@@ -1401,7 +1429,7 @@ typedef struct
  */
 typedef struct
 {
-  uint8 len;         //!< Length of UUID (2 or 6)
+  uint8 len;         //!< Length of UUID (2 or 16)
   const uint8 *uuid; //!< Pointer to UUID
 } gattAttrType_t;
 
@@ -1958,12 +1986,12 @@ extern CONST uint8 centAddrResUUID[];
 /*********************************************************************
  * PUBLIC FUNCTIONS
  */
-extern u32   tmos_rand( void  );                                          
-extern BOOL  tmos_memcmp( const void *src1, const void *src2, u32 len );
-extern BOOL  tmos_isbufset( u8 *buf, u8 val, u32 len );
+extern u32   tmos_rand( void  );   // pseudo-random number                                    
+extern BOOL  tmos_memcmp( const void *src1, const void *src2, u32 len ); // TRUE - same, FALSE - different
+extern BOOL  tmos_isbufset( u8 *buf, u8 val, u32 len ); // TRUE if all "val",FALSE otherwise
 extern u32   tmos_strlen( char *pString );
 extern void  tmos_memset( void * pDst, u8 Value, u32 len );               
-extern void  tmos_memcpy( void *dst, const void *src, u32 len ); 
+extern void  tmos_memcpy( void *dst, const void *src, u32 len ); // Generic memory copy.
 
 /*******************************************************************************
  * @fn          tmos_set_event
@@ -2124,6 +2152,25 @@ extern u8   *tmos_msg_receive( tmosTaskID taskID );
  * @return      pointer to allocated buffer or NULL if allocation failed.
  */
 extern u8   *tmos_msg_allocate( u16 len );
+
+/*******************************************************************************
+ * @fn          tmos_snv_read
+ *
+ * @brief       read a data item to NV.
+ *
+ * input parameters
+ *
+ * @param       id   - Valid NV item Id.
+ * @param       len  - Length of data to read.
+ * @param       *pBuf - Data to read.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      SUCCESS if successful, NV_OPER_FAILED if failed.
+ */
+extern u8   tmos_snv_read( u8 id, u8 len, void *pBuf);
 
 /*******************************************************************************
  * @fn          TMOS_TimerInit
@@ -2338,6 +2385,59 @@ extern void  LL_ConnectEventRegister( pfnConnectEventCB connectEventCB );
  * @return      Command Status.
  */
  extern bStatus_t  LL_SetTxPowerLevel( u8 power );
+
+/*******************************************************************************
+ * @fn          BLE_ReadRssi
+ *
+ * @brief       read rssi
+ *
+ *
+ * input parameters
+ *
+ * @param       None.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      the value of rssi.
+ */
+extern s8 BLE_ReadRssi( void ) ;
+
+/*******************************************************************************
+ * @fn          BLE_PAControlInit
+ *
+ * @brief       pa control init
+ *
+ *
+ * input parameters
+ *
+ * @param       paControl - pa control parameters(global variable)
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      Command Status.
+ */
+extern void BLE_PAControlInit( blePaControlConfig_t *paControl );
+
+/*******************************************************************************
+ * @fn          BLE_RegInit
+ *
+ * @brief       ble register reset and rf calibration 
+ *
+ * input parameters
+ *
+ * @param          - 
+ *
+ * output parameters
+ *
+ * @param       
+ *
+ * @return      None.
+ */
+extern void BLE_RegInit( void );
 
 /*******************************************************************************
  * @fn          BLE_LibInit

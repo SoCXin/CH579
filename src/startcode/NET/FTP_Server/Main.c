@@ -66,6 +66,11 @@ const UINT8 GWIPAddr[4] = {192,168,111,191};                                    
 const UINT8 IPMask[4] = {255,255,255,0};                                        /* CH579子网掩码 */
 //UINT8 DESIP[4] = {192,168,111,100};                                           /* 目的IP地址 */
 
+/* 网口灯定义 PB口低十六位有效 */
+UINT16 CH57xNET_LEDCONN=0x0010;                                                 /* 连接指示灯 PB4 */
+UINT16 CH57xNET_LEDDATA=0x0080;                                                 /* 通讯指示灯 PB7 */ 
+
+
 /* 变量相关定义 */
 extern FTP ftp;        
 char  UserName[16];                                                             /* 用于保存用户名 */
@@ -466,7 +471,7 @@ void CH57xNET_FTPConnect( void )
 	NVIC_EnableIRQ(ETH_IRQn);
 	                                                                            /* 初始化中断 */
 	while ( CH57xInf.PHYStat < 2 ) 
-		DelsyMs(50);
+		DelayMs(50);
     CH57xNET_FTPCtlServer( );
 }
 
@@ -481,7 +486,7 @@ void CH57xNET_FTPConnect( void )
 void SystemClock_UART1_init(void)
 {
     PWR_UnitModCfg(ENABLE, UNIT_SYS_PLL);                                      /* PLL上电 */
-    DelsyMs(3); 
+    DelayMs(3); 
     SetSysClock(CLK_SOURCE_HSE_32MHz);                                          /* 外部晶振 PLL 输出32MHz */
     GPIOA_SetBits( GPIO_Pin_9 );
     GPIOA_ModeCfg( GPIO_Pin_9, GPIO_ModeOut_PP_5mA );                           /* 串口1的IO口设置 */

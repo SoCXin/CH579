@@ -44,6 +44,41 @@ typedef enum
 	
 }LClk32KTypeDef;
 
+typedef enum
+{
+	HSE_RCur_75 = 0,
+	HSE_RCur_100,
+    HSE_RCur_125,
+    HSE_RCur_150
+	
+}HSECurrentTypeDef;
+
+typedef enum
+{
+	HSECap_10p = 0,
+	HSECap_12p,  HSECap_14p,  HSECap_16p,  HSECap_18p,  
+    HSECap_20p,  HSECap_22p,  HSECap_24p
+	
+}HSECapTypeDef;
+
+typedef enum
+{
+	LSE_RCur_70 = 0,
+	LSE_RCur_100,
+    LSE_RCur_140,
+    LSE_RCur_200
+	
+}LSECurrentTypeDef;
+
+typedef enum
+{
+	LSECap_2p = 0,
+	LSECap_13p,  LSECap_14p,  LSECap_15p,  LSECap_16p,  
+    LSECap_17p,  LSECap_18p,  LSECap_19p,  LSECap_20p,
+    LSECap_21p,  LSECap_22p,  LSECap_23p,  LSECap_24p,
+    LSECap_25p,  LSECap_26p,  LSECap_27p
+	
+}LSECapTypeDef;
 
 #define  MAX_DAY		0x00004000 
 #define	 MAX_2_SEC		0x0000A8C0
@@ -92,15 +127,14 @@ void SetSysClock( SYS_CLKTypeDef sc);			/* 重设系统运行时钟 */
 UINT32 GetSysClock( void );						/* 获取当前系统时钟 */	
 void HClk32M_Select( HClk32MTypeDef hc);		/* 32M 高频时钟来源 */
 void LClk32K_Select( LClk32KTypeDef hc);		/* 32K 低频时钟来源 */
+
+void HSECFG_Current( HSECurrentTypeDef c );     /* HSE晶体 偏置电流配置 */
+void HSECFG_Capacitance( HSECapTypeDef c );     /* HSE晶体 负载电容配置 */
+void LSECFG_Current( LSECurrentTypeDef c );     /* LSE晶体 偏置电流配置 */
+void LSECFG_Capacitance( LSECapTypeDef c );     /* LSE晶体 负载电容配置 */
+
 UINT16 Calibration_LSI( void );				/* 外部32M时钟校准内部32K时钟 */
 
-
-/* 内部 32KHz 时钟校准 */
-/* 外部 32KHz 时钟谐振控制 */
-/* 内部 32MHz 时钟校准 */
-/* 外部 32MHz 时钟谐振控制 */
-/* PLL 配置 */	 
-	 
 	 
 void RTC_InitTime( UINT32 h, UINT16 m, UINT16 s );			/* RTC时钟初始化当前时间 */
 void RTC_GetTime( PUINT32 ph, PUINT16 pm, PUINT16 ps );		/* 获取当前时间 */

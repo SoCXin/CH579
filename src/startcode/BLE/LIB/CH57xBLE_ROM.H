@@ -1,7 +1,7 @@
 /********************************** (C) COPYRIGHT ******************************
 * File Name         : CH57xBLE_ROM.H
 * Author            : WCH
-* Version           : V1.43
+* Version           : V1.44
 * Date              : 2020/04/11
 * Description       : head file
 *                    Address Space CH579
@@ -141,6 +141,16 @@ typedef struct  tag_ble_config
   pfnLibStatusErrorCB staCB;         // Register a program that library status callback
 } bleConfig_t;                       // Library init call BLE_LibInit function
 
+/* BLE pa control config struct */
+typedef struct  tag_ble_pa_control_config
+{
+	u32 txEnableGPIO;        // tx enable gpio register
+	u32 txDisableGPIO;       // tx disable gpio register
+	u32 tx_pin;              // tx pin define
+	u32 rxEnableGPIO;        // rx enable gpio register
+	u32 rxDisableGPIO;       // rx disable gpio register
+	u32 rx_pin;              // tx pin define
+}blePaControlConfig_t;
 
 // defined for all task
 #define SYS_EVENT_MSG                   (0x8000)  // A message is waiting event
@@ -954,6 +964,24 @@ extern const u8 VER_LIB[];    // LIB version
 #define GAPBOND_FAIL_TERMINATE_LINK               0x02 //!< Terminate link upon unsuccessful bonding
 #define GAPBOND_FAIL_TERMINATE_ERASE_BONDS        0x03 //!< Terminate link and erase all existing bonds on device upon unsuccessful bonding
 
+#define GAP_BOND_REC_ID_OFFSET              0 //!< NV ID for the main bonding record
+#define GAP_BOND_LOCAL_LTK_OFFSET           1 //!< NV ID for the bonding record's local LTK information
+#define GAP_BOND_DEV_LTK_OFFSET             2 //!< NV ID for the bonding records' device LTK information
+#define GAP_BOND_DEV_IRK_OFFSET             3 //!< NV ID for the bonding records' device IRK
+#define GAP_BOND_DEV_CSRK_OFFSET            4 //!< NV ID for the bonding records' device CSRK
+#define GAP_BOND_DEV_SIGN_COUNTER_OFFSET    5 //!< NV ID for the bonding records' device Sign Counter
+
+#define GAP_BOND_REC_IDS                    6
+
+// Macros to calculate the index/offset in to NV space
+#define calcNvID(Idx, offset)               (((((Idx) * GAP_BOND_REC_IDS) + (offset))) + BLE_NVID_GAP_BOND_START)
+#define mainRecordNvID(bondIdx)             (calcNvID((bondIdx), GAP_BOND_REC_ID_OFFSET))
+#define localLTKNvID(bondIdx)               (calcNvID((bondIdx), GAP_BOND_LOCAL_LTK_OFFSET))
+#define devLTKNvID(bondIdx)                 (calcNvID((bondIdx), GAP_BOND_DEV_LTK_OFFSET))
+#define devIRKNvID(bondIdx)                 (calcNvID((bondIdx), GAP_BOND_DEV_IRK_OFFSET))
+#define devCSRKNvID(bondIdx)                (calcNvID((bondIdx), GAP_BOND_DEV_CSRK_OFFSET))
+#define devSignCounterNvID(bondIdx)         (calcNvID((bondIdx), GAP_BOND_DEV_SIGN_COUNTER_OFFSET))
+
 /*********************************************************************
  * TYPEDEFS
  */
@@ -1410,7 +1438,7 @@ typedef struct
  */
 typedef struct
 {
-  uint8 len;         //!< Length of UUID (2 or 6)
+  uint8 len;         //!< Length of UUID (2 or 16)
   const uint8 *uuid; //!< Pointer to UUID
 } gattAttrType_t;
 
@@ -3961,6 +3989,155 @@ typedef struct  tag_rf_config
  * @return      0 - success.
  */
 #define    GAPRole_BroadcasterSetCB  ((  void  (*)  (gapRolesBroadcasterCBs_t *pAppCallbacks  ))  BLE_LIB_JT(106) )
+
+/*******************************************************************************
+ * @fn          tmos_snv_read
+ *
+ * @brief       read a data item to NV.
+ *
+ * input parameters
+ *
+ * @param       id   - Valid NV item Id.
+ * @param       len  - Length of data to read.
+ * @param       *pBuf - Data to read.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      SUCCESS if successful, NV_OPER_FAILED if failed.
+ */
+#define		tmos_snv_read	((	bStatus_t	(*)	( u8 id, u8 len, void *pBuf))	BLE_LIB_JT(107) )
+	
+/*******************************************************************************
+ * @fn          BLE_ReadRssi
+ *
+ * @brief       read rssi
+ *
+ *
+ * input parameters
+ *
+ * @param       None.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      the value of rssi.
+ */
+#define		BLE_ReadRssi	((	s8	(*)	( void ))	BLE_LIB_JT(108) )
+	
+/*******************************************************************************
+ * @fn          BLE_PAControlInit
+ *
+ * @brief       pa control init
+ *
+ *
+ * input parameters
+ *
+ * @param       paControl - pa control parameters(global variable)
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      Command Status.
+ */
+#define		BLE_PAControlInit	((	void 	(*)	( blePaControlConfig_t *paControl ))	BLE_LIB_JT(109) )
+	
+/*******************************************************************************
+ * @fn          BLE_RegInit
+ *
+ * @brief       ble register reset and rf calibration 
+ *
+ * input parameters
+ *
+ * @param          - 
+ *
+ * output parameters
+ *
+ * @param       
+ *
+ * @return      None.
+ */
+#define		BLE_RegInit	((	void 	(*)	( void ))	BLE_LIB_JT(110) )
+	
+/*******************************************************************************
+ * @fn          API_LE_ReceiverTestCmd API
+ *
+ * @brief       used to start a test where the DUT receives test reference packets at a fixed interval
+ *
+ * input parameters
+ *
+ * @param       rx_channel
+ *
+ * output parameters
+ *
+ * @param       None
+ *
+ * @return      Command Status.
+ *
+ * Command Complete event
+ */
+#define		API_LE_ReceiverTestCmd	((	bStatus_t	(*)	( u8 rx_channel ))	BLE_LIB_JT(111) )
+
+/*******************************************************************************
+ * @fn          API_LE_ReceiverTestCmd API
+ *
+ * @brief       used to start a test where the DUT generates test reference packets at a fixed interval
+ *
+ * input parameters
+ *
+ * @param       tx_channel - RF channel(0-39)
+ *              len        - test data length
+ *              payload    - test data type
+ *              tx_power   - tx power
+ *
+ * output parameters
+ *
+ * @param       None
+ *
+ * @return      Command Status.
+ *
+ * Command Complete event
+ */
+#define		API_LE_TransmitterTestCmd	((	bStatus_t	(*)	( u8 tx_channel, u8 len, u8 payload, u8 tx_power))	BLE_LIB_JT(112) )
+
+/*******************************************************************************
+ * @fn          API_LE_TestEndCmd API
+ *
+ * @brief       used to stop any test which is in progress
+ *
+ * input parameters
+ *
+ * @param       None
+ *
+ * output parameters
+ *
+ * @param       None
+ *
+ * @return      Command Status.
+ *
+ * Command Complete event
+ */
+#define		API_LE_TestEndCmd	((	bStatus_t	(*)	( void ))	BLE_LIB_JT(113) )
+
+/*******************************************************************************
+ * @fn      API_LE_TestEndCmd API
+ *
+ * @brief   Deregister a service's attribute list and callback functions from
+ *          the GATT Server Application.
+ *
+ *          NOTE: It's the caller's responsibility to free the service attribute
+ *          list returned from this API.
+ *
+ * @param   handle - handle of service to be deregistered
+ * @param   p2pAttrs - pointer to array of attribute records (to be returned)
+ *
+ * @return  SUCCESS: Service deregistered successfully.<BR>
+ *          FAILURE: Service not found.<BR>
+ */
+#define		GATTServApp_DeregisterService	((	bStatus_t	(*)	( u16 handle, gattAttribute_t **p2pAttrs ))	BLE_LIB_JT(114) )
 
 /*
  * END @ Profile API

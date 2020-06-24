@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT *********************************
 * File Name          : CH57xNET.H
-* Author             : WCH
+* Author             : tech9
 * Version            : V1.0
-* Date               : 2018/12/01
+* Date               : 2015/01/15
 * Description        : C Define for CH57xNET.LIB
 *                      Website: http://wch.cn
 *                      Email:   tech@wch.cn         
@@ -30,17 +30,7 @@ extern "C" {
 #ifndef     NULL
 #define     NULL    0
 #endif
-/* 延时替代 */
-#define DelsyMs(x)  mDelaymS(x)
-#define DelsyUs(x)  mDelayuS(x)
-	
-	
-/* LED设置 */
-#define CH57xNET_LEDEN			1
-#define CH57xNET_LEDCONN		0x10
-#define CH57xNET_LEDDATA		0x80
 
-	
 /* Socket的个数 */
 #ifndef CH57xNET_MAX_SOCKET_NUM
 #define CH57xNET_MAX_SOCKET_NUM               4                                 /* Socket的个数，用户可以配置，默认为4个Socket,最大为32 */

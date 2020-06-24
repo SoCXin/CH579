@@ -70,6 +70,12 @@ UINT8 SocketRecvBuf[RECE_BUF_LEN];                                              
 UINT8 MyBuf[RECE_BUF_LEN];                                                      /* 定义一个临时缓冲区 */
 
 
+/* 网口灯定义 PB口低十六位有效 */
+UINT16 CH57xNET_LEDCONN=0x0010;                                                 /* 连接指示灯 PB4 */
+UINT16 CH57xNET_LEDDATA=0x0080;                                                 /* 通讯指示灯 PB7 */ 
+
+
+
 //extern const UINT16 *memp_num;
 
 /*******************************************************************************
@@ -245,6 +251,8 @@ void CH57xNET_HandleGlobalInt(void)
     UINT8 i;
     UINT8 socketinit;
     initstat = CH57xNET_GetGlobalInt();                                         /* 读全局中断状态并清除 */
+	  PRINT("initstat=%x  \r\n",initstat);
+	
     if(initstat & GINT_STAT_UNREACH)                                            /* 不可达中断 */
     {
         PRINT("UnreachCode ：%d\n",CH57xInf.UnreachCode);                       /* 查看不可达代码 */
@@ -253,7 +261,7 @@ void CH57xNET_HandleGlobalInt(void)
     }
    if(initstat & GINT_STAT_IP_CONFLI)                                           /* IP冲突中断 */
    {
-   
+			PRINT("IP_CONFIL\r\n");
    }
    if(initstat & GINT_STAT_PHY_CHANGE)                                          /* PHY改变中断 */
    {
@@ -298,7 +306,7 @@ void Timer0Init(UINT32 time)
 void SystemClock_UART1_init(void)
 {
     PWR_UnitModCfg(ENABLE, UNIT_SYS_PLL);                                      /* PLL上电 */
-    DelsyMs(3); 
+    DelayMs(3); 
     SetSysClock(CLK_SOURCE_HSE_32MHz);                                          /* 外部晶振 PLL 输出32MHz */
     GPIOA_SetBits( GPIO_Pin_9 );
     GPIOA_ModeCfg( GPIO_Pin_9, GPIO_ModeOut_PP_5mA );                           /* 串口1的IO口设置 */
@@ -323,7 +331,7 @@ int main(void)
 	Timer0Init( 10000 );		                                                /* 初始化定时器:10ms */
 	NVIC_EnableIRQ(ETH_IRQn);	
 	while ( CH57xInf.PHYStat < 2 ) {
-		DelsyMs(50);
+		DelayMs(50);
 	}	
     CH57xNET_CreatTcpSocket();                                                  /* 创建TCP Socket */
     PRINT("CH579 TCP client create！\r\n");  	

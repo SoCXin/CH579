@@ -14,6 +14,29 @@
 tmosTaskID halTaskID;
 
 /*******************************************************************************
+ * @fn          Lib_Calibration_LSI
+ *
+ * @brief       内部32k校准
+ *
+ * input parameters
+ *
+ * @param       None.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
+ */
+void Lib_Calibration_LSI( void )
+{
+	if( Calibration_LSI() > 2 )
+	{
+		Calibration_LSI();
+	}
+}
+
+/*******************************************************************************
  * @fn          CH57X_BLEInit
  *
  * @brief       BLE 库初始化
@@ -59,9 +82,9 @@ void CH57X_BLEInit( void )
 	cfg.ConnectNumber  = (PERIPHERAL_MAX_CONNECTION&3)|(CENTRAL_MAX_CONNECTION<<2);
   cfg.srandCB = SYS_GetSysTickCnt;
 #if (defined TEM_SAMPLE)  && (TEM_SAMPLE == TRUE)
-  cfg.tsCB = HAL_GetInterTempValue;
+  cfg.tsCB = HAL_GetInterTempValue;  // 根据温度变化校准RF和内部RC( 大于7摄氏度 )
 #if( CLK_OSC32K )
-  cfg.rcCB = Calibration_LSI; // 内部32K时钟校准  
+  cfg.rcCB = Lib_Calibration_LSI; // 内部32K时钟校准  
 #endif
 #endif
 #if (defined (HAL_SLEEP)) && (HAL_SLEEP == TRUE)
@@ -125,6 +148,17 @@ tmosEvents HAL_ProcessEvent( tmosTaskID task_id, tmosEvents events )
     if (!Hal_KeyIntEnable){        
 			tmos_start_task( halTaskID, HAL_KEY_EVENT, MS1_TO_SYSTEM_TIME(100) );
     }
+		return events ^ HAL_KEY_EVENT;
+#endif
+  }
+  if( events & HAL_REG_INIT_EVENT ){
+#if (defined BLE_CALIBRATION_ENABLE) && (BLE_CALIBRATION_ENABLE == TRUE)	// 校准任务，单次校准耗时小于10ms
+    BLE_RegInit();  // 校准RF
+#if( CLK_OSC32K )	
+    Lib_Calibration_LSI();  // 校准内部RC
+#endif
+    tmos_start_task( halTaskID , HAL_REG_INIT_EVENT ,MS1_TO_SYSTEM_TIME(BLE_CALIBRATION_PERIOD) ); 
+		return events ^ HAL_REG_INIT_EVENT;
 #endif
   }
   if( events & HAL_TEST_EVENT ){
@@ -164,6 +198,9 @@ tmosEvents HAL_ProcessEvent( tmosTaskID task_id, tmosEvents events )
   HAL_KeyInit( );
 #endif
   __enable_irq();
+#if (defined BLE_CALIBRATION_ENABLE) && (BLE_CALIBRATION_ENABLE == TRUE)
+	tmos_start_task( halTaskID , HAL_REG_INIT_EVENT ,MS1_TO_SYSTEM_TIME(BLE_CALIBRATION_PERIOD) );	// 添加校准任务，单次校准耗时小于10ms
+#endif
 //  tmos_start_task( halTaskID , HAL_TEST_EVENT ,1000 ); // 添加一个测试任务
 }
 

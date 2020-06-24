@@ -65,6 +65,11 @@ UINT8 GWIPAddr[4]= {192,168,1,1};                                               
 UINT8 IPMask[4]  = {255,255,255,0};                                             /* CH579子网掩码 */
 UINT8 DESIP[4]   = {192,168,1,200};                                             /* 目的IP地址 */
 
+/* 网口灯定义 PB口低十六位有效 */
+UINT16 CH57xNET_LEDCONN=0x0010;                                                 /* 连接指示灯 PB4 */
+UINT16 CH57xNET_LEDDATA=0x0080;                                                 /* 通讯指示灯 PB7 */ 
+
+
 UINT8 SocketId;                                                                 /* 保存socket索引，可以不用定义 */
 UINT8 SocketRecvBuf[RECE_BUF_LEN];                                              /* socket接收缓冲区 */
 UINT8 MyBuf[RECE_BUF_LEN];                                                      /* 定义一个临时缓冲区 */
@@ -297,7 +302,7 @@ void Timer0Init(UINT32 time)
 void SystemClock_UART1_init(void)
 {
     PWR_UnitModCfg(ENABLE, UNIT_SYS_PLL);                                      /* PLL上电 */
-    DelsyMs(3); 
+    DelayMs(3); 
     SetSysClock(CLK_SOURCE_HSE_32MHz);                                          /* 外部晶振 PLL 输出32MHz */
     GPIOA_SetBits( GPIO_Pin_9 );
     GPIOA_ModeCfg( GPIO_Pin_9, GPIO_ModeOut_PP_5mA );                           /* 串口1的IO口设置 */
@@ -321,11 +326,11 @@ int main(void)
     PRINT("CH57xNETLibInit Success\r\n"); 
 	Timer0Init( 10000 );		                                                /* 初始化定时器:10ms */
 	NVIC_EnableIRQ(ETH_IRQn); 
-	while ( CH57xInf.PHYStat < 2 )DelsyMs(50);
+	while ( CH57xInf.PHYStat < 2 )DelayMs(50);
 	CH57xNET_CreatIPRAWSocket();                                                /* 创建IPRAW */
     mStopIfError(i);                                                            /* 检查错误 */
     PRINT("CH579 IP client create！\r\n");
-	DelsyMs(20);	
+	 DelayMs(20);	
     while(1)
     {
         CH57xNET_MainTask();                                                    /* CH57xNET库主任务函数，需要在主循环中不断调用 */

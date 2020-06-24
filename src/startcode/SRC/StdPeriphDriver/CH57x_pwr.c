@@ -175,73 +175,78 @@ void LowPower_Idle( void )
 
 /*******************************************************************************
 * Function Name  : LowPower_Halt_1
-* Description    : 低功耗-Halt_1模式
+* Description    : 低功耗-Halt_1模式。
+                   此低功耗切到HSI/5时钟运行，唤醒后需要用户自己重新选择系统时钟源
 * Input          : None
 * Return         : None
 *******************************************************************************/
 void LowPower_Halt_1( void )
 {
-	UINT16 t;
-	
-	t = R16_CLK_SYS_CFG;
-    t = t&0xff00;
-    t = t|8;
+    UINT8  x32Kpw, x32Mpw;
+    
+    x32Kpw = R8_XT32K_TUNE;
+    x32Mpw = R8_XT32M_TUNE;
+    x32Mpw = (x32Mpw&0xfc)|0x03;            // 150%额定电流
+    if(R16_RTC_CNT_32K>0x3fff){     // 超过500ms
+        x32Kpw = (x32Kpw&0xfc)|0x01;        // LSE驱动电流降低到额定电流
+    }
+    
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-    R8_SLP_POWER_CTRL &= ~RB_SLP_ROM_PWR_DN;		// flash待机
-    R8_BAT_DET_CTRL = 0;                             // 关闭电压监控
-    R16_CLK_SYS_CFG = t;		        // 降频
+    R8_SLP_POWER_CTRL &= ~RB_SLP_ROM_PWR_DN;		  // flash待机
+    R8_BAT_DET_CTRL = 0;                              // 关闭电压监控
+    R8_XT32K_TUNE = x32Kpw;
+    R8_XT32M_TUNE = x32Mpw;
+    R16_CLK_SYS_CFG = 5;		        // 降频 HSI/5=6.4M
     R8_SAFE_ACCESS_SIG = 0;
-    
+        
     SCB -> SCR |= SCB_SCR_SLEEPDEEP_Msk;				//deep sleep
     __WFI();
     R8_SAFE_ACCESS_SIG = 0;
-    
-    /* HSI做主频 */
-    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-    R16_CLK_SYS_CFG |= (2<<6);			// 32M -> Fsys
-    R8_SAFE_ACCESS_SIG = 0;
+ 
     /* 开启电压监控 */
     PowerMonitor( ENABLE );    
 }
 
 /*******************************************************************************
 * Function Name  : LowPower_Halt_2
-* Description    : 低功耗-Halt_2模式
+* Description    : 低功耗-Halt_2模式。
+                   此低功耗切到HSI/5时钟运行，唤醒后需要用户自己重新选择系统时钟源
 * Input          : None
 * Return         : None
 *******************************************************************************/
 void LowPower_Halt_2( void )
 {
-	UINT16 t;
-	
-	t = R16_CLK_SYS_CFG;
-    t = t&0xff00;
-    t = t|8;
+    UINT8  x32Kpw, x32Mpw;
+    
+    x32Kpw = R8_XT32K_TUNE;
+    x32Mpw = R8_XT32M_TUNE;
+    x32Mpw = (x32Mpw&0xfc)|0x03;            // 150%额定电流
+    if(R16_RTC_CNT_32K>0x3fff){     // 超过500ms
+        x32Kpw = (x32Kpw&0xfc)|0x01;        // LSE驱动电流降低到额定电流
+    }    
+    
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-    R8_SLP_POWER_CTRL |= RB_SLP_ROM_PWR_DN;			// flash停机
-    R8_BAT_DET_CTRL = 0;                             // 关闭电压监控
-    R16_CLK_SYS_CFG = t;		        // 降频
+    R8_SLP_POWER_CTRL |= RB_SLP_ROM_PWR_DN;			  // flash停机
+    R8_BAT_DET_CTRL = 0;                              // 关闭电压监控
+    R8_XT32K_TUNE = x32Kpw;
+    R8_XT32M_TUNE = x32Mpw;
+    R16_CLK_SYS_CFG = 5;		        // 降频 HSI/5=6.4M
     R8_SAFE_ACCESS_SIG = 0;
 
     SCB -> SCR |= SCB_SCR_SLEEPDEEP_Msk;				//deep sleep
     __WFI();
     R8_SAFE_ACCESS_SIG = 0;
-    
-    /* HSI做主频 */
-    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-    R16_CLK_SYS_CFG |= (2<<6);			// 32M -> Fsys
-    R8_SAFE_ACCESS_SIG = 0;
+
     /* 开启电压监控 */
     PowerMonitor( ENABLE );   
 }
 
 /*******************************************************************************
 * Function Name  : LowPower_Sleep
-* Description    : 低功耗-Sleep模式
+* Description    : 低功耗-Sleep模式。
+                   此低功耗切到HSI/5时钟运行，唤醒后需要用户自己重新选择系统时钟源
                    注意调用此函数，DCDC功能强制关闭，唤醒后可以手动再次打开
 * Input          : rm:
                     RB_PWR_RAM2K	-	最后2K SRAM 供电
@@ -252,8 +257,15 @@ void LowPower_Halt_2( void )
 *******************************************************************************/
 void LowPower_Sleep( UINT8 rm )
 {
-	UINT16 t;
-		    
+    UINT8  x32Kpw, x32Mpw;
+    
+    x32Kpw = R8_XT32K_TUNE;
+    x32Mpw = R8_XT32M_TUNE;
+    x32Mpw = (x32Mpw&0xfc)|0x03;            // 150%额定电流
+    if(R16_RTC_CNT_32K>0x3fff){     // 超过500ms
+        x32Kpw = (x32Kpw&0xfc)|0x01;        // LSE驱动电流降低到额定电流
+    } 
+    
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
     R16_POWER_PLAN = RB_PWR_PLAN_EN		    \
@@ -261,31 +273,27 @@ void LowPower_Sleep( UINT8 rm )
                     |RB_PWR_CORE            \
                     |rm;    
     R8_SAFE_ACCESS_SIG = 0;
-    
-    t = R16_CLK_SYS_CFG;
-    t = t&0xff00;
-    t = t|8;
+
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-    R16_CLK_SYS_CFG = t;		        // 降频
-    R8_BAT_DET_CTRL = 0;                             // 关闭电压监控
+    R8_BAT_DET_CTRL = 0;                // 关闭电压监控
+    R8_XT32K_TUNE = x32Kpw;
+    R8_XT32M_TUNE = x32Mpw;
+    R16_CLK_SYS_CFG = 5;		        // 降频 HSI/5=6.4M  
     R8_SAFE_ACCESS_SIG = 0;
 
 	SCB -> SCR |= SCB_SCR_SLEEPDEEP_Msk;				//deep sleep
     __WFI();
     R8_SAFE_ACCESS_SIG = 0;
-    
-    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-    R16_CLK_SYS_CFG |= (2<<6);			// 32M -> Fsys
-    R8_SAFE_ACCESS_SIG = 0;
+
     /* 开启电压监控 */
     PowerMonitor( ENABLE );    
 }
 
 /*******************************************************************************
 * Function Name  : LowPower_Shutdown
-* Description    : 低功耗-Shutdown模式
+* Description    : 低功耗-Shutdown模式。
+                   此低功耗切到HSI/5时钟运行，唤醒后需要用户自己重新选择系统时钟源
                    注意调用此函数，DCDC功能强制关闭，唤醒后可以手动再次打开
 * Input          : rm:
                     RB_PWR_RAM2K	-	最后2K SRAM 供电
@@ -294,8 +302,15 @@ void LowPower_Sleep( UINT8 rm )
 *******************************************************************************/
 void LowPower_Shutdown( UINT8 rm )
 {	
-	UINT16 t;
-		
+    UINT8  x32Kpw, x32Mpw;
+    
+    x32Kpw = R8_XT32K_TUNE;
+    x32Mpw = R8_XT32M_TUNE;
+    x32Mpw = (x32Mpw&0xfc)|0x03;            // 150%额定电流
+    if(R16_RTC_CNT_32K>0x3fff){     // 超过500ms
+        x32Kpw = (x32Kpw&0xfc)|0x01;        // LSE驱动电流降低到额定电流
+    }
+    
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
     R16_POWER_PLAN = RB_PWR_PLAN_EN		    \
@@ -303,24 +318,18 @@ void LowPower_Shutdown( UINT8 rm )
                     |rm;
     R8_SAFE_ACCESS_SIG = 0; 
 
-    t = R16_CLK_SYS_CFG;
-    t = t&0xff00;
-    t = t|8;
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-    R16_CLK_SYS_CFG = t;		        // 降频
-    R8_BAT_DET_CTRL = 0;                             // 关闭电压监控
+    R8_BAT_DET_CTRL = 0;                // 关闭电压监控
+    R8_XT32K_TUNE = x32Kpw;
+    R8_XT32M_TUNE = x32Mpw;
+    R16_CLK_SYS_CFG = 5;		        // 降频 HSI/5=6.4M    
     R8_SAFE_ACCESS_SIG = 0;    
 
 	SCB -> SCR |= SCB_SCR_SLEEPDEEP_Msk;				//deep sleep
     __WFI();
     R8_SAFE_ACCESS_SIG = 0;
 
-    /* HSI做主频 */
-    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-    R16_CLK_SYS_CFG |= (2<<6);			// 32M -> Fsys
-    R8_SAFE_ACCESS_SIG = 0;
     /* 开启电压监控 */
     PowerMonitor( ENABLE );   
 }
@@ -357,12 +366,9 @@ void EnterCodeUpgrade( void )
     R8_RTC_MODE_CTRL = 0x2f;    // 进入boot下载必要条件
     R8_SAFE_ACCESS_SIG = 0;
 	
-    t = R16_CLK_SYS_CFG;
-    t = t&0xff00;
-    t = t|8;
 	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-    R16_CLK_SYS_CFG = t;		        // 降频
+    R16_CLK_SYS_CFG = 5;		        // 降频 HSI/5=6.4M    
     R8_SAFE_ACCESS_SIG = 0;
     	
 /* ready to BOOT */	

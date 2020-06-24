@@ -54,7 +54,7 @@ __align(4)UINT8 Mem_ArpTable[CH57xNET_RAM_ARP_TABLE_SIZE];
 /* 本演示程序的相关宏 */
 #define RECE_BUF_LEN                          536                               /* 接收缓冲区的大小 */
 #define READ_RECV_BUF_MODE                    0                                 /* socket接收缓冲区读取模式，1：复制，0：不复制 */
-
+										 									 
 UINT8 SocketRecvBuf[CH57xNET_MAX_SOCKET_NUM][RECE_BUF_LEN];                     /* socket接收缓冲区 */
 /* CH579相关定义 */                                                                   
 UINT8 MACAddr[6]  = {0x84,0x21,0x04,0x05,0x06,0x07};                            /* CH579MAC地址 */ 
@@ -69,6 +69,10 @@ char  ListName[24];                                                             
 char  ListMkd[24];                                                              /* 用于保存新创建的目录名 */
 char  FileName[24];                                                             /* 用于保存文件名 */
 char  CharIP[17];                                                               /* 用于保存转换成字符的IP地址 */
+
+/* 网口灯定义 PB口低十六位有效 */
+UINT16 CH57xNET_LEDCONN=0x0010;                                                 /* 连接指示灯 PB4 */
+UINT16 CH57xNET_LEDDATA=0x0080;                                                 /* 通讯指示灯 PB7 */ 
 
 UINT8 SocketId;                                                                 /* 保存socket索引，可以不用定义 */
 UINT8 gPort;                                                                    /* 用于改变端口值 */
@@ -439,7 +443,7 @@ void CH57xNET_FTPInit( void )
     i = CH57xNET_LibInit(IPAddr,GWIPAddr,IPMask,MACAddr);                       /* 库初始化 */
     mStopIfError(i);                                                            /* 检查错误 */
     PRINT("CH57xNET_LibInit Success\n");   
-    DelsyMs(50);
+    DelayMs(50);
     Timer0Init( 10000 );		// 初始化定时器:10ms
 	NVIC_EnableIRQ(ETH_IRQn);
 }
@@ -454,7 +458,7 @@ void CH57xNET_FTPInit( void )
 void SystemClock_UART1_init(void)
 {
     PWR_UnitModCfg(ENABLE, UNIT_SYS_PLL);                                      /* PLL上电 */
-    DelsyMs(3); 
+    DelayMs(3); 
     SetSysClock(CLK_SOURCE_HSE_32MHz);                                          /* 外部晶振 PLL 输出32MHz */
     GPIOA_SetBits( GPIO_Pin_9 );
     GPIOA_ModeCfg( GPIO_Pin_9, GPIO_ModeOut_PP_5mA );                           /* 串口1的IO口设置 */

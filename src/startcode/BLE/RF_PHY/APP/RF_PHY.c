@@ -131,8 +131,8 @@ void RF_Init( void )
   rfConfig_t rfConfig;
   
   taskID = TMOS_ProcessEventRegister( RF_ProcessEvent );
-  rfConfig.TxAccessAddress = 0x66666666;
-  rfConfig.RxAccessAddress = 0x66666666;
+  rfConfig.TxAccessAddress = 0x71764129;	// 禁止使用0x55555555以及0xAAAAAAAA ( 建议不超过24次位反转，且不超过连续的6个0或1 )
+  rfConfig.RxAccessAddress = 0x71764129;	// 禁止使用0x55555555以及0xAAAAAAAA ( 建议不超过24次位反转，且不超过连续的6个0或1 )
   rfConfig.TxCRCInit = 0x555555;
   rfConfig.RxCRCInit = 0x555555;
   rfConfig.Channel = 8;

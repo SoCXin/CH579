@@ -1,12 +1,19 @@
 /********************************** (C) COPYRIGHT *******************************
 * File Name          : Main.c
 * Author             : WCH
-* Version            : V1.1
-* Date               : 2020/03/18
+* Version            : V1.2
+* Date               : 2020/05/27
 * Description 		 : 系统睡眠模式并唤醒演示：GPIOA_6和GPIOA_5作为唤醒源，共6种睡眠等级
 *******************************************************************************/
 
-/* 注意：使用低功耗（Idle模式除外）睡眠唤醒后，需要重新配置系统时钟，否则使用的是32M时钟分频，4M主频 */
+/* 
+注意：使用低功耗（Idle模式除外）睡眠唤醒后，需要重新配置系统时钟，否则使用的是内部32M时钟5分频，6.4M主频 
+切换到外部HSE直接做主频或者间接方式（送入PLL再通过PLL分频做主频），唤醒后，延时1.2ms（一般），再切换用于HSE起振稳定。
+切换到内部HSI直接做主频或者间接方式（送入PLL再通过PLL分频做主频），唤醒后，无需等待时间。
+
+注意：切换到HSE时钟源，所需等待稳定时间和选择的外置晶体参数有关，选择一款新的晶体最好阅读厂家提供的晶体及其
+负载电容参数值。通过配置R8_XT32M_TUNE寄存器，可以配置不同的负载电容和偏置电流，调整晶体稳定时间。
+*/
 
 #include "CH57x_common.h"
 
@@ -19,7 +26,8 @@ void DebugInit(void)
 
 int main()
 {
-    SetSysClock( CLK_SOURCE_HSE_32MHz );        // 设置外部32M做主频
+    DelayMs(2); 
+    SetSysClock( CLK_SOURCE_HSE_32MHz );            // 设置外部32M做主频
     GPIOA_ModeCfg( GPIO_Pin_All, GPIO_ModeIN_PU );
     GPIOB_ModeCfg( GPIO_Pin_All, GPIO_ModeIN_PU );
     
@@ -49,7 +57,21 @@ int main()
     PRINT( "Halt_1 mode sleep \n");   
     DelayMs(1);
     LowPower_Halt_1();
-    SetSysClock( CLK_SOURCE_HSE_32MHz );  // 切换到原始时钟
+/*
+使用HSI/5=6.4M睡眠，唤醒时间大概需要 2048Tsys≈330us
+HSE起振一般不超过1.2ms(500us-1200us)，所以切换到外部HSE，需要 1.2ms-330us 这个时间可以保证HSE足够稳定，一般用于蓝牙
+DelayUs()函数时基于32M时钟的书写，此时主频为6.4M，所以 DelayUs((1200-330)/5)    
+*/
+    if(!(R8_HFCK_PWR_CTRL&RB_CLK_XT32M_PON)) {     // 是否HSE上电
+        PWR_UnitModCfg( ENABLE, UNIT_SYS_HSE );   // HSE上电
+        DelayUs((1200)/5);
+    }
+    else if(!(R16_CLK_SYS_CFG&RB_CLK_OSC32M_XT)){   // 是否选择 HSI/5 做时钟源
+        DelayUs((1200-330)/5);
+    } 
+    HSECFG_Current( HSE_RCur_100 );     // 降为额定电流(低功耗函数中提升了HSE偏置电流)
+    DelayUs(5/5);                       // 等待稳定 1-5us
+    SetSysClock( CLK_SOURCE_HSE_32MHz );
     PRINT( "wake.. \n"); 
     DelayMs(500);    
 #endif    
@@ -58,7 +80,21 @@ int main()
     PRINT( "Halt_2 mode sleep \n");   
     DelayMs(1);
     LowPower_Halt_2();
-    SetSysClock( CLK_SOURCE_HSE_32MHz );  // 切换到原始时钟
+/*
+使用HSI/5=6.4M睡眠，唤醒时间大概需要 2048Tsys≈330us
+HSE起振一般不超过1.2ms(500us-1200us)，所以切换到外部HSE，需要 1.2ms-330us 这个时间可以保证HSE足够稳定，一般用于蓝牙
+DelayUs()函数时基于32M时钟的书写，此时主频为6.4M，所以 DelayUs((1200-330)/5)    
+*/
+    if(!(R8_HFCK_PWR_CTRL&RB_CLK_XT32M_PON)) {     // 是否HSE上电
+        PWR_UnitModCfg( ENABLE, UNIT_SYS_HSE );   // HSE上电
+        DelayUs((1200)/5);
+    }
+    else if(!(R16_CLK_SYS_CFG&RB_CLK_OSC32M_XT)){   // 是否选择 HSI/5 做时钟源
+        DelayUs((1200-330)/5);
+    } 
+    HSECFG_Current( HSE_RCur_100 );     // 降为额定电流(低功耗函数中提升了HSE偏置电流)
+    DelayUs(5/5);                       // 等待稳定 1-5us
+    SetSysClock( CLK_SOURCE_HSE_32MHz );
     PRINT( "wake.. \n"); 
     DelayMs(500);    
 #endif    
@@ -67,7 +103,21 @@ int main()
     PRINT( "sleep mode sleep \n");   
     DelayMs(1);
     LowPower_Sleep( RB_PWR_RAM14K|RB_PWR_RAM2K );       //只保留14+2K SRAM 供电
-    SetSysClock( CLK_SOURCE_HSE_32MHz );  // 切换到原始时钟
+/*
+使用HSI/5=6.4M睡眠，唤醒时间大概需要 2048Tsys≈330us
+HSE起振一般不超过1.2ms(500us-1200us)，所以切换到外部HSE，需要 1.2ms-330us 这个时间可以保证HSE足够稳定，一般用于蓝牙
+DelayUs()函数时基于32M时钟的书写，此时主频为6.4M，所以 DelayUs((1200-330)/5)    
+*/
+    if(!(R8_HFCK_PWR_CTRL&RB_CLK_XT32M_PON)) {     // 是否HSE上电
+        PWR_UnitModCfg( ENABLE, UNIT_SYS_HSE );   // HSE上电
+        DelayUs((1200)/5);
+    }
+    else if(!(R16_CLK_SYS_CFG&RB_CLK_OSC32M_XT)){   // 是否选择 HSI/5 做时钟源
+        DelayUs((1200-330)/5);
+    } 
+    HSECFG_Current( HSE_RCur_100 );     // 降为额定电流(低功耗函数中提升了HSE偏置电流)
+    DelayUs(5/5);                       // 等待稳定 1-5us
+    SetSysClock( CLK_SOURCE_HSE_32MHz );
     PRINT( "wake.. \n");      
     DelayMs(500);
 #endif
@@ -76,8 +126,25 @@ int main()
     PRINT( "shut down mode sleep \n");   
     DelayMs(1);
     LowPower_Shutdown( NULL );                          //全部断电，唤醒后复位
-/* 此模式唤醒后会执行复位，所以下面代码不会运行 */
-    SetSysClock( CLK_SOURCE_HSE_32MHz );  // 切换到原始时钟
+/* 
+   此模式唤醒后会执行复位，所以下面代码不会运行，
+   注意要确保系统睡下去再唤醒才是唤醒复位，否则有可能变成IDLE等级唤醒 
+*/
+/*
+使用HSI/5=6.4M睡眠，唤醒时间大概需要 2048Tsys≈330us
+HSE起振一般不超过1.2ms(500us-1200us)，所以切换到外部HSE，需要 1.2ms-330us 这个时间可以保证HSE足够稳定，一般用于蓝牙
+DelayUs()函数时基于32M时钟的书写，此时主频为6.4M，所以 DelayUs((1200-330)/5)    
+*/
+    if(!(R8_HFCK_PWR_CTRL&RB_CLK_XT32M_PON)) {     // 是否HSE上电
+        PWR_UnitModCfg( ENABLE, UNIT_SYS_HSE );   // HSE上电
+        DelayUs((1200)/5);
+    }
+    else if(!(R16_CLK_SYS_CFG&RB_CLK_OSC32M_XT)){   // 是否选择 HSI/5 做时钟源
+        DelayUs((1200-330)/5);
+    } 
+    HSECFG_Current( HSE_RCur_100 );     // 降为额定电流(低功耗函数中提升了HSE偏置电流)
+    DelayUs(5/5);                       // 等待稳定 1-5us
+    SetSysClock( CLK_SOURCE_HSE_32MHz );
     PRINT( "wake.. \n");
     DelayMs(500);
 #endif

@@ -68,6 +68,11 @@ UINT8 IPMask[4]  = {255,255,255,0};                                            /
 UINT8 DESIP[4]   = {58,213,74,190};                                            /* 目的IP地址 */
 UINT16 aport=1000;											                   /* CH579源端口 */
 
+
+/* 网口灯定义 PB口低十六位有效 */
+UINT16 CH57xNET_LEDCONN=0x0010;                                                 /* 连接指示灯 PB4 */
+UINT16 CH57xNET_LEDDATA=0x0080;                                                 /* 通讯指示灯 PB7 */ 
+
 char *username  = "";							                               /* 设备名，每个设备唯一，可用”/“做分级 */
 char *password  = "";								                           /* 服务器登陆密码 */
 char *sub_topic = "";								                           /* 订阅的会话名，为了自发自收，应与发布的会话名相同 */
@@ -530,7 +535,7 @@ void Timer0Init(UINT32 time)
 void SystemClock_UART1_init(void)
 {
     PWR_UnitModCfg(ENABLE, UNIT_SYS_PLL);                                      /* PLL上电 */
-    DelsyMs(3); 
+    DelayMs(3); 
     SetSysClock(CLK_SOURCE_HSE_32MHz);                                          /* 外部晶振 PLL 输出32MHz */
     GPIOA_SetBits( GPIO_Pin_9 );
     GPIOA_ModeCfg( GPIO_Pin_9, GPIO_ModeOut_PP_5mA );                           /* 串口1的IO口设置 */
@@ -557,7 +562,7 @@ int main(void)
 	Transport_Open();
     
 	while ( CH57xInf.PHYStat < 2 ) {
-		DelsyMs(50);
+		DelayMs(50);
 	}	
     PRINT("CH579 MQTT socket create!Subscribed\r\n");  	
     while(1)

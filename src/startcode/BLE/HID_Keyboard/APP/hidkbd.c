@@ -410,6 +410,10 @@ static void hidEmuStateCB( gapRole_States_t newState , gapRoleEvent_t * pEvent )
       {
         PRINT( "Disconnected.. Reason:%x\n",pEvent->linkTerminate.reason );
       }
+      else if( pEvent->gap.opcode == GAP_LINK_ESTABLISHED_EVENT )
+      {
+        PRINT( "Advertising timeout..\n" );
+      }
       break;
 
     case GAPROLE_ERROR:
