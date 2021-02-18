@@ -42,10 +42,10 @@ typedef enum
   */
 typedef enum
 {
-	CAP_NULL = 0,						// 不捕捉
-	Edge_To_Edge,						// 任意边沿之间
-	FallEdge_To_FallEdge,				// 下降沿到下降沿
-	RiseEdge_To_RiseEdge,				// 上升沿到上升沿
+	CAP_NULL = 0,						// 不捕捉 & 不计数
+	Edge_To_Edge,						// 任意边沿之间  &  计数任意边沿
+	FallEdge_To_FallEdge,				// 下降沿到下降沿  & 计数下降沿
+	RiseEdge_To_RiseEdge,				// 上升沿到上升沿  &  计数上升沿
 }CapModeTypeDef;
 
 /**
@@ -59,10 +59,15 @@ typedef enum
 
 
 /****************** TMR0 */
-// 定时和计数
+// 定时功能
 void TMR0_TimerInit( UINT32 t );									/* 定时功能初始化 */	 
 void TMR0_EXTSingleCounterInit( UINT32 c );							/* 外部信号计数功能初始化 */
-#define  TMR0_GetCurrentCount()		R32_TMR0_COUNT	 				/* 获取当前计数值，最大67108864 */
+#define  TMR0_GetCurrentTimer()		R32_TMR0_COUNT	 				/* 获取当前定时器值，最大67108864 */
+
+//计数功能
+void TMR0_CountInit( CapModeTypeDef cap );							/* 外部信号边沿计数初始化 */
+#define TMR0_CountOverflowCfg( cyc )   (R32_TMR0_CNT_END=(cyc+2))	/* 计数统计溢出大小，最大67108862 */
+#define  TMR0_GetCurrentCount()		R32_TMR0_COUNT	 				/* 获取当前计数值，最大67108862 */
 
 // PWM功能
 #define TMR0_PWMCycleCfg( cyc )	    (R32_TMR0_CNT_END=cyc)			/* PWM0 通道输出波形周期配置, 最大67108864 */
@@ -88,7 +93,12 @@ void TMR0_CapInit( CapModeTypeDef cap );							/* 外部信号捕捉功能初始化 */
 // 定时和计数
 void TMR1_TimerInit( UINT32 t );									/* 定时功能初始化 */	 
 void TMR1_EXTSingleCounterInit( UINT32 c );							/* 外部信号计数功能初始化 */
-#define  TMR1_GetCurrentCount()		R32_TMR1_COUNT	 				/* 获取当前计数值，最大67108864 */
+#define  TMR1_GetCurrentTimer()		R32_TMR1_COUNT	 				/* 获取当前定时器值，最大67108864 */
+
+//计数功能
+void TMR1_CountInit( CapModeTypeDef cap );							/* 外部信号边沿计数初始化 */
+#define TMR1_CountOverflowCfg( cyc )   (R32_TMR1_CNT_END=(cyc+2))	/* 计数统计溢出大小，最大67108862 */
+#define  TMR1_GetCurrentCount()		R32_TMR1_COUNT	 				/* 获取当前计数值，最大67108862 */
 
 // PWM功能
 #define TMR1_PWMCycleCfg( cyc )	    (R32_TMR1_CNT_END=cyc)			/* PWM1 通道输出波形周期配置, 最大67108864 */
@@ -115,7 +125,12 @@ void TMR1_DMACfg( UINT8 s, UINT16 startAddr, UINT16 endAddr, DMAModeTypeDef m );
 // 定时和计数
 void TMR2_TimerInit( UINT32 t );									/* 定时功能初始化 */	 
 void TMR2_EXTSingleCounterInit( UINT32 c );							/* 外部信号计数功能初始化 */
-#define  TMR2_GetCurrentCount()		R32_TMR2_COUNT	 				/* 获取当前计数值，最大67108864 */
+#define  TMR2_GetCurrentTimer()		R32_TMR2_COUNT	 				/* 获取当前定时器值，最大67108864 */
+
+//计数功能
+void TMR2_CountInit( CapModeTypeDef cap );							/* 外部信号边沿计数初始化 */
+#define TMR2_CountOverflowCfg( cyc )   (R32_TMR2_CNT_END=(cyc+2))	/* 计数统计溢出大小，最大67108862 */
+#define  TMR2_GetCurrentCount()		R32_TMR2_COUNT	 				/* 获取当前计数值，最大67108862 */
 
 // PWM功能
 #define TMR2_PWMCycleCfg( cyc )	    (R32_TMR2_CNT_END=cyc)			/* PWM2 通道输出波形周期配置, 最大67108864 */
@@ -142,7 +157,12 @@ void TMR2_DMACfg( UINT8 s, UINT16 startAddr, UINT16 endAddr, DMAModeTypeDef m );
 // 定时和计数
 void TMR3_TimerInit( UINT32 t );									/* 定时功能初始化 */	 
 void TMR3_EXTSingleCounterInit( UINT32 c );							/* 外部信号计数功能初始化 */
-#define  TMR3_GetCurrentCount()		R32_TMR3_COUNT	 				/* 获取当前计数值，最大67108864 */
+#define  TMR3_GetCurrentTimer()		R32_TMR3_COUNT	 				/* 获取当前定时器值，最大67108864 */
+
+//计数功能
+void TMR3_CountInit( CapModeTypeDef cap );							/* 外部信号边沿计数初始化 */
+#define TMR3_CountOverflowCfg( cyc )   (R32_TMR3_CNT_END=(cyc+2))	/* 计数统计溢出大小，最大67108862 */
+#define  TMR3_GetCurrentCount()		R32_TMR3_COUNT	 				/* 获取当前计数值，最大67108862 */
 
 // PWM功能
 #define TMR3_PWMCycleCfg( cyc )	    (R32_TMR3_CNT_END=cyc)			/* PWM3 通道输出波形周期配置, 最大67108864 */

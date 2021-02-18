@@ -113,6 +113,14 @@ static uint8 scanRspData[] =
   LO_UINT16( DEFAULT_DESIRED_MAX_CONN_INTERVAL ),   // 1s
   HI_UINT16( DEFAULT_DESIRED_MAX_CONN_INTERVAL ),
 
+  // service UUIDs
+  0x05,   // length of this data
+  GAP_ADTYPE_16BIT_MORE,
+  LO_UINT16(HID_SERV_UUID),
+  HI_UINT16(HID_SERV_UUID),
+  LO_UINT16(BATT_SERV_UUID),
+  HI_UINT16(BATT_SERV_UUID),
+	
   // Tx power level
   0x02,   // length of this data
   GAP_ADTYPE_POWER_LEVEL,
@@ -131,15 +139,7 @@ static uint8 advertData[] =
   0x03,   // length of this data
   GAP_ADTYPE_APPEARANCE,
   LO_UINT16(GAP_APPEARE_HID_KEYBOARD),
-  HI_UINT16(GAP_APPEARE_HID_KEYBOARD),
-
-  // service UUIDs
-  0x05,   // length of this data
-  GAP_ADTYPE_16BIT_MORE,
-  LO_UINT16(HID_SERV_UUID),
-  HI_UINT16(HID_SERV_UUID),
-  LO_UINT16(BATT_SERV_UUID),
-  HI_UINT16(BATT_SERV_UUID)
+  HI_UINT16(GAP_APPEARE_HID_KEYBOARD)
 };
 
 // Device name attribute value

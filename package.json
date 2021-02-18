@@ -1,8 +1,0 @@
-{
-    "name":"CH579",
-    "Core":"Cortex M0",
-    "Vendor":"wch",
-    "description":"Cortex M0 CH579 MCU",
-    "url":"https://github.com/SoCXin/CH579",
-    "version":"1.0.0"
-}

@@ -95,6 +95,9 @@
 // Default read or write timer delay in 0.625ms
 #define DEFAULT_READ_OR_WRITE_DELAY           1600
 
+// Default write CCCD delay in 0.625ms
+#define DEFAULT_WRITE_CCCD_DELAY           		1600
+
 // Establish link timeout in 0.625ms
 #define ESTABLISH_LINK_TIMEOUT            		3200
 
@@ -112,7 +115,8 @@ enum
 {
   BLE_DISC_STATE_IDLE,                // Idle
   BLE_DISC_STATE_SVC,                 // Service discovery
-  BLE_DISC_STATE_CHAR                 // Characteristic discovery
+  BLE_DISC_STATE_CHAR,                // Characteristic discovery
+  BLE_DISC_STATE_CCCD                 // client characteristic configuration discovery
 };
 /*********************************************************************
  * TYPEDEFS
@@ -167,6 +171,9 @@ static uint16 centralSvcEndHdl = 0;
 
 // Discovered characteristic handle
 static uint16 centralCharHdl = 0;
+
+// Discovered Client Characteristic Configuration handle
+static uint16 centralCCCDHdl = 0;
 
 // Value to write
 static uint8 centralCharVal = 0x5A;
@@ -366,6 +373,36 @@ uint16 Central_ProcessEvent( uint8 task_id, uint16 events )
     return ( events ^ START_READ_OR_WRITE_EVT );
   }
   
+  if ( events & START_WRITE_CCCD_EVT )
+  {   
+    if( centralProcedureInProgress == FALSE )
+    {
+			// Do a write
+			attWriteReq_t req;
+			
+			req.cmd = FALSE;
+			req.sig = FALSE;
+			req.handle = centralCCCDHdl;
+			req.len = 2;
+			req.pValue = GATT_bm_alloc(centralConnHandle,ATT_WRITE_REQ,req.len,NULL,0);
+			if ( req.pValue != NULL )
+			{
+				req.pValue[0] = 1;
+				req.pValue[1] = 0;
+				
+				if( GATT_WriteCharValue(centralConnHandle,&req,centralTaskId) == SUCCESS )
+				{      
+					centralProcedureInProgress = TRUE;
+				}
+				else
+				{
+					GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
+				}
+      }
+    }
+    return ( events ^ START_WRITE_CCCD_EVT );
+  }
+
   if ( events & START_READ_RSSI_EVT )
   {
     GAPRole_ReadRssiCmd(centralConnHandle);
@@ -452,7 +489,7 @@ static void centralProcessGATTMsg( gattMsgEvent_t *pMsg )
          ( pMsg->msg.errorRsp.reqOpcode == ATT_WRITE_REQ ) ) )
   {
     
-    if ( pMsg->method == ATT_ERROR_RSP == ATT_ERROR_RSP )
+    if ( pMsg->method == ATT_ERROR_RSP )
     {
       uint8 status = pMsg->msg.errorRsp.errCode;
       
@@ -460,13 +497,17 @@ static void centralProcessGATTMsg( gattMsgEvent_t *pMsg )
     }
     else
     {
-      // After a succesful write, display the value that was written and increment value
-      PRINT( "Write sent: %x\n", centralCharVal);      
+      // Write success
+      PRINT( "Write success \n" );      
     }
     
     centralProcedureInProgress = FALSE;    
 
   }
+  else if ( pMsg->method == ATT_HANDLE_VALUE_NOTI )
+	{
+		PRINT("Receive noti: %x\n",*pMsg->msg.handleValueNoti.pValue);
+	}
   else if ( centralDiscState != BLE_DISC_STATE_IDLE )
   {
     centralGATTDiscoveryEvent( pMsg );
@@ -786,13 +827,43 @@ static void centralGATTDiscoveryEvent( gattMsgEvent_t *pMsg )
     {
       centralCharHdl = BUILD_UINT16( pMsg->msg.readByTypeRsp.pDataList[0],
                                        pMsg->msg.readByTypeRsp.pDataList[1] );
-      centralProcedureInProgress = FALSE;
       
       // Start do read or write
       tmos_start_task( centralTaskId, START_READ_OR_WRITE_EVT, DEFAULT_READ_OR_WRITE_DELAY);
       
       // Display Characteristic 1 handle
       PRINT("Found Characteristic 1 handle : %x \n",centralCharHdl);      
+    }
+    if ( ( pMsg->method == ATT_READ_BY_TYPE_RSP  && 
+           pMsg->hdr.status == bleProcedureComplete ) ||
+         ( pMsg->method == ATT_ERROR_RSP ) )
+		{
+			// Discover characteristic
+			centralDiscState = BLE_DISC_STATE_CCCD;
+			req.startHandle = centralSvcStartHdl;
+			req.endHandle = centralSvcEndHdl;
+			req.type.len = ATT_BT_UUID_SIZE;
+			req.type.uuid[0] = LO_UINT16(GATT_CLIENT_CHAR_CFG_UUID);
+			req.type.uuid[1] = HI_UINT16(GATT_CLIENT_CHAR_CFG_UUID);
+
+			GATT_ReadUsingCharUUID( centralConnHandle, &req, centralTaskId );
+		}
+  }    
+  else if ( centralDiscState == BLE_DISC_STATE_CCCD )
+  {
+    // Characteristic found, store handle
+    if ( pMsg->method == ATT_READ_BY_TYPE_RSP && 
+         pMsg->msg.readByTypeRsp.numPairs > 0 )
+    {
+      centralCCCDHdl = BUILD_UINT16( pMsg->msg.readByTypeRsp.pDataList[0],
+                                       pMsg->msg.readByTypeRsp.pDataList[1] );
+      centralProcedureInProgress = FALSE;
+      
+      // Start do write CCCD
+      tmos_start_task( centralTaskId, START_WRITE_CCCD_EVT, DEFAULT_WRITE_CCCD_DELAY);
+      
+      // Display Characteristic 1 handle
+      PRINT("Found client characteristic configuration handle : %x \n",centralCCCDHdl);      
     }
     centralDiscState = BLE_DISC_STATE_IDLE;
   }    

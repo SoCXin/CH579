@@ -22,6 +22,7 @@ void DebugInit(void)
 int main()
 {     
     UINT8  i;
+		UINT32 x = 0;
   
 /* 配置串口调试 */   
     DebugInit();
@@ -68,7 +69,26 @@ int main()
     }printf("\n");
 
 #endif
-    
+#if 1       /* 定时器2，计数器 */
+		GPIOB_ModeCfg( GPIO_Pin_11, GPIO_ModeIN_PD );
+		GPIOPinRemap( ENABLE, RB_PIN_TMR2 );
+		
+		TMR2_CountInit( FallEdge_To_FallEdge );
+		TMR2_CountOverflowCfg( 1000 );                  // 设置计数上限1000
+		
+		/* 开启计数溢出中断，计慢1000个周期进入中断 */   
+		TMR2_ClearITFlag( TMR0_3_IT_CYC_END );
+		NVIC_EnableIRQ(TMR2_IRQn);
+		TMR2_ITCfg( ENABLE, TMR0_3_IT_CYC_END);
+
+		do
+		{
+						/* 约0.5s打印一次当前计数值，如果送入脉冲频率较高，可能很快计数溢出，需要按实际情况修改 */
+				x++;
+				if( !( x & 0xfffff ) )	printf("=%ld ", TMR2_GetCurrentCount());			
+		}while(1); 
+
+#endif
     while(1);    
 }
 
@@ -93,6 +113,18 @@ void TMR1_IRQHandler( void )        // TMR1 定时中断
         printf("*");
     }
 }
+
+void TMR2_IRQHandler(void)
+{
+   if( TMR2_GetITFlag(TMR0_3_IT_CYC_END) ) 
+   {
+       TMR2_ClearITFlag( TMR0_3_IT_CYC_END );
+       /* 计数器计满，硬件自动清零，重新开始计数 */
+       /* 用户可自行添加需要的处理 */
+   }
+   
+}
+
 
 
 

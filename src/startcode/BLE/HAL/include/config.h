@@ -27,8 +27,8 @@
 
 【SLEEP】
 	HAL_SLEEP   									- 是否开启睡眠功能 ( 默认:FALSE )
-	WAKE_UP_RTC_MAX_TIME					- 睡眠唤醒所需时间，根据不同睡眠类型取值可分为：睡眠模式/下电模式 -	65(默认)
-																																								暂停模式					-	65
+	WAKE_UP_RTC_MAX_TIME					- 睡眠唤醒所需时间，根据不同睡眠类型取值可分为：睡眠模式/下电模式 -	50(默认)
+																																								暂停模式					-	50
 																																								空闲模式					-	5
 	
 【TEMPERATION】
@@ -50,7 +50,7 @@
 
 【DATA】
 	BLE_BUFF_MAX_LEN							- 单个连接最大包长度( 默认:27 (ATT_MTU=23)，取值范围[27~251] )
-	BLE_BUFF_NUM									- 控制器缓存的包数量( 默认:10 )
+	BLE_BUFF_NUM									- 控制器缓存的包数量( 默认:5 )
 	BLE_TX_NUM_EVENT							- 单个连接事件最多可以发多少个数据包( 默认:1 )
 	BLE_TX_POWER									- 发射功率( 默认:LL_TX_POWEER_0_DBM (0dBm) )
 	
@@ -69,7 +69,7 @@
 #define HAL_SLEEP										FALSE
 #endif
 #ifndef WAKE_UP_RTC_MAX_TIME
-#define WAKE_UP_RTC_MAX_TIME				65
+#define WAKE_UP_RTC_MAX_TIME				50
 #endif
 #ifndef HAL_KEY
 #define HAL_KEY											FALSE
@@ -102,7 +102,7 @@
 #define BLE_BUFF_MAX_LEN						27
 #endif
 #ifndef BLE_BUFF_NUM
-#define BLE_BUFF_NUM								10
+#define BLE_BUFF_NUM								5
 #endif
 #ifndef BLE_TX_NUM_EVENT
 #define BLE_TX_NUM_EVENT						1

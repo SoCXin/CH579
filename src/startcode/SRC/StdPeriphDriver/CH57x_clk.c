@@ -275,11 +275,11 @@ UINT16 Calibration_LSI( void )
 	}
 	else if( (rev & RB_CLK_SYS_MOD) == (1<<6) ){		// PLL进行分频
 	    calv = (((UINT32)5*480000000/(rev&0x1f)+(CAB_LSIFQ>>1))/CAB_LSIFQ);		
-        CNT_STEP_K = -37/(rev&0x1f);
+        CNT_STEP_K =( -37-((rev&0x1f)-1))/(rev&0x1f);
 	}
 	else if( (rev & RB_CLK_SYS_MOD) == (0<<6) ){		// 32M进行分频
 		calv = ((5*32000000/(rev&0x1f)+(CAB_LSIFQ>>1))/CAB_LSIFQ);	
-        CNT_STEP_K = -3/(rev&0x1f);
+        CNT_STEP_K = ( -3-((rev&0x1f)-1))/(rev&0x1f);
 	}
 	else {												// 32K做主频
 		calv = (5);
@@ -354,26 +354,47 @@ UINT16 Calibration_LSI( void )
 /*******************************************************************************
 * Function Name  : RTCInitTime
 * Description    : RTC时钟初始化当前时间
-* Input          : h: 配置时间 - 小时
-					MAX_H = 393192
+* Input          : y: 配置时间 - 年
+					MAX_Y = BEGYEAR + 44
+					 mon: 配置时间 - 月
+					MAX_MON = 12
+					 d: 配置时间 - 日
+					MAX_D = 31
+
+					 h: 配置时间 - 小时
+					MAX_H = 23
 				   m: 配置时间 - 分钟
 					MAX_M = 59
 				   s: 配置时间 - 秒
-				    MAX_S = 59
+				  MAX_S = 59
 * Return         : None
 *******************************************************************************/
-void RTC_InitTime( UINT32 h, UINT16 m, UINT16 s )
+void RTC_InitTime( UINT16 y, UINT16 mon, UINT16 d, UINT16 h, UINT16 m, UINT16 s )
 {
     UINT32  t;
-    UINT16  day, sec2, t32k;
+    UINT16  year, month, day, sec2, t32k;
 
-    day = h/24;
+		year = y;
+		month = mon;
+		day = 0;
+    while ( year > BEGYEAR )
+    {
+      day += YearLength( year-1 );
+      year--;
+    }
+    while ( month > 1 )
+    {
+      day += monthLength( IsLeapYear( y ), month-2 );
+      month--;
+    }
+ 
+    day += d-1;
     sec2 = (h%24)*1800+m*30+s/2;
     t32k = (s&1)?(0x8000):(0);
     t = sec2;
     t = t<<16 | t32k;
 
-    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		// 进入安全模式
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;		
     R32_RTC_TRIG = day;
     R8_RTC_MODE_CTRL |= RB_RTC_LOAD_HI;
@@ -385,15 +406,21 @@ void RTC_InitTime( UINT32 h, UINT16 m, UINT16 s )
 /*******************************************************************************
 * Function Name  : RTC_GetTime
 * Description    : 获取当前时间
-* Input          : ph: 获取到的时间 - 小时
-					MAX_H = 393192
+* Input          : y: 获取到的时间 - 年
+					MAX_Y = BEGYEAR + 44
+					 mon: 获取到的时间 - 月
+					MAX_MON = 12
+					 d: 获取到的时间 - 日
+					MAX_D = 31
+					 ph: 获取到的时间 - 小时
+					MAX_H = 23
 				   pm: 获取到的时间 - 分钟
 					MAX_M = 59
 				   ps: 获取到的时间 - 秒
-				    MAX_S = 59
+				  MAX_S = 59
 * Return         : None
 *******************************************************************************/
-void RTC_GetTime( PUINT32 ph, PUINT16 pm, PUINT16 ps )
+void RTC_GetTime( PUINT16 py, PUINT16 pmon, PUINT16 pd, PUINT16 ph, PUINT16 pm, PUINT16 ps )
 {
     UINT32  t;
     UINT16  day, sec2, t32k;
@@ -402,8 +429,24 @@ void RTC_GetTime( PUINT32 ph, PUINT16 pm, PUINT16 ps )
     sec2 = R16_RTC_CNT_2S; 
     t32k = R16_RTC_CNT_32K;
 
-    t = sec2*2 + ((t32k<0x8000)?0:1);		// 
-    *ph = day*24 + t/3600;
+    t = sec2*2 + ((t32k<0x8000)?0:1);		
+	
+		*py = BEGYEAR;
+    while ( day >= YearLength( *py ) )
+    {
+      day -= YearLength( *py );
+      (*py)++;
+    }
+		
+    *pmon = 0;
+    while ( day >= monthLength( IsLeapYear( *py ), *pmon ) )
+    {
+      day -= monthLength( IsLeapYear( *py ), *pmon );
+      (*pmon)++;
+    }
+		(*pmon) ++;
+		*pd = day+1;
+    *ph = t/3600;
     *pm = t%3600/60;
     *ps = t%60;
 }
@@ -468,6 +511,7 @@ void RTC_TRIGFunCfg( UINT32 cyc )
     UINT32 t;
 
     t = RTC_GetCycle32k() + cyc;
+    if( t>0xA8C00000)	t -= 0xA8C00000;
     if( t&0xFFFF )	t = t+0x10000;
 
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		

@@ -30,8 +30,9 @@ extern "C"
 #define START_SVC_DISCOVERY_EVT                       0x0008
 #define START_PARAM_UPDATE_EVT                        0x0010
 #define START_READ_OR_WRITE_EVT                       0x0020
-#define START_READ_RSSI_EVT                           0x0040
-#define ESTABLISH_LINK_TIMEOUT_EVT                    0x0080
+#define START_WRITE_CCCD_EVT                          0x0040
+#define START_READ_RSSI_EVT                           0x0080
+#define ESTABLISH_LINK_TIMEOUT_EVT                    0x0100
 
 /*********************************************************************
  * MACROS

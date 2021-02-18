@@ -134,6 +134,8 @@ static void hidDev_ProcessTMOSMsg( tmos_event_hdr_t *pMsg );
 static void hidDevProcessGattMsg( gattMsgEvent_t *pMsg );
 static void hidDevDisconnected( void );
 static void hidDevGapStateCB( gapRole_States_t newState, gapRoleEvent_t * pEvent );
+static void hidDevParamUpdateCB( uint16 connHandle, uint16 connInterval,
+                                 uint16 connSlaveLatency, uint16 connTimeout );
 static void hidDevPairStateCB( uint16 connHandle, uint8 state, uint8 status );
 static void hidDevPasscodeCB( uint8 *deviceAddr, uint16 connectionHandle,
                               uint8 uiInputs, uint8 uiOutputs );
@@ -163,7 +165,7 @@ static gapRolesCBs_t hidDev_PeripheralCBs =
 {
   hidDevGapStateCB,   // Profile State Change Callbacks
   NULL,                // When a valid RSSI is read from controller
-  NULL
+  hidDevParamUpdateCB
 };
 
 // Bond Manager Callbacks
@@ -903,6 +905,24 @@ static void hidDevGapStateCB( gapRole_States_t newState, gapRoleEvent_t * pEvent
 }
 
 /*********************************************************************
+ * @fn      hidDevParamUpdateCB
+ *
+ * @brief   Parameter update complete callback
+ *
+ * @param   connHandle - connect handle
+ *          connInterval - connect interval
+ *          connSlaveLatency - connect slave latency
+ *          connTimeout - connect timeout
+ *
+ * @return  none
+ */
+static void hidDevParamUpdateCB( uint16 connHandle, uint16 connInterval,
+                                 uint16 connSlaveLatency, uint16 connTimeout )
+{
+  PRINT("Update %d - Int 0x%x - Latency %d\n", connHandle, connInterval, connSlaveLatency);
+}
+
+/*********************************************************************
  * @fn      hidDevPairStateCB
  *
  * @brief   Pairing state callback.
@@ -990,11 +1010,7 @@ static void hidDevBattCB( uint8 event )
 {
   if ( event == BATT_LEVEL_NOTI_ENABLED )
   {
-    // if connected start periodic measurement
-    if ( hidDevGapState == GAPROLE_CONNECTED )
-    {
-      tmos_start_task( hidDevTaskId, BATT_PERIODIC_EVT, DEFAULT_BATT_PERIOD );
-    }
+    tmos_start_task( hidDevTaskId, BATT_PERIODIC_EVT, DEFAULT_BATT_PERIOD );
   }
   else if ( event == BATT_LEVEL_NOTI_DISABLED )
   {
@@ -1028,14 +1044,11 @@ static void hidDevScanParamCB( uint8 event )
  */
 static void hidDevBattPeriodicTask( void )
 {
-  if ( hidDevGapState == GAPROLE_CONNECTED )
-  {
-    // perform battery level check
-    Batt_MeasLevel( );
+  // perform battery level check
+  Batt_MeasLevel( );
 
-    // Restart timer
-    tmos_start_task( hidDevTaskId, BATT_PERIODIC_EVT, DEFAULT_BATT_PERIOD );
-  }
+  // Restart timer
+  tmos_start_task( hidDevTaskId, BATT_PERIODIC_EVT, DEFAULT_BATT_PERIOD );
 }
 
 /*********************************************************************

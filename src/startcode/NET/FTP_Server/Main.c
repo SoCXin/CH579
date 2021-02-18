@@ -494,6 +494,25 @@ void SystemClock_UART1_init(void)
 }
 
 /*******************************************************************************
+* Function Name  : GetMacAddr
+* Description    : 系统获取MAC地址
+* Input          : pMAC:指向用来存储Mac地址的缓冲
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void GetMacAddr(UINT8 *pMAC)
+{
+	UINT8 transbuf[6],i;
+	
+	GetMACAddress(transbuf);
+	for(i=0;i<6;i++)
+	{
+		pMAC[5-i]=transbuf[i];
+	
+	}
+}
+
+/*******************************************************************************
 * Function Name  : main
 * Description    : 主函数
 * Input          : None
@@ -503,6 +522,7 @@ void SystemClock_UART1_init(void)
 int main(void) 
 {
     SystemClock_UART1_init();
+	GetMacAddr(MACAddr);
 	CH57xNET_FTPConnect( );                                                     /* 进行TCP FTP控制连接 */	
     while(1)
     {

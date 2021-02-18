@@ -99,21 +99,23 @@ void ImageVectorsCopy(void)
 *******************************************************************************/
 int main( void ) 
 {
+  GPIOA_ModeCfg( GPIO_Pin_All, GPIO_ModeIN_PU );
+  GPIOB_ModeCfg( GPIO_Pin_All&(~(GPIO_Pin_11|GPIO_Pin_10)), GPIO_ModeIN_PU );
 #ifdef DEBUG
-    GPIOA_SetBits(bTXD1);
-    GPIOA_ModeCfg(bTXD1, GPIO_ModeOut_PP_5mA);
-    UART1_DefInit( );
+	GPIOA_SetBits(bTXD1);
+	GPIOA_ModeCfg(bTXD1, GPIO_ModeOut_PP_5mA);
+	UART1_DefInit( );
 #endif   
-    PRINT("%s\n",VER_LIB);
-    ReadImageFlag();
+	PRINT("%s\n",VER_LIB);
+	ReadImageFlag();
 	ImageVectorsCopy();
 	CH57X_BLEInit( );
 	HAL_Init( );
 	GAPRole_PeripheralInit( );
 	Peripheral_Init( ); 
-    while(1){
-        TMOS_SystemProcess( );
-    }
+	while(1){
+			TMOS_SystemProcess( );
+	}
 }
 
 /******************************** endfile @ main ******************************/

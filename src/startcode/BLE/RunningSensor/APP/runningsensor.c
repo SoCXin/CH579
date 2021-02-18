@@ -316,8 +316,6 @@ void RunningSensor_Init( )
 uint16 RunningSensor_ProcessEvent( uint8 task_id, uint16 events )
 {
 
-  VOID task_id; // TMOS required parameter that isn't used in this function
-
   if ( events & SYS_EVENT_MSG )
   {
     uint8 *pMsg;
@@ -327,7 +325,7 @@ uint16 RunningSensor_ProcessEvent( uint8 task_id, uint16 events )
       sensor_ProcessTMOSMsg( (tmos_event_hdr_t *)pMsg );
 
       // Release the TMOS message
-      VOID tmos_msg_deallocate( pMsg );
+       tmos_msg_deallocate( pMsg );
     }
 
     // return unprocessed events
@@ -337,7 +335,7 @@ uint16 RunningSensor_ProcessEvent( uint8 task_id, uint16 events )
   if ( events & START_DEVICE_EVT )
   {
     // Start the Device
-    VOID GAPRole_PeripheralStartDevice( sensor_TaskID, &runningBondCB, &runningPeripheralCB );
+     GAPRole_PeripheralStartDevice( sensor_TaskID, &runningBondCB, &runningPeripheralCB );
 
     return ( events ^ START_DEVICE_EVT );
   }

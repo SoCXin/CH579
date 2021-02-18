@@ -64,7 +64,7 @@ extern "C"
  */
 
 // Callback when a characteristic value has changed
-typedef void (*simpleProfileChange_t)( uint8 paramID );
+typedef void (*simpleProfileChange_t)( uint8 paramID, uint8 *pValue, uint16 len );
 
 typedef struct
 {

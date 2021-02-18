@@ -244,7 +244,6 @@ void SPI0_SlaveRecv( PUINT8 pbuf, UINT16 len )
     
     revlen = len;
     R8_SPI0_CTRL_MOD |= RB_SPI_FIFO_DIR;
-    R16_SPI0_TOTAL_CNT = revlen;
     R8_SPI0_INT_FLAG = RB_SPI_IF_CNT_END;
     while( revlen )
     {
@@ -270,7 +269,6 @@ void SPI0_SlaveTrans( UINT8 *pbuf, UINT16 len )
 
     sendlen = len;
     R8_SPI0_CTRL_MOD &= ~RB_SPI_FIFO_DIR;                     // 设置数据方向为输出 
-    R16_SPI0_TOTAL_CNT = sendlen;                             // 设置要发送的数据长度	
     R8_SPI0_INT_FLAG = RB_SPI_IF_CNT_END;
     while( sendlen )
     {                                         
@@ -284,7 +282,43 @@ void SPI0_SlaveTrans( UINT8 *pbuf, UINT16 len )
     while( R8_SPI0_FIFO_COUNT != 0 );                         // 等待FIFO中的数据全部发送完成 
 }
 
+/*******************************************************************************
+* Function Name  : SPI0_SlaveDMARecv
+* Description    : DMA方式连续接收数据  
+* Input          : pbuf: 待接收数据存放起始地址
+*                  len : 待接收数据长度
+* Return         : None
+*******************************************************************************/
+void SPI0_SlaveDMARecv( PUINT8 pbuf, UINT16 len)
+{
+    R8_SPI0_CTRL_MOD |= RB_SPI_FIFO_DIR;                                      
+    R16_SPI0_DMA_BEG = (UINT32)pbuf;                                           
+    R16_SPI0_DMA_END = (UINT32)(pbuf + len); 
+    R16_SPI0_TOTAL_CNT = len; 
+    R8_SPI0_INT_FLAG = RB_SPI_IF_CNT_END|RB_SPI_IF_DMA_END;
+    R8_SPI0_CTRL_CFG |= RB_SPI_DMA_ENABLE;
+    while(!(R8_SPI0_INT_FLAG & RB_SPI_IF_CNT_END));
+    R8_SPI0_CTRL_CFG &= ~RB_SPI_DMA_ENABLE;
+}
 
+/*******************************************************************************
+* Function Name  : SPI0_SlaveDMATrans
+* Description    : DMA方式连续发送数据  
+* Input          : pbuf: 待发送数据起始地址
+*                  len : 待发送数据长度
+* Return         : None
+*******************************************************************************/
+void SPI0_SlaveDMATrans( PUINT8 pbuf, UINT16 len)
+{                                    
+    R8_SPI0_CTRL_MOD &= ~RB_SPI_FIFO_DIR;     
+    R16_SPI0_DMA_BEG = (UINT32)pbuf;                                           
+    R16_SPI0_DMA_END = (UINT32)(pbuf + len);
+    R16_SPI0_TOTAL_CNT = len; 
+    R8_SPI0_INT_FLAG = RB_SPI_IF_CNT_END|RB_SPI_IF_DMA_END;
+    R8_SPI0_CTRL_CFG |= RB_SPI_DMA_ENABLE;
+    while(!(R8_SPI0_INT_FLAG & RB_SPI_IF_CNT_END));
+    R8_SPI0_CTRL_CFG &= ~RB_SPI_DMA_ENABLE;
+}
 
 
 

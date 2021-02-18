@@ -229,9 +229,9 @@ void CH57xNET_HandleGlobalInt( void )
     initstat = CH57xNET_GetGlobalInt();                                         /* 读全局中断状态并清除 */
     if(initstat & GINT_STAT_UNREACH)                                            /* 不可达中断 */
     {
-        PRINT("UnreachCode ：%d\n",CH579Inf.UnreachCode);                      /* 查看不可达代码 */
-        PRINT("UnreachProto ：%d\n",CH579Inf.UnreachProto);                    /* 查看不可达协议类型 */
-        PRINT("UnreachPort ：%d\n",CH579Inf.UnreachPort);                      /* 查询不可达端口 */       
+        PRINT("UnreachCode ：%d\n",CH57xInf.UnreachCode);                      /* 查看不可达代码 */
+        PRINT("UnreachProto ：%d\n",CH57xInf.UnreachProto);                    /* 查看不可达协议类型 */
+        PRINT("UnreachPort ：%d\n",CH57xInf.UnreachPort);                      /* 查询不可达端口 */       
     }
    if(initstat & GINT_STAT_IP_CONFLI)                                           /* IP冲突中断 */
    {
@@ -466,6 +466,25 @@ void SystemClock_UART1_init(void)
 }
 
 /*******************************************************************************
+* Function Name  : GetMacAddr
+* Description    : 系统获取MAC地址
+* Input          : pMAC:指向用来存储Mac地址的缓冲
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void GetMacAddr(UINT8 *pMAC)
+{
+	UINT8 transbuf[6],i;
+	
+	GetMACAddress(transbuf);
+	for(i=0;i<6;i++)
+	{
+		pMAC[5-i]=transbuf[i];
+	
+	}
+}
+
+/*******************************************************************************
 * Function Name  : main
 * Description    : 主函数
 * Input          : None
@@ -475,6 +494,7 @@ void SystemClock_UART1_init(void)
 int main( void )
 {
 	SystemClock_UART1_init();
+	GetMacAddr(MACAddr);
     CH57xNET_FTPInit( );                                                        /* 初始化 */
     while(1)
     {

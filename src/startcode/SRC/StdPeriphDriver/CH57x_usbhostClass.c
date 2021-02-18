@@ -138,6 +138,8 @@ UINT8 InitRootDevice( void )
                             ThisUsbDev.DeviceStatus = ROOT_DEV_SUCCESS;
                             ThisUsbDev.DeviceType = USB_DEV_CLASS_HUB;
                             PRINT( "USB-HUB Ready\n" );
+                            SetUsbSpeed( 1 );  // 默认为全速
+                            return( ERR_SUCCESS );
                         }
                     }
                 }

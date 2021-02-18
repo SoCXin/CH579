@@ -279,7 +279,6 @@ void RunningService_Init( uint8 task_id )
  */
 uint16 RunningService_ProcessEvent( uint8 task_id, uint16 events )
 {
-  VOID task_id;
 
   if ( events & SYS_EVENT_MSG )
   {
@@ -290,7 +289,7 @@ uint16 RunningService_ProcessEvent( uint8 task_id, uint16 events )
       running_ProcessTMOSMsg( (tmos_event_hdr_t *)pMsg );
 
       // Release the TMOS message
-      VOID tmos_msg_deallocate( pMsg );
+       tmos_msg_deallocate( pMsg );
     }
 
     // return unprocessed events
@@ -600,7 +599,7 @@ static void running_ProcessRSCCmd( uint16 attrHandle, uint8 *pValue, uint8 len )
         // Notify app
         if ( runningServiceCB != NULL )
         {
-          VOID (*runningServiceCB)( RSC_CMD_SET_CUMM_VAL, &totalDistance );
+           (*runningServiceCB)( RSC_CMD_SET_CUMM_VAL, &totalDistance );
         }
       }
       else // characteristic not supported.
@@ -642,7 +641,7 @@ static void running_ProcessRSCCmd( uint16 attrHandle, uint8 *pValue, uint8 len )
         // Notify app
         if ( runningServiceCB != NULL )
         {
-          VOID (*runningServiceCB)( RSC_CMD_UPDATE_SENS_LOC, NULL );
+           (*runningServiceCB)( RSC_CMD_UPDATE_SENS_LOC, NULL );
         }
       }
       else // characteristic not supported.
@@ -760,7 +759,7 @@ static uint8 running_ReadAttrCB( uint16 connHandle, gattAttribute_t *pAttr,
   // Notify app
   if ( runningServiceCB != NULL )
   {
-    VOID (*runningServiceCB)( RSC_READ_ATTR, NULL );
+     (*runningServiceCB)( RSC_READ_ATTR, NULL );
   }
 
   return ( status );
@@ -821,7 +820,7 @@ static bStatus_t running_WriteAttrCB( uint16 connHandle, gattAttribute_t *pAttr,
         // Notify app
         if ( runningServiceCB != NULL )
         {
-          VOID (*runningServiceCB)( RSC_WRITE_ATTR, NULL );
+           (*runningServiceCB)( RSC_WRITE_ATTR, NULL );
         }
       }
       else if ( pAttr->handle == runningAttrTbl[RSC_MEAS_CFG_POS].handle )
@@ -835,7 +834,7 @@ static bStatus_t running_WriteAttrCB( uint16 connHandle, gattAttribute_t *pAttr,
           {
             uint16 charCfg = BUILD_UINT16( pValue[0], pValue[1] );
 
-            VOID (*runningServiceCB)( ((charCfg == GATT_CFG_NO_OPERATION) ?
+             (*runningServiceCB)( ((charCfg == GATT_CFG_NO_OPERATION) ?
                                         RSC_MEAS_NOTI_DISABLED :
                                         RSC_MEAS_NOTI_ENABLED ), NULL );
           }

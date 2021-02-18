@@ -84,6 +84,10 @@ typedef enum
 #define	 MAX_2_SEC		0x0000A8C0
 //#define	 MAX_SEC		0x545FFFFF	
 
+#define BEGYEAR													2020
+#define	IsLeapYear(yr)									(!((yr) % 400) || (((yr) % 100) && !((yr) % 4)))
+#define	YearLength(yr)									(IsLeapYear(yr) ? 366 : 365)
+#define monthLength(lpyr,mon)						((mon==1) ? (28+lpyr) : ((mon>6) ? ((mon&1)?30:31) : ((mon&1)?31:30)))
 
 /**
   * @brief  rtc timer mode period define
@@ -136,8 +140,8 @@ void LSECFG_Capacitance( LSECapTypeDef c );     /* LSE晶体 负载电容配置 */
 UINT16 Calibration_LSI( void );				/* 外部32M时钟校准内部32K时钟 */
 
 	 
-void RTC_InitTime( UINT32 h, UINT16 m, UINT16 s );			/* RTC时钟初始化当前时间 */
-void RTC_GetTime( PUINT32 ph, PUINT16 pm, PUINT16 ps );		/* 获取当前时间 */
+void RTC_InitTime( UINT16 y, UINT16 mon, UINT16 d, UINT16 h, UINT16 m, UINT16 s );			/* RTC时钟初始化当前时间 */
+void RTC_GetTime( PUINT16 py, PUINT16 pmon, PUINT16 pd, PUINT16 ph, PUINT16 pm, PUINT16 ps );		/* 获取当前时间 */
 	 
 void RTC_SetCycle32k( UINT32 cyc );							/* 基于LSE/LSI时钟，配置当前RTC 周期数 */	 
 UINT32 RTC_GetCycle32k( void );				                /* 基于LSE/LSI时钟，获取当前RTC 周期数 */

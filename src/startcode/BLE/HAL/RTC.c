@@ -14,9 +14,6 @@
 /*********************************************************************
  * CONSTANTS
  */
-#define RTC_INIT_TIME_HOUR              0
-#define RTC_INIT_TIME_MINUTE            0
-#define RTC_INIT_TIME_SECEND            0
 
 /***************************************************
  * Global variables
@@ -85,7 +82,7 @@ void HAL_TimeInit( void )
   R8_CK32K_CONFIG    |= RB_CLK_OSC32K_XT | RB_CLK_INT32K_PON | RB_CLK_XT32K_PON;
   R8_SAFE_ACCESS_SIG = 0;
 #endif
-  RTC_InitTime( RTC_INIT_TIME_HOUR, RTC_INIT_TIME_MINUTE, RTC_INIT_TIME_SECEND ); //RTC时钟初始化当前时间
+  RTC_InitTime( 2020, 1, 1, 0, 0, 0 );    //RTC时钟初始化当前时间
   TMOS_TimerInit( 0 );
 }
 

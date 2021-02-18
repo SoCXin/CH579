@@ -56,7 +56,7 @@ tmosEvents TEST_ProcessEvent( tmosTaskID task_id, tmosEvents events )
               payload++;
               TestEnalbe = TRUE;
               HalLedBlink( HAL_LED_1, 0xff, 30 , 4000);
-              API_LE_TransmitterTestCmd( 0, 20, payload&7, 0x15 );
+              API_LE_TransmitterTestCmd( 0, 20, payload&7, 0x15|0x80 );
               PRINT("(key)test start ...\n");
             }
             else{
@@ -81,7 +81,7 @@ tmosEvents TEST_ProcessEvent( tmosTaskID task_id, tmosEvents events )
       payload++;
       TestEnalbe = TRUE;
       HalLedBlink( HAL_LED_1, 0xff, 30 , 4000);
-      API_LE_TransmitterTestCmd( 0, 20, payload&7, 0x15 );
+      API_LE_TransmitterTestCmd( 0, 20, payload&7, 0x15|0x80 );
       tmos_start_task( testTaskID , TEST_EVENT ,MS1_TO_SYSTEM_TIME(20*1000) ); // ≤‚ ‘ ±º‰20s
       PRINT("test start ...\n");
     }

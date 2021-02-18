@@ -29,6 +29,8 @@ __align(4) u32 MEM_BUF[BLE_MEMHEAP_SIZE/4];
 *******************************************************************************/
 int main( void ) 
 {
+  GPIOA_ModeCfg( GPIO_Pin_All, GPIO_ModeIN_PU );
+  GPIOB_ModeCfg( GPIO_Pin_All&(~(GPIO_Pin_11|GPIO_Pin_10)), GPIO_ModeIN_PU );
 #ifdef DEBUG
   GPIOA_SetBits( bTXD1 );
   GPIOA_ModeCfg( bTXD1, GPIO_ModeOut_PP_5mA );

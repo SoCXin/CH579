@@ -114,7 +114,7 @@ static uint8 scanRspData[ ] =
 };
 
 // GAP - Advertisement data (max size = 31 bytes, though this is
-// best kept short to conserve power while advertisting)
+// best kept short to conserve power while advertising)
 static uint8 advertData[] =
 {
   // Flags; this sets the device to use limited discoverable
@@ -144,7 +144,7 @@ static peripheralConnItem_t peripheralConnList;
 static void Peripheral_ProcessTMOSMsg( tmos_event_hdr_t *pMsg );
 static void peripheralStateNotificationCB( gapRole_States_t newState ,gapRoleEvent_t * pEvent);
 static void performPeriodicTask( void );
-static void simpleProfileChangeCB( uint8 paramID );
+static void simpleProfileChangeCB( uint8 paramID, uint8 *pValue, uint16 len );
 static void peripheralParamUpdateCB( uint16 connHandle, uint16 connInterval, 
                                       uint16 connSlaveLatency, uint16 connTimeout );
 static void peripheralInitConnItem( peripheralConnItem_t* peripheralConnList );
@@ -180,7 +180,7 @@ static gapBondCBs_t Peripheral_BondMgrCBs =
 // Simple GATT Profile Callbacks
 static simpleProfileCBs_t Peripheral_SimpleProfileCBs =
 {
-  simpleProfileChangeCB    // Charactersitic value change callback
+  simpleProfileChangeCB    // Characteristic value change callback
 };
 /*********************************************************************
  * PUBLIC FUNCTIONS
@@ -621,10 +621,12 @@ static void peripheralChar4Notify( uint8 *pValue, uint16 len )
  * @brief   Callback from SimpleBLEProfile indicating a value change
  *
  * @param   paramID - parameter ID of the value that was changed.
+ *          pValue - pointer to data that was changed
+ *          len - length of data
  *
  * @return  none
  */
-static void simpleProfileChangeCB( uint8 paramID )
+static void simpleProfileChangeCB( uint8 paramID, uint8 *pValue, uint16 len )
 {
 
   switch( paramID )
@@ -632,7 +634,7 @@ static void simpleProfileChangeCB( uint8 paramID )
     case SIMPLEPROFILE_CHAR1:
 		{
 			uint8 newValue[SIMPLEPROFILE_CHAR1_LEN];
-      SimpleProfile_GetParameter( SIMPLEPROFILE_CHAR1, newValue );
+      tmos_memcpy( newValue, pValue, len );
 			PRINT("profile ChangeCB CHAR1.. \n");
       break;
 		}
@@ -640,7 +642,7 @@ static void simpleProfileChangeCB( uint8 paramID )
     case SIMPLEPROFILE_CHAR3:
 		{
 			uint8 newValue[SIMPLEPROFILE_CHAR3_LEN];
-      SimpleProfile_GetParameter( SIMPLEPROFILE_CHAR3, newValue );
+      tmos_memcpy( newValue, pValue, len );
 			PRINT("profile ChangeCB CHAR3..\n");
       break;
 		}

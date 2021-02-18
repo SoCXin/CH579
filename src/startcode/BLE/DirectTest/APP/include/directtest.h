@@ -37,7 +37,8 @@ extern tmosEvents TEST_ProcessEvent( tmosTaskID task_id, tmosEvents events );
  *              payload    - 测试的数据类型(0-7),8种数据类型。
  *                           0：PRBS9       1：全部为0xF0  2：全部为0xAA  3：PRBS15  
  *                           4：全部为0xFF  5：全部为0x00  6：全部为0x0F  7：全部为0x55 
- *              tx_power   - 测试的发送功率（1-31）对应（-20dBM至3dBm）
+ *              tx_power   - bit0~5: 测试的发送功率（1-31）对应（-20dBM至3dBm）
+ *													 bit7: 1-关白化(接入地址0x71764129);0-开白化(接入地址0x8E86BED9)
  *
  * output parameters
  *

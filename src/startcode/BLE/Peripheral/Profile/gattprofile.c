@@ -709,7 +709,7 @@ static bStatus_t simpleProfile_WriteAttrCB( uint16 connHandle, gattAttribute_t *
   // If a charactersitic value changed then callback function to notify application of change
   if ( (notifyApp != 0xFF ) && simpleProfile_AppCBs && simpleProfile_AppCBs->pfnSimpleProfileChange )
   {
-    simpleProfile_AppCBs->pfnSimpleProfileChange( notifyApp );  
+    simpleProfile_AppCBs->pfnSimpleProfileChange( notifyApp, pValue, len );
   }
   
   return ( status );

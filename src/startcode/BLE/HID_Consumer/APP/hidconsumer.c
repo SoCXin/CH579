@@ -30,8 +30,8 @@
 /*********************************************************************
  * CONSTANTS
  */
-// Param uodate delay
-#define START_PARAM_UPDATE_EVT_DELAY          3200
+// Param update delay
+#define START_PARAM_UPDATE_EVT_DELAY          12800
 
 // HID idle timeout in msec; set to zero to disable timeout
 #define DEFAULT_HID_IDLE_TIMEOUT              60000
@@ -115,6 +115,14 @@ static uint8 scanRspData[] =
   LO_UINT16( DEFAULT_DESIRED_MAX_CONN_INTERVAL ),   // 1s
   HI_UINT16( DEFAULT_DESIRED_MAX_CONN_INTERVAL ),
 
+  // service UUIDs
+  0x05,   // length of this data
+  GAP_ADTYPE_16BIT_MORE,
+  LO_UINT16(HID_SERV_UUID),
+  HI_UINT16(HID_SERV_UUID),
+  LO_UINT16(BATT_SERV_UUID),
+  HI_UINT16(BATT_SERV_UUID),
+	
   // Tx power level
   0x02,   // length of this data
   GAP_ADTYPE_POWER_LEVEL,
@@ -133,15 +141,7 @@ static uint8 advertData[] =
   0x03,   // length of this data
   GAP_ADTYPE_APPEARANCE,
   LO_UINT16(GAP_APPEARE_GENERIC_HID),
-  HI_UINT16(GAP_APPEARE_GENERIC_HID),
-
-  // service UUIDs
-  0x05,   // length of this data
-  GAP_ADTYPE_16BIT_MORE,
-  LO_UINT16(HID_SERV_UUID),
-  HI_UINT16(HID_SERV_UUID),
-  LO_UINT16(BATT_SERV_UUID),
-  HI_UINT16(BATT_SERV_UUID)
+  HI_UINT16(GAP_APPEARE_GENERIC_HID)
 };
 
 // Device name attribute value
@@ -261,7 +261,6 @@ void HidEmu_Init( )
  */
 uint16 HidEmu_ProcessEvent( uint8 task_id, uint16 events )
 {
-  //VOID task_id; // TMOS required parameter that isn't used in this function
 
   if ( events & SYS_EVENT_MSG )
   {
@@ -401,6 +400,12 @@ static void hidEmuStateCB( gapRole_States_t newState , gapRoleEvent_t * pEvent )
       else if( pEvent->gap.opcode == GAP_LINK_ESTABLISHED_EVENT )
       {
         PRINT( "Advertising timeout..\n" );
+      }
+      // Enable advertising
+      {
+        uint8 initial_advertising_enable = TRUE;
+        // Set the GAP Role Parameters
+        GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &initial_advertising_enable );
       }
       break;
 

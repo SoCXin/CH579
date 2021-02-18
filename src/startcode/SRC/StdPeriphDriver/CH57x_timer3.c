@@ -37,6 +37,25 @@ void TMR3_EXTSingleCounterInit( UINT32 c )
 }
 
 /*******************************************************************************
+* Function Name  : TMR3_CountInit
+* Description    : 边沿计数功能初始化
+* Input          : cap: 采集计数类型
+                    CAP_NULL - 不计数
+                    Edge_To_Edge - 计数任意边沿
+                    FallEdge_To_FallEdge - 计数下降沿
+					RiseEdge_To_RiseEdge - 计数上升沿
+* Return         : None
+*******************************************************************************/
+void TMR3_CountInit( CapModeTypeDef cap )
+{
+    R8_TMR3_CTRL_MOD = RB_TMR_ALL_CLEAR;
+    R8_TMR3_CTRL_MOD = RB_TMR_COUNT_EN      \
+                      |RB_TMR_CAP_COUNT     \
+                      |RB_TMR_MODE_IN       \
+                      |(cap<<6);    
+}
+
+/*******************************************************************************
 * Function Name  : TMR3_PWMInit
 * Description    : PWM 输出初始化
 * Input          : pr:  select wave polar 	

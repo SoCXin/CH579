@@ -80,11 +80,7 @@ void RF_2G4StatusCallBack( uint8 sta , uint8 crc, uint8 *rxBuf )
     }
     case RX_MODE_TX_FINISH:
     {
-			uint8 state;
-      RF_Shut();
-      TX_DATA[0]++;
-			state = RF_Rx( TX_DATA,10, 0xFF, 0xFF );
-      PRINT("RX mode.state = %x\n",state);
+      tmos_set_event(taskID, SBP_RF_RF_RX_EVT);
       break;
     }
     case RX_MODE_TX_FAIL:
@@ -121,6 +117,15 @@ uint16 RF_ProcessEvent( uint8 task_id, uint16 events )
     RF_Tx( TX_DATA,10, 0xFF, 0xFF );
     tmos_start_task( taskID , SBP_RF_PERIODIC_EVT ,1000 );
     return events^SBP_RF_PERIODIC_EVT;
+  }
+  if( events & SBP_RF_RF_RX_EVT )
+  {
+    uint8 state;
+    RF_Shut();
+    TX_DATA[0]++;
+    state = RF_Rx( TX_DATA,10, 0xFF, 0xFF );
+    PRINT("RX mode.state = %x\n",state);
+    return events^SBP_RF_RF_RX_EVT;
   }
   return 0;
 }

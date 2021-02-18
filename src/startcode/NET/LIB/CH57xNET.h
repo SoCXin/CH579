@@ -31,6 +31,8 @@ extern "C" {
 #define     NULL    0
 #endif
 
+
+	
 /* Socket的个数 */
 #ifndef CH57xNET_MAX_SOCKET_NUM
 #define CH57xNET_MAX_SOCKET_NUM               4                                 /* Socket的个数，用户可以配置，默认为4个Socket,最大为32 */
@@ -390,6 +392,8 @@ typedef void (*dns_callback)(const char *name, UINT8 *ipaddr, void *callback_arg
 #error "CH57xNET_IP_REASS_PBUFS Error,Please Config CH57xNET_IP_REASS_PBUFS < CH57xNET_NUM_POOL_BUF"
 #endif
 
+
+
 /* 库内部函数声明 */
 
 UINT8 CH57xNET_Init(const UINT8* ip,const UINT8* gwip,const UINT8* mask,const UINT8* macaddr); /* 库初始化 */
@@ -454,6 +458,9 @@ UINT8 CH57xNET_GetHostName(const char *hostname,UINT8 *addr,dns_callback found,v
 void CH57xNET_ConfigKeepLive(struct _KEEP_CFG *cfg);                            /* 配置库KEEP LIVE参数 */
 
 UINT8 CH57xNET_SocketSetKeepLive(UINT8 socindex,UINT8 cfg);                     /* 配置socket KEEP LIVE*/
+
+void CH57xNET_SetHostname(char *name);
+
 #ifdef __cplusplus
 }
 #endif

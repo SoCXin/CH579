@@ -32,6 +32,8 @@ u8C MacAddr[6] = {0x84,0xC2,0xE4,0x03,0x02,0x02};
 *******************************************************************************/
 int main( void ) 
 {
+  GPIOA_ModeCfg( GPIO_Pin_All, GPIO_ModeIN_PU );
+  GPIOB_ModeCfg( GPIO_Pin_All&(~(GPIO_Pin_11|GPIO_Pin_10)), GPIO_ModeIN_PU );
 #ifdef DEBUG
   GPIOA_SetBits(bTXD1);
   GPIOA_ModeCfg(bTXD1, GPIO_ModeOut_PP_5mA);

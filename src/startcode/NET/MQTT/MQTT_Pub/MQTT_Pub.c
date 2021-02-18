@@ -533,6 +533,26 @@ void SystemClock_UART1_init(void)
     GPIOA_ModeCfg( GPIO_Pin_9, GPIO_ModeOut_PP_5mA );                           /* 串口1的IO口设置 */
 	UART1_DefInit( );                                                            /* 串口1初始化 */
 }
+
+/*******************************************************************************
+* Function Name  : GetMacAddr
+* Description    : 系统获取MAC地址
+* Input          : pMAC:指向用来存储Mac地址的缓冲
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void GetMacAddr(UINT8 *pMAC)
+{
+	UINT8 transbuf[6],i;
+	
+	GetMACAddress(transbuf);
+	for(i=0;i<6;i++)
+	{
+		pMAC[5-i]=transbuf[i];
+	
+	}
+}
+
 /*******************************************************************************
 * Function Name  : main
 * Description    : 主函数
@@ -549,6 +569,7 @@ int main(void)
 	payload[i]='a';
 
 	SystemClock_UART1_init();
+	GetMacAddr(MACAddr);
     i = CH57xNET_LibInit(IPAddr,GWIPAddr,IPMask,MACAddr);                       /* 库初始化 */
     mStopIfError(i);                                                            /* 检查错误 */
     PRINT("CH57xNETLibInit Success\r\n");   

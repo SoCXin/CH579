@@ -69,6 +69,9 @@ UINT8 SPI0_SlaveRecvByte( void );			                /* 从机模式，接收一字节数据 
 void SPI0_SlaveTrans( UINT8 *pbuf, UINT16 len );            /* 从机模式，发送多字节数据 */
 void SPI0_SlaveRecv( PUINT8 pbuf, UINT16 len );             /* 从机模式，接收多字节数据  */
 
+void SPI0_SlaveDMATrans( PUINT8 pbuf, UINT16 len);          /* 从机模式，DMA方式发送多字节数据 */
+void SPI0_SlaveDMARecv( PUINT8 pbuf, UINT16 len);           /* 从机模式，DMA方式接收多字节数据 */
+
 // refer to SPI0 interrupt bit define
 #define SPI0_ITCfg(s,f)			((s)?(R8_SPI0_INTER_EN|=f):(R8_SPI0_INTER_EN&=~f))
 #define SPI0_GetITFlag(f)		(R8_SPI0_INT_FLAG&f)		/* 获取中断标志状态，0-未置位，(!0)-触发 */
@@ -87,6 +90,7 @@ UINT8 SPI1_MasterRecvByte( void );                          /* 接收单字节 (buffe
 
 void SPI1_MasterTrans( UINT8 *pbuf, UINT16 len );           /* 使用FIFO连续发送多字节 */	 
 void SPI1_MasterRecv( UINT8 *pbuf, UINT16 len );            /* 使用FIFO连续接收多字节 */
+
 
 // refer to SPI1 interrupt bit define
 #define SPI1_ITCfg(s,f)			((s)?(R8_SPI1_INTER_EN|=f):(R8_SPI1_INTER_EN&=~f))

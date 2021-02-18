@@ -73,6 +73,7 @@ int main()
 #if 0
 /* 设备模式 */ 
     PRINT( "1.spi0 mul slave mode \n");
+    GPIOA_ModeCfg(GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_14|GPIO_Pin_15, GPIO_ModeIN_PU);
     SPI0_SlaveInit(); 
     i = SPI0_SlaveRecvByte();
     SPI0_SlaveSendByte( ~i );

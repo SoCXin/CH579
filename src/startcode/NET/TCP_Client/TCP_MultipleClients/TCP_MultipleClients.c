@@ -147,7 +147,7 @@ void CH57xNET_CreatTcpSocket1(void)
 
    i = CH57xNET_SocketConnect(SocketId1);                                        /* TCP连接 */
    mStopIfError(i);                                                             /* 检查错误 */
-   i = CH57xNET_SetSocketTTL( SocketId1,10 );
+   i = CH57xNET_SetSocketTTL( SocketId1,128 );
    mStopIfError(i);                                                             /* 检查错误 */
 }
 
@@ -426,6 +426,25 @@ void SystemClock_UART1_init(void)
 	UART1_DefInit( );                                                            /* 串口1初始化 */
 }
 
+/*******************************************************************************
+* Function Name  : GetMacAddr
+* Description    : 系统获取MAC地址
+* Input          : pMAC:指向用来存储Mac地址的缓冲
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void GetMacAddr(UINT8 *pMAC)
+{
+	UINT8 transbuf[6],i;
+	
+	GetMACAddress(transbuf);
+	for(i=0;i<6;i++)
+	{
+		pMAC[5-i]=transbuf[i];
+	
+	}
+}
+
 
 /*******************************************************************************
 * Function Name  : main
@@ -439,6 +458,7 @@ int main(void)
     UINT8 i = 0;
 
 	SystemClock_UART1_init();       	
+	GetMacAddr(MACAddr);
     i = CH57xNET_LibInit(IPAddr,GWIPAddr,IPMask,MACAddr);                       /* 库初始化 */
     mStopIfError(i);                                                            /* 检查错误 */
 	
