@@ -37,6 +37,6 @@
 
 ### [选型建议](https://github.com/SoCXin)
 
-[CH579](https://github.com/SoCXin/CH579)的片上资源相对独特，集成以太网通信和无线通信，若稳定必成爆款
+[CH579](https://github.com/SoCXin/CH579)定位清晰，片上集成的通信资源丰富，拥有以太网和蓝牙通信能力。
 
-###  [SoC芯平台](http://www.SoC.Xin)
+###  [www.SoC.xin](http://www.SoC.Xin)
