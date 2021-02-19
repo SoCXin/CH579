@@ -4,7 +4,7 @@
 
 #### [Vendor](https://github.com/SoCXin/Vendor)：[WCH](http://www.wch.cn/)
 #### [Core](https://github.com/SoCXin/Cortex)：[Cortex M0](https://github.com/SoCXin/CM0)
-#### [Level](https://github.com/SoCXin/Level)：40MHz
+#### [Level](https://github.com/SoCXin/Level)：40 MHz
 
 ## [CH579描述](https://github.com/SoCXin/CH579/wiki)
 
@@ -39,4 +39,4 @@
 
 [CH579](https://github.com/SoCXin/CH579)定位清晰，片上集成的通信资源丰富，拥有以太网和蓝牙通信能力。
 
-###  [www.SoC.xin](http://www.SoC.Xin)
+###  [探索芯世界 www.SoC.xin](http://www.SoC.Xin)

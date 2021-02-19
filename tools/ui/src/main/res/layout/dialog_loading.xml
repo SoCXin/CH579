@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+
+    >
+    <LinearLayout
+        android:layout_width="@dimen/width_200"
+        android:layout_height="@dimen/height_150"
+        android:orientation="vertical"
+        android:background="#3D3D41"
+        >
+
+        <com.touchmcu.ui.LoadingView
+            android:layout_width="@dimen/width_150"
+            android:layout_height="@dimen/height_90"
+            android:layout_gravity="center"
+            />
+        <TextView
+            android:id="@+id/tv_loading_info"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:background="#3D3D41"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_50"
+            android:layout_marginBottom="@dimen/margin_10"
+            android:textSize="@dimen/text_13"
+            />
+    </LinearLayout>
+
+</LinearLayout>

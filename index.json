@@ -1,0 +1,68 @@
+{
+    "type":"SoC",
+    "name":"CH579",
+    "series":["CH579","CH578"],
+    "price":[4,8],
+    "description":"WCH Cortex-M0 SoC",
+    "peripheral": ["TIM","ADC","USB","UART","SPI","LDO","PWM"],
+    "package":["QFN48","QFN28"],
+    "encryption": ["UID"],
+    "manufacturer": {
+        "vendor":"WCH",
+        "homepage": "http://www.wch.cn/products/CH579.html"
+    },
+    "url":"http://www.SoC.xin/CH579",
+    "repo":"https://github.com/SoCXin/CH579",
+    "version":"1.2.0",
+    "Core": {
+        "num": 1,
+        "architecture":"MCS51",
+        "Freq":[8,48]
+    },
+    "TIM": {
+        "resolution":[16,16,16],
+        "WWDG": true
+    },
+    "UART": {
+        "mark": ["UART1","UART2"],
+        "BIT":[5,6,7,8,9],
+        "ISO7816":true,
+        "IrDA":true,
+        "LIN":true,
+        "FIFO": 16,
+        "BPS": [48,3000000]
+    },
+    "ADC": {
+        "num": 1,
+        "channel": 4,
+        "resolution": 12,
+        "MSPS": 1
+    },
+    "USB": {
+        "num": 1,
+        "PD": true,
+        "FIFO": true,
+        "more":["FS","type-C","Host","Device"]
+    },
+    "PWR": {
+        "VDD": [2800,5000],
+        "Ivdd": 3.5,
+        "LDO": [5000,3300],
+        "rate": 1024
+    },
+    "PWM": {
+        "num": 2,
+        "resolution": 8,
+        "rate": 256
+    },
+    "EMC": {
+        "EFT": 2000,
+        "ESD": 4000
+    },
+    "upload": {
+        "ISP": true,
+        "IAP": true,
+        "SWD": true,
+        "speed": 115200
+    }
+}

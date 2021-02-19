@@ -1,0 +1,15 @@
+{
+    "type":"MCU",
+    "name":"CH579",
+    "package":["QFN48","QFN28"],
+    "QFN28": {
+        "name":"CH579F",
+        "peripheral": ["ADC","TIM","UART1","UART2","I2C","SPI","PWM"],
+        "GPIO":7
+    },
+    "QFN48": {
+        "name":"CH579M",
+        "peripheral": ["ADC","TIM","UART1","UART2","I2C","SPI","PWM"],
+        "GPIO":18
+    }
+}
