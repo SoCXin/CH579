@@ -13,10 +13,10 @@
     },
     "url":"http://www.SoC.xin/CH579",
     "repo":"https://github.com/SoCXin/CH579",
-    "version":"1.2.0",
+    "version":"2.3.0",
     "Core": {
         "num": 1,
-        "architecture":"MCS51",
+        "architecture":"Cortex-M0",
         "Freq":[8,48]
     },
     "TIM": {
