@@ -4,6 +4,7 @@
 *.hex
 obj/
 list/
+listing/
 *uvgui*
 *uvop*
 ImageB/
