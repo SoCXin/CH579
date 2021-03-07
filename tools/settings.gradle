@@ -1,5 +1,0 @@
-include ':ui'
-include ':otaupdate'
-include ':blelib'
-include ':app'
-rootProject.name = "CH579Update"
