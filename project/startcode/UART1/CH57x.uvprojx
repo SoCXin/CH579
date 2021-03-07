@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>CH57x</TargetName>
+      <TargetName>QITAS</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
@@ -391,6 +391,16 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>startup</GroupName>
+          <Files>
+            <File>
+              <FileName>startup_ARMCM0.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>..\SRC\Startup\startup_ARMCM0.s</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>peripheral</GroupName>
           <Files>
             <File>
@@ -503,16 +513,6 @@
                   </Cads>
                 </FileArmAds>
               </FileOption>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>startup</GroupName>
-          <Files>
-            <File>
-              <FileName>startup_ARMCM0.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\SRC\Startup\startup_ARMCM0.s</FilePath>
             </File>
           </Files>
         </Group>

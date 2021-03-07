@@ -4,7 +4,7 @@
 * Version            : V1.0
 * Date               : 2018/12/10
 * Description        : 外设从机应用程序，初始化广播连接参数，然后广播，直至连接主机后，通过自定义服务传输数据
-            
+
 *******************************************************************************/
 
 /*********************************************************************
@@ -56,7 +56,7 @@
 // Connection Pause Peripheral time value (in seconds)
 #define DEFAULT_CONN_PAUSE_PERIPHERAL         6
 
-// Company Identifier: WCH  
+// Company Identifier: WCH
 #define WCH_COMPANY_ID                        0x07D7
 
 #define INVALID_CONNHANDLE                    0xFFFF
@@ -91,7 +91,7 @@ static uint8 scanRspData[31] =
   // complete name
   0x12,   // length of this data
   GAP_ADTYPE_LOCAL_NAME_COMPLETE,
-  's','i','m','p','l','e',' ','P','e','r','i','p','h','e','r','a','l',   
+  'Q','i','t','a','s','-',' ','P','e','r','i','p','h','e','r','a','l',
   // connection interval range
   0x05,   // length of this data
   GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE,
@@ -127,14 +127,14 @@ static uint8 advertData[] =
 };
 
 // GAP GATT Attributes
-static uint8 attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple Peripheral";
+static uint8 attDeviceName[GAP_DEVICE_NAME_LEN] = "Qitas Peripheral";
 
 // OTA IAP VARIABLES
 /* OTA通讯的帧 */
 OTA_IAP_CMD_t iap_rec_data;
 
 /* OTA解析结果 */
-__align(8) UINT32 OpParaData[4];  
+__align(8) UINT32 OpParaData[4];
 UINT32 OpParaDataLen = 0;
 UINT32 OpAdd = 0;
 
@@ -239,12 +239,12 @@ void Peripheral_Init( )
     GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &initial_advertising_enable );
     GAPRole_SetParameter( GAPROLE_SCAN_RSP_DATA, sizeof ( scanRspData ), scanRspData );
     GAPRole_SetParameter( GAPROLE_ADVERT_DATA, sizeof( advertData ), advertData );
-	
+
 	//PeripheralParamUpdate_t = (gapRolesParamUpdateCB_t *)PeripheralParamUpdate;
-	
+
 	//PRINT( "PeripheralParamUpdate_t %08x \n",(int)PeripheralParamUpdate_t );
-	
-	//GAPRole_PeripheralRegisterAppCBs( (gapRolesParamUpdateCB_t *)&PeripheralParamUpdate ); 
+
+	//GAPRole_PeripheralRegisterAppCBs( (gapRolesParamUpdateCB_t *)&PeripheralParamUpdate );
   }
 
   // Set the GAP Characteristics
@@ -278,7 +278,7 @@ void Peripheral_Init( )
   DevInfo_AddService();                           // Device Information Service
   SimpleProfile_AddService( GATT_ALL_SERVICES );  // Simple GATT Profile
   OTAProfile_AddService( GATT_ALL_SERVICES );
-  
+
   // Setup the SimpleProfile Characteristic Values
   {
     uint8 charValue1 = 1;
@@ -286,7 +286,7 @@ void Peripheral_Init( )
     uint8 charValue3 = 3;
     uint8 charValue4[SIMPLEPROFILE_CHAR4_LEN] = "01234567";
     uint8 charValue5[SIMPLEPROFILE_CHAR5_LEN] = { 1, 2, 3, 4, 5 };
-		
+
     SimpleProfile_SetParameter( SIMPLEPROFILE_CHAR1, sizeof ( uint8 ), &charValue1 );
     SimpleProfile_SetParameter( SIMPLEPROFILE_CHAR2, sizeof ( uint8 ), &charValue2 );
     SimpleProfile_SetParameter( SIMPLEPROFILE_CHAR3, sizeof ( uint8 ), &charValue3 );
@@ -295,18 +295,18 @@ void Peripheral_Init( )
     SimpleProfile_SetParameter( SIMPLEPROFILE_CHAR5, SIMPLEPROFILE_CHAR5_LEN, charValue5 );
   }
 
-  // 
+  //
   {
-	  //GAPRole_PeripheralRegisterAppCBs( (gapRolesParamUpdateCB_t *)PeripheralParamUpdate_t ); 
-	  
+	  //GAPRole_PeripheralRegisterAppCBs( (gapRolesParamUpdateCB_t *)PeripheralParamUpdate_t );
+
   }
-  
+
   // Register callback with SimpleGATTprofile
   SimpleProfile_RegisterAppCBs( &Peripheral_SimpleProfileCBs );
 
   //  Register callback with OTAGATTprofile
   OTAProfile_RegisterAppCBs( &Peripheral_OTA_IAPProfileCBs );
-  
+
 	// Setup a delayed profile startup
   tmos_set_event( Peripheral_TaskID, SBP_START_DEVICE_EVT );
 
@@ -315,10 +315,10 @@ void Peripheral_Init( )
 void PeripheralParamUpdate(uint16 connInterval,uint16 connSlaveLatency, uint16 connTimeout)
 {
 	PRINT( "update %d %d %d \n",connInterval,connSlaveLatency,connTimeout );
-	
+
 //		GAPRole_SendUpdateParam( DEFAULT_DESIRED_MIN_CONN_INTERVAL, DEFAULT_DESIRED_MAX_CONN_INTERVAL,
-//                                 DEFAULT_DESIRED_SLAVE_LATENCY, DEFAULT_DESIRED_CONN_TIMEOUT, GAPROLE_NO_ACTION );	
-	
+//                                 DEFAULT_DESIRED_SLAVE_LATENCY, DEFAULT_DESIRED_CONN_TIMEOUT, GAPROLE_NO_ACTION );
+
 }
 
 /*********************************************************************
@@ -373,19 +373,19 @@ uint16 Peripheral_ProcessEvent( uint8 task_id, uint16 events )
 	if ( events & OTA_FLASH_ERASE_EVT )
 	{
 		UINT8 status;
-		
+
 		PRINT("ERASE:%08x num:%d\r\n",(int)(EraseAdd+EraseBlockCnt*FLASH_BLOCK_SIZE),(int)EraseBlockCnt);
 		status = FlashBlockErase(EraseAdd+EraseBlockCnt*FLASH_BLOCK_SIZE);
-		
+
 		/* 擦除失败 */
 		if(status != SUCCESS)
 		{
 			OTA_IAP_SendCMDDealSta(status);
 			return (events ^ OTA_FLASH_ERASE_EVT);
 		}
-		
+
 		EraseBlockCnt++;
-		
+
 		/* 擦除结束 */
 		if( EraseBlockCnt >= EraseBlockNum )
 		{
@@ -393,7 +393,7 @@ uint16 Peripheral_ProcessEvent( uint8 task_id, uint16 events )
 			OTA_IAP_SendCMDDealSta(status);
 			return (events ^ OTA_FLASH_ERASE_EVT);
 		}
-		
+
 		return (events);
 	}
 
@@ -446,23 +446,23 @@ static void peripheralStateNotificationCB( gapRole_States_t newState ,gapRoleEve
 
 				conn_interval = event->connInterval;
 				PRINT( "Connected.. \n" );
-				
+
 				if( conn_interval > DEFAULT_DESIRED_MAX_CONN_INTERVAL)
 				{
 					PRINT("Send Update\r\n");
-					GAPRole_PeripheralConnParamUpdateReq( event->connectionHandle, 
-																								DEFAULT_DESIRED_MIN_CONN_INTERVAL, 
+					GAPRole_PeripheralConnParamUpdateReq( event->connectionHandle,
+																								DEFAULT_DESIRED_MIN_CONN_INTERVAL,
 																								DEFAULT_DESIRED_MAX_CONN_INTERVAL,
-																								DEFAULT_DESIRED_SLAVE_LATENCY, 
-																								DEFAULT_DESIRED_CONN_TIMEOUT, 
+																								DEFAULT_DESIRED_SLAVE_LATENCY,
+																								DEFAULT_DESIRED_CONN_TIMEOUT,
 																								Peripheral_TaskID );
-					
+
 				}
 				break;
 			}
     case GAPROLE_CONNECTED_ADV:
       PRINT( "Connected Advertising..\n" );
-      break;      
+      break;
     case GAPROLE_WAITING:
 			{
 				uint8 initial_advertising_enable = TRUE;
@@ -563,7 +563,7 @@ void OTA_IAP_SendData(UINT8 *p_send_data,UINT8 send_len)
 void OTA_IAP_SendCMDDealSta(UINT8 deal_status)
 {
 	UINT8 send_buf[2];
-	
+
 	send_buf[0] = deal_status;
 	send_buf[1] = 0;
 	OTA_IAP_SendData(send_buf,2);
@@ -593,23 +593,23 @@ void SwitchImageFlag(UINT8 new_flag)
 	UINT8  *p_flash;
 	UINT16 i;
 	UINT8  ver_flag;
-	
+
 	/* 读取第一块 */
 	p_flash = (UINT8 *)OTA_DATAFLASH_ADD;
 	for(i=0; i<FLASH_BLOCK_SIZE; i++)
 	{
 		dataflash_block_buf[i] = p_flash[i];
 	}
-	
+
 	/* 擦除第一块 */
 	FlashBlockErase(OTA_DATAFLASH_ADD);
 
 	/* 更新Image信息 */
 	dataflash_block_buf[0] = new_flag;
-	
+
 	/* 编程DataFlash */
 	FlashWriteBuf(OTA_DATAFLASH_ADD, (UINT32 *)dataflash_block_buf, FLASH_BLOCK_SIZE);
-	
+
 	/* 打印输出消息 */
 	p_flash = (UINT8 *)OTA_DATAFLASH_ADD;
 	ver_flag = p_flash[0];
@@ -639,7 +639,7 @@ void DisableAllIRQ(void)
 void GotoResetVector(UINT32 entry_add)
 {
 	user_image_tasks = (pImageTaskFn)(*(UINT32 *)(entry_add));
-	(user_image_tasks)(); 
+	(user_image_tasks)();
 }
 
 /*******************************************************************************
@@ -658,9 +658,9 @@ void Rec_OTA_IAP_DataDeal(void)
 		{
 			UINT32 i;
 			UINT8 status;
-			
-			OpParaDataLen = iap_rec_data.program.len;   
-			
+
+			OpParaDataLen = iap_rec_data.program.len;
+
 			OpAdd = (UINT32)(iap_rec_data.program.addr[0]);
 			OpAdd |= ((UINT32)(iap_rec_data.program.addr[1]) << 8);
 			OpAdd = OpAdd * 4;
@@ -674,11 +674,11 @@ void Rec_OTA_IAP_DataDeal(void)
 				OpParaData[i] |= ((UINT32)(iap_rec_data.program.buf[2+4*i]) << 16);
 				OpParaData[i] |= ((UINT32)(iap_rec_data.program.buf[3+4*i]) << 24);
 			}
-			
+
 			/* 当前是ImageA，直接编程 */
 			if(CurrImageFlag == IMAGE_A_FLAG)
 			{
-				status = FlashWriteBuf(OpAdd, OpParaData, (UINT16) OpParaDataLen);				
+				status = FlashWriteBuf(OpAdd, OpParaData, (UINT16) OpParaDataLen);
 			}
 			/* 当前是ImageB，除了第一块直接编程 */
 			else
@@ -700,7 +700,7 @@ void Rec_OTA_IAP_DataDeal(void)
 					OTA_IAP_SendCMDDealSta(status);
 				}
 			}
-			
+
 			break;
 		}
 		/* 擦除 -- 蓝牙擦除由主机控制 */
@@ -714,10 +714,10 @@ void Rec_OTA_IAP_DataDeal(void)
 			EraseBlockNum |= ((UINT32)(iap_rec_data.erase.block_num[1]) << 8);
 			EraseAdd = OpAdd;
 			EraseBlockCnt = 0;
-			
+
 			/* 检验就放在擦除里清0 */
 			VerifyStatus = 0;
-			
+
 			PRINT("IAP_ERASE start:%08x num:%d\r\n",(int)OpAdd,(int)EraseBlockNum);
 
 			/* 当前是ImageB的话需要保留ImageA地址第一块 */
@@ -726,7 +726,7 @@ void Rec_OTA_IAP_DataDeal(void)
 				EraseBlockNum -= 1;
 				EraseAdd += FLASH_BLOCK_SIZE;
 			}
-			
+
 			/* 启动擦除 */
 			tmos_set_event( Peripheral_TaskID, OTA_FLASH_ERASE_EVT );
 			break;
@@ -737,17 +737,17 @@ void Rec_OTA_IAP_DataDeal(void)
 			UINT32 i;
 			UINT8 *p_flash;
 			UINT8 status = 0;
-			
+
 			OpParaDataLen = iap_rec_data.verify.len;
-			
+
 			OpAdd = (UINT32)(iap_rec_data.verify.addr[0]);
 			OpAdd |= ((UINT32)(iap_rec_data.verify.addr[1]) << 8);
 			OpAdd = OpAdd * 4;
-			
+
 			PRINT("IAP_VERIFY: %08x len:%d \r\n",(int)OpAdd,(int)OpParaDataLen);
-			
+
 			p_flash = (UINT8 *)OpAdd;
-			
+
 			/* 当前是ImageA，直接读取ImageB校验 */
 			if(CurrImageFlag == IMAGE_A_FLAG)
 			{
@@ -792,7 +792,7 @@ void Rec_OTA_IAP_DataDeal(void)
 		case CMD_IAP_END:
 		{
 			PRINT("IAP_END \r\n");
-			
+
 			/* 当前的是ImageA */
 			if(CurrImageFlag == IMAGE_A_FLAG)
 			{
@@ -804,7 +804,7 @@ void Rec_OTA_IAP_DataDeal(void)
 
 				/* 保证打印结束 */
 				DelayMs( 10 );
-        
+
 				/* 跳入ImageB运行 */
 				GotoResetVector(IMAGE_B_ENTRY_ADD);
 			}
@@ -813,18 +813,18 @@ void Rec_OTA_IAP_DataDeal(void)
 			{
 				/* 修改DataFlash，切换至ImageA */
 				SwitchImageFlag(IMAGE_A_FLAG);
-				
+
 				/* 关闭当前所有使用中断，或者方便一点直接全部关闭 */
 				DisableAllIRQ();
 
 				/* 编程ImageA第一块 */
 				FlashBlockErase(IMAGE_A_START_ADD);
-				
+
 				FlashWriteBuf(IMAGE_A_START_ADD, (PUINT32) vectors_block_buf, FLASH_BLOCK_SIZE);
-				
+
 				/* 保证打印结束 */
-				DelayMs( 10 );        
-        
+				DelayMs( 10 );
+
 				/* 跳入ImageA运行 */
 				GotoResetVector(IMAGE_A_ENTRY_ADD);
 			}
@@ -835,33 +835,33 @@ void Rec_OTA_IAP_DataDeal(void)
 			UINT8 send_buf[20];
 
 			PRINT("IAP_INFO \r\n");
-			
+
 			/* IMAGE FLAG */
 			send_buf[0] = CurrImageFlag;
-			
+
 			/* IMAGE_SIZE */
 			send_buf[1] = (UINT8)(IMAGE_SIZE & 0xff);
 			send_buf[2] = (UINT8)((IMAGE_SIZE>>8) & 0xff);
 			send_buf[3] = (UINT8)((IMAGE_SIZE>>16) & 0xff);
 			send_buf[4] = (UINT8)((IMAGE_SIZE>>24) & 0xff);
-			
+
 			/* BLOCK SIZE */
 			send_buf[5] = (UINT8)(FLASH_BLOCK_SIZE & 0xff);
 			send_buf[6] = (UINT8)((FLASH_BLOCK_SIZE>>8) & 0xff);
-			
+
 			/* 有需要再增加 */
-			
+
 			/* 发送信息 */
 			OTA_IAP_SendData(send_buf,20);
-			
+
 			break;
 		}
-		
+
 		default:
 		{
 			OTA_IAP_CMDErrDeal();
 			break;
-		}  
+		}
     }
 }
 

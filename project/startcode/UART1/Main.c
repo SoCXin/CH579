@@ -41,7 +41,7 @@ int main()
 
 #endif
 
-#if 0      // 中断方式：接收数据后发送出去
+#if 1      // 中断方式：接收数据后发送出去
     UART1_ByteTrigCfg( UART_7BYTE_TRIG );
     trigB = 7;
     UART1_INTCfg( ENABLE, RB_IER_RECV_RDY|RB_IER_LINE_STAT );
