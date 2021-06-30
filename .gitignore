@@ -1,5 +1,7 @@
 *.pyc
+*.hex
+*.log
 .pio/
 .vscode/
-*.hex
-obj/*
+list
+obj
