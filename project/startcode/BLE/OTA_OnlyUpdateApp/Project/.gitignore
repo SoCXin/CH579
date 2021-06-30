@@ -1,9 +1,0 @@
-*.pyc
-.pio/
-.vscode/
-*.hex
-obj/
-list/
-*uvgui*
-*uvop*
-ImageOTA/

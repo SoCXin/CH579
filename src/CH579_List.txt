@@ -1,0 +1,98 @@
+
+南京沁恒微电子股份有限公司 2021.02
+最新资料请到我们的网站上查询
+http://wch.cn
+
+
+文件目录
+  |
+  |-- CH579: 低功耗蓝牙 - 32位Cortex-M0内核微控制器
+  |      |-- CH579安卓OTA升级工具V1.1: CH579 OTA相关例程配套APP升级工具及源码
+  |      |-- EVT: CH579评估板和CH579相关例程
+  |      |      |-- PUB: 
+  |      |      |      |-- CH579评估板说明书.pdf: CH579评估板说明及工程创建说明
+  |      |      |      |-- CH579SCH.pdf: CH579评估板原理图
+  |      |      |-- EXAM: 
+  |      |      |      |-- SRC  
+  |      |      |      |      |-- CMSIS：内核系统头文件
+  |      |      |      |      |-- Startup：CH57x系列启动文件
+  |      |      |      |      |-- StdPeriphDriver：基本外设驱动源文件及头文件
+  |      |      |      |-- ADC：adc采样例程，包括温度检测、单通道检测、差分通道检测、TouchKey检测、中断方式采样
+  |      |      |      |-- FLASH：片上flash例程：包括Code区，DataFlash区的擦/读/写
+  |      |      |      |-- LCD：LCD例程：评估板输出数字0-7
+  |      |      |      |-- PM：系统睡眠模式并唤醒例程：GPIOA_6作为唤醒源，共6种功耗等级
+  |      |      |      |-- PWMX：PWM4-11输出功能例程
+  |      |      |      |-- SPI0
+  |      |      |      |      |-- SPI0_MASTER&SLAVE：SPI0例程，Master/Slave 模式数据收发 
+  |      |      |      |-- SPI1
+  |      |      |      |      |-- SPI1_FLASH：SPI1接口操作flash外设例子 
+  |      |      |      |      |-- SPI1_MASTER：SPI1例程，Master 模式数据收发    
+  |      |      |      |-- TMR：定时器功能例程  
+  |      |      |      |-- UART1：串口1收发例程
+  |      |      |      |-- USB
+  |      |      |      |      |-- Device
+  |      |      |      |      |      |-- VendorDefinedDev：模拟自定义USB设备（CH372设备）例程，提供8个非0通道(上传+下传)，实现数据先下传，然后数据内容取反上传
+  |      |      |      |      |      |-- CompoundDev：模拟键鼠例程，支持部分类命令。 
+  |      |      |      |      |-- Host
+  |      |      |      |      |      |-- HostEnum：USB设备的简易枚举过程例程
+  |      |      |      |      |      |-- HostAOA：USB主机应用例子,支持连接安卓设备与APP进行通讯。
+  |      |      |      |      |      |-- U_DISK：U盘文件系统示例
+  |      |      |      |      |      |      |-- EXAM1.C:C示例源程序,以字节为单位读写文件，包括文件创建、删除、修改文件属性,修改文件名  
+  |      |      |      |      |      |      |-- EXAM10.C:C示例源程序,包括文件创建、删除、修改文件属性,修改文件名  
+  |      |      |      |      |      |      |-- EXAM11.C:C示例源程序,枚举根目录或者指定目下的文件  
+  |      |      |      |      |      |      |-- EXAM13.C:C示例源程序,创建长文件名文件  
+  |      |      |      |      |      |-- USB_LIB：U盘文件系统库文件
+  |      |      |      |-- NET
+  |      |      |      |      |-- DHCP_Client：DHCP功能例程，获取IP地址
+  |      |      |      |      |-- DNS：DNS例程，用域名解析出目标IP地址                            
+  |      |      |      |      |-- FTP_Client：FTP客户端例程
+  |      |      |      |      |-- FTP_Server：FTP服务器例程
+  |      |      |      |      |-- IP_Raw：IP_Raw例程，IP层建立连接、进行数据收发
+  |      |      |      |      |-- MQTT
+  |      |      |      |      |       |-- MQTT_SRC：MQTT协议源文件
+  |      |      |      |      |       |-- MQTT_Pub：MQTT-Publish例程
+  |      |      |      |      |       |-- MQTT_Sub：MQTT-Subscibe例程
+  |      |      |      |      |-- TCP_Client
+  |      |      |      |      |       |-- TCP_MultipleClients：TCP多客户端例程，建立4个TCP客户端
+  |      |      |      |      |       |-- TCP_SingleClient：TCP单客户端例程，建立1个TCP客户端
+  |      |      |      |      |-- TCP_Server: TCP_Server例程，建立TCP服务器
+  |      |      |      |      |-- UDP_Client：UDP_Client例程，通过UDP协议发送报文
+  |      |      |      |      |-- UDP_Server：UDP_Server例程，接受来自广播IP的指定端口报文，并将接受到报文的地址作为目标地址发送报文
+  |      |      |      |      |-- CH57xNET协议栈库说明.pdf：以太网协议栈库说明  
+  |      |      |      |-- BLE
+  |      |      |      |      |-- BLE_MESH
+  |      |      |      |      |       |-- Ali_Genie_Light：天猫精灵灯例程，上电找队友绑定连接，控制智能灯
+  |      |      |      |      |       |-- Generic_Model_With_Proxy：通用模型例程，支持PB-ADV和PB-GATT，支持代理
+  |      |      |      |      |       |-- Generic_Model_With_Proxy_Only：通用模型例程，支持PB-GATT，支持代理
+  |      |      |      |      |       |-- Generic_OnOff_Models：通用模型例程，支持PB-ADV，支持转发
+  |      |      |      |      |       |-- Self_Provision_Friend：自配网朋友节点，需与低功耗节点结合使用
+  |      |      |      |      |       |-- Self_Provision_Low_Power_Node：自配网低功耗节点，需与朋友节点结合使用
+  |      |      |      |      |       |-- Self_Provision_Generic_OnOff_Publish：自配网例程，通用开关模型周期发布例程，
+  |      |      |      |      |       |-- Self_Provision_Generic_OnOff_Subscription：自配网例程，通用开关模型订阅例程
+  |      |      |      |      |       |-- Self_Provisioner：配置者例程，将设备通过配网流程入网，与Generic_OnOff_Models结合使用
+  |      |      |      |      |       |-- Common：通用配置文件
+  |      |      |      |      |       |-- LIB：BLE Mesh协议栈库文件及其头文件
+  |      |      |      |      |       |-- 认证及证书：蓝牙Mesh BQB认证证书以及阿里天猫精灵证书
+  |      |      |      |      |-- Broadcaster：广播者角色例程，处于广播态一直广播
+  |      |      |      |      |-- CyclingSensor：骑行传感器例程，连接主机后定时上传速度和踏频
+  |      |      |      |      |-- CentPeri：主从一体例程，整合了主机例程和从机例程的功能同时运行
+  |      |      |      |      |-- Central：主机例程，主动扫描周围设备，连接至给定的从机设备地址，寻找自定义服务及特征，执行读写命令，需与从机例程配合使用,并将从机设备地址修改为该例程目标地址，默认为(84:C2:E4:03:02:02)
+  |      |      |      |      |-- HeartRate：心率计例程，连接主机后定时上传心率
+  |      |      |      |      |-- Peripheral：外设从机角色例程，自定义包含五种不同属性的服务，包含可读、可写、通知、可读可写、安全可读
+  |      |      |      |      |-- RunningSensor：跑步传感器例程，连接主机后定时上传速度
+  |      |      |      |      |-- HID_Keyboard：蓝牙键盘例程，模拟键盘设备，连接主机后定时上传键值
+  |      |      |      |      |-- HID_Mouse：蓝牙鼠标例程，模拟鼠标设备，连接主机后定时上传键值
+  |      |      |      |      |-- HID_Consumer：蓝牙拍照器例程，模拟用户控制设备，连接主机后定时上传音量键下键
+  |      |      |      |      |-- HID_Touch：蓝牙触摸例程，模拟触摸笔设备，连接主机后定时上传触摸值
+  |      |      |      |      |-- MultiCentral：主机多连接例程，主动扫描周围设备，连接至给定的三个从机设备地址，寻找自定义服务及特征，执行读写命令，需与从机例程配合使用,并将从机设备地址修改为该例程目标地址，三个从机设备地址默认为 (84:C2:E4:03:02:02)、(84:C2:E4:03:02:03)、(84:C2:E4:03:02:04)
+  |      |      |      |      |-- Observer：观察者角色例程，定时扫描，如果扫描结果不为空，则打印扫描到的广播地址
+  |      |      |      |      |-- DirectTest：直接测试例程，测试指定通信频道发送数据包
+  |      |      |      |      |-- RF_PHY：非标准无线收发例程
+  |      |      |      |      |-- OTA：无线升级例程
+  |      |      |      |      |-- OTA_OnlyUpdateApp：固定库无线升级例程,只升级用户程序
+  |      |      |      |      |-- Peripheral_OnlyUpdateApp：固定库无线升级用户程序例程,与OTA_OnlyUpdateApp配合使用，需用合成工具将IAP文件、用户文件、库文件合成单个BIN文件后用ISP工具烧录。
+  |      |      |      |      |-- HAL：例程共用的硬件相关文件
+  |      |      |      |      |-- LIB：BLE协议栈库文件及其头文件
+  |      |      |      |      |-- CH57xBLE协议栈库说明.pdf：蓝牙协议栈库说明
+  |      |      |      |      |-- BLE认证证书：产品：WCH CH57x  QDID：135567
+  |
