@@ -5,3 +5,6 @@
 .vscode/
 list
 obj
+Lst
+*uvgui*
+*uvopt*
