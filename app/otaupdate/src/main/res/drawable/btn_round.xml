@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+    android在匹配状态的时候，从上到下开始匹配，如果匹配到合适的状态就终止了，所以正常状态一定要放到最下面，否则其他的状态可能不会被显示。
+    -->
+
+    <item android:state_pressed="true"
+        >
+        <shape>
+            <size android:height="10dp"
+                android:width="20dp"/>
+            <solid android:color="@color/colorGrey"/>
+            <corners android:radius="@dimen/corners_btn"/>
+        </shape>
+    </item>
+    <item android:state_enabled="false">
+        <shape>
+            <size android:height="10dp"
+                android:width="20dp"/>
+            <solid android:color="@color/colorGrey"/>
+            <corners android:radius="@dimen/corners_btn"/>
+        </shape>
+    </item>
+
+    <item android:state_pressed="false"
+            >
+        <shape>
+            <size android:height="10dp"
+                android:width="20dp"/>
+            <solid android:color="@color/colorPrimary"/>
+            <corners android:radius="@dimen/corners_btn"/>
+        </shape>
+    </item>
+
+    <item android:state_enabled="true">
+        <shape>
+            <size android:height="10dp"
+                android:width="20dp"/>
+            <solid android:color="@color/colorPrimary"/>
+            <corners android:radius="@dimen/corners_btn"/>
+        </shape>
+    </item>
+
+
+</selector>

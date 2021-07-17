@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<dimen name="dialog_width">160.0000dp</dimen>
+	<dimen name="dialog_height">213.3333dp</dimen>
+	<dimen name="margin_20">21.3333dp</dimen>
+	<dimen name="width_200">213.3333dp</dimen>
+	<dimen name="width_150">160.0000dp</dimen>
+	<dimen name="height_90">96.0000dp</dimen>
+	<dimen name="text_13">13.8667sp</dimen>
+	<dimen name="height_150">160.0000dp</dimen>
+	<dimen name="margin_10">10.6667dp</dimen>
+	<dimen name="height_50">53.3333dp</dimen>
+</resources>
