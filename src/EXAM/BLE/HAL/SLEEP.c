@@ -47,9 +47,11 @@ u32 CH57X_LowPower( u32 time )
   if( !RTCTigFlag ){
 		LowPower_Sleep(RB_PWR_RAM2K|RB_PWR_RAM14K|RB_PWR_EXTEND );
 		SetSysClock( CLK_SOURCE_HSI_32MHz );
-    HSECFG_Current( HSE_RCur_100 );     // 降为额定电流(低功耗函数中提升了HSE偏置电流)
-    RTC_SetTignTime( time + 47 );
+		time+=WAKE_UP_RTC_MAX_TIME;
+		if( time > 0xA8C00000 )   time -= 0xA8C00000;
+    RTC_SetTignTime( time );
     LowPower_Idle();
+    HSECFG_Current( HSE_RCur_100 );     // 降为额定电流(低功耗函数中提升了HSE偏置电流)
 		SetSysClock( CLK_SOURCE_HSE_32MHz );
   }
   else{

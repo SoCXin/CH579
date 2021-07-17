@@ -75,6 +75,11 @@ void RTC_IRQHandler( void )
 void HAL_TimeInit( void )
 {
 #if( CLK_OSC32K )
+  R8_SAFE_ACCESS_SIG = 0x57;
+  R8_SAFE_ACCESS_SIG = 0xa8;
+  R8_CK32K_CONFIG &= ~(RB_CLK_OSC32K_XT|RB_CLK_XT32K_PON);
+  R8_CK32K_CONFIG |= RB_CLK_INT32K_PON;
+  R8_SAFE_ACCESS_SIG = 0;
   Calibration_LSI();
 #else
   R8_SAFE_ACCESS_SIG = 0x57; 

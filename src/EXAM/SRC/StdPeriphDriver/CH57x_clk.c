@@ -19,6 +19,7 @@ void SystemInit(void)
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
     R16_CLK_SYS_CFG = (2<<6)|0x08;			// 32M -> Fsys
+    *((PUINT16V)0x40001048) |= 4;
     R8_SAFE_ACCESS_SIG = 0;
     
     mDelayuS(10);
@@ -373,6 +374,7 @@ void RTC_InitTime( UINT16 y, UINT16 mon, UINT16 d, UINT16 h, UINT16 m, UINT16 s 
 {
     UINT32  t;
     UINT16  year, month, day, sec2, t32k;
+    UINT8V clk_pin;
 
 		year = y;
 		month = mon;
@@ -393,6 +395,11 @@ void RTC_InitTime( UINT16 y, UINT16 mon, UINT16 d, UINT16 h, UINT16 m, UINT16 s 
     t32k = (s&1)?(0x8000):(0);
     t = sec2;
     t = t<<16 | t32k;
+
+    do{
+      clk_pin = (R8_CK32K_CONFIG&RB_32K_CLK_PIN);
+    }while( (clk_pin != (R8_CK32K_CONFIG&RB_32K_CLK_PIN)) || (!clk_pin) );
+
 
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;		
@@ -460,6 +467,12 @@ void RTC_GetTime( PUINT16 py, PUINT16 pmon, PUINT16 pd, PUINT16 ph, PUINT16 pm, 
 *******************************************************************************/
 void RTC_SetCycle32k( UINT32 cyc )
 {
+    UINT8V clk_pin;
+
+    do{
+      clk_pin = (R8_CK32K_CONFIG&RB_32K_CLK_PIN);
+    }while( (clk_pin != (R8_CK32K_CONFIG&RB_32K_CLK_PIN)) || (!clk_pin) );
+
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;   
     R32_RTC_TRIG = cyc;

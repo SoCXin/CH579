@@ -341,7 +341,7 @@ extern void HidDev_RegisterReports( uint8 numReports, hidRptMap_t *pRpt );
  *
  * @return  None.
  */
-extern void HidDev_Report( uint8 id, uint8 type, uint8 len, uint8 *pData );
+extern uint8 HidDev_Report( uint8 id, uint8 type, uint8 len, uint8 *pData );
 
 /*********************************************************************
  * @fn      HidDev_Close

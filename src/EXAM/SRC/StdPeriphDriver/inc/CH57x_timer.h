@@ -82,6 +82,7 @@ void TMR0_CapInit( CapModeTypeDef cap );							/* 外部信号捕捉功能初始化 */
 
 
 #define TMR0_Disable()				(R8_TMR0_CTRL_MOD &= ~RB_TMR_COUNT_EN)		/* 关闭 TMR0 */
+#define TMR0_Enable()					(R8_TMR0_CTRL_MOD |= RB_TMR_COUNT_EN)		/* 开启 TMR0 */
 // refer to TMR0 interrupt bit define
 #define	TMR0_ITCfg(s,f)				((s)?(R8_TMR0_INTER_EN|=f):(R8_TMR0_INTER_EN&=~f))		/* TMR0 相应中断位开启与关闭 */
 // refer to TMR0 interrupt bit define
@@ -114,6 +115,7 @@ void TMR1_CapInit( CapModeTypeDef cap );							/* 外部信号捕捉功能初始化 */
 void TMR1_DMACfg( UINT8 s, UINT16 startAddr, UINT16 endAddr, DMAModeTypeDef m );    /* DMA配置  */
 
 #define TMR1_Disable()				(R8_TMR1_CTRL_MOD &= ~RB_TMR_COUNT_EN)		/* 关闭 TMR1 */
+#define TMR1_Enable()					(R8_TMR1_CTRL_MOD |= RB_TMR_COUNT_EN)		/* 开启 TMR1 */
 // refer to TMR1 interrupt bit define
 #define	TMR1_ITCfg(s,f)				((s)?(R8_TMR1_INTER_EN|=f):(R8_TMR1_INTER_EN&=~f))		/* TMR1 相应中断位开启与关闭 */
 // refer to TMR1 interrupt bit define
@@ -146,6 +148,7 @@ void TMR2_CapInit( CapModeTypeDef cap );							/* 外部信号捕捉功能初始化 */
 void TMR2_DMACfg( UINT8 s, UINT16 startAddr, UINT16 endAddr, DMAModeTypeDef m );    /* DMA配置  */
 
 #define TMR2_Disable()				(R8_TMR2_CTRL_MOD &= ~RB_TMR_COUNT_EN)		/* 关闭 TMR2 */
+#define TMR2_Enable()					(R8_TMR2_CTRL_MOD |= RB_TMR_COUNT_EN)		/* 开启 TMR2 */
 // refer to TMR2 interrupt bit define
 #define	TMR2_ITCfg(s,f)				((s)?(R8_TMR2_INTER_EN|=f):(R8_TMR2_INTER_EN&=~f))		/* TMR2 相应中断位开启与关闭 */
 // refer to TMR2 interrupt bit define
@@ -177,6 +180,7 @@ void TMR3_CapInit( CapModeTypeDef cap );							/* 外部信号捕捉功能初始化 */
 
 
 #define TMR3_Disable()				(R8_TMR3_CTRL_MOD &= ~RB_TMR_COUNT_EN)		/* 关闭 TMR3 */
+#define TMR3_Enable()					(R8_TMR3_CTRL_MOD |= RB_TMR_COUNT_EN)		/* 开启 TMR3 */
 // refer to TMR3 interrupt bit define
 #define	TMR3_ITCfg(s,f)				((s)?(R8_TMR3_INTER_EN|=f):(R8_TMR3_INTER_EN&=~f))		/* TMR3 相应中断位开启与关闭 */
 // refer to TMR3 interrupt bit define

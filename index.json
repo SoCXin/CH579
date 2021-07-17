@@ -19,7 +19,7 @@
         "type": "git",
         "url": "https://github.com/SoCXin/CH579.git"
     },
-    "series":["CH579M","CH579F","CH578","CH577"],
+    "series":["CH579","CH578","CH577"],
     "package":["QFN28","QFN48"],
     "peripheral": ["TIM","ADC","USB","UART","SPI","LDO","PWM"],
     "price":[4,8],
@@ -45,7 +45,7 @@
         "Cortex-M",
         "WCH",
         "CH579",
-        "DAC","SDIO","CAN","I2C","RTC","SPI",
+        "ETH","SDIO","BLE","I2C","RTC","SPI",
         "3.6V","1.8V"
     ]
 }

@@ -47,34 +47,15 @@
 // Heart Rate Task Events
 #define START_DEVICE_EVT                      0x0001
 #define BATT_PERIODIC_EVT                     0x0002
-#define HID_IDLE_EVT                          0x0004
-#define HID_SEND_REPORT_EVT                   0x0008
-
-#define reportQEmpty()                        ( firstQIdx == lastQIdx )
 
 /*********************************************************************
  * CONSTANTS
  */
 
-#define HID_DEV_DATA_LEN                      8
-
-#ifdef HID_DEV_RPT_QUEUE_LEN
-  #define HID_DEV_REPORT_Q_SIZE               (HID_DEV_RPT_QUEUE_LEN+1)
-#else
-  #define HID_DEV_REPORT_Q_SIZE               (10+1)
-#endif
-
 /*********************************************************************
  * TYPEDEFS
  */
 
-typedef struct
-{
- uint8 id;
- uint8 type;
- uint8 len;
- uint8 data[HID_DEV_DATA_LEN];
-} hidDevReport_t;
 
 /*********************************************************************
  * GLOBAL VARIABLES
@@ -104,9 +85,6 @@ static uint8 hidDevConnSecure = FALSE;
 // GAP connection handle
 static uint16 gapConnHandle;
 
-// TRUE if pairing in progress
-static uint8 hidDevPairingStarted = TRUE;
-
 // Status of last pairing
 static uint8 pairingStatus = SUCCESS;
 
@@ -118,14 +96,6 @@ static hidDevCB_t *pHidDevCB;
 
 static hidDevCfg_t *pHidDevCfg;
 
-// Pending reports
-static uint8 firstQIdx = 0;
-static uint8 lastQIdx = 0;
-static hidDevReport_t hidDevReportQ[HID_DEV_REPORT_Q_SIZE];
-
-// Last report sent out
-//static attHandleValueNoti_t lastNoti = { 0 };
-static hidDevReport_t lastReport = { 0 };
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
@@ -145,17 +115,12 @@ static void hidDevBattPeriodicTask( void );
 static hidRptMap_t *hidDevRptByHandle( uint16 handle );
 static hidRptMap_t *hidDevRptById( uint8 id, uint8 type );
 static hidRptMap_t *hidDevRptByCccdHandle( uint16 handle );
-static void hidDevEnqueueReport( uint8 id, uint8 type, uint8 len, uint8 *pData );
-static hidDevReport_t *hidDevDequeueReport( void );
-static void hidDevSendReport( uint8 id, uint8 type, uint8 len, uint8 *pData );
+static uint8 hidDevSendReport( uint8 id, uint8 type, uint8 len, uint8 *pData );
 static void hidDevHighAdvertising( void );
 static void hidDevLowAdvertising( void );
 static void hidDevInitialAdvertising( void );
 static uint8 hidDevBondCount( void );
-static void hidDevStartIdleTimer( void );
-static void hidDevStopIdleTimer( void );
 static uint8 HidDev_sendNoti(uint16 handle, uint8 len, uint8 *pData);
-static uint8 HidDev_isbufset(uint8 *buf, uint8 val, uint8 len);
 /*********************************************************************
  * PROFILE CALLBACKS
  */
@@ -267,51 +232,12 @@ uint16 HidDev_ProcessEvent( uint8 task_id, uint16 events )
     return ( events ^ START_DEVICE_EVT );
   }
 
-  if ( events & HID_IDLE_EVT )
-  {
-    if ( hidDevGapState == GAPROLE_CONNECTED )
-    {
-			PRINT("hid idle event..\n");
-      // if pairing in progress then restart timer
-      if ( hidDevPairingStarted )
-      {
-        hidDevStartIdleTimer();
-      }
-      // else disconnect
-      else
-      {
-        GAPRole_TerminateLink( gapConnHandle );
-      }
-    }
-
-    return ( events ^ HID_IDLE_EVT );
-  }
-
   if ( events & BATT_PERIODIC_EVT )
   {
     // Perform periodic battery task
     hidDevBattPeriodicTask();
 
     return ( events ^ BATT_PERIODIC_EVT );
-  }
-
-  if ( events & HID_SEND_REPORT_EVT )
-  {
-    // if connection is secure
-    if ( hidDevConnSecure )
-    {
-      hidDevReport_t *pReport = hidDevDequeueReport();
-
-      if ( pReport != NULL )
-      {
-        // Send report
-        hidDevSendReport( pReport->id, pReport->type, pReport->len, pReport->data );
-      }
-
-      return ( reportQEmpty() ? events ^ HID_SEND_REPORT_EVT : events );
-    }
-
-    return ( events ^ HID_SEND_REPORT_EVT );
   }
 
   return 0;
@@ -361,7 +287,7 @@ void HidDev_RegisterReports( uint8 numReports, hidRptMap_t *pRpt )
  *
  * @return  None.
  */
-void HidDev_Report( uint8 id, uint8 type, uint8 len, uint8*pData )
+uint8 HidDev_Report( uint8 id, uint8 type, uint8 len, uint8*pData )
 {
   // if connected
   if ( hidDevGapState == GAPROLE_CONNECTED )
@@ -369,14 +295,8 @@ void HidDev_Report( uint8 id, uint8 type, uint8 len, uint8*pData )
     // if connection is secure
     if ( hidDevConnSecure )
     {
-      // Make sure there're no pending reports
-      if ( reportQEmpty() )
-      {
-        // send report
-        hidDevSendReport( id, type, len, pData );
-
-        return; // we're done
-      }
+      // send report
+      return hidDevSendReport( id, type, len, pData );
     }
   }
   // else if not already advertising
@@ -395,9 +315,7 @@ void HidDev_Report( uint8 id, uint8 type, uint8 len, uint8*pData )
       hidDevInitialAdvertising();
     }
   }
-
-  // hidDev task will send report when secure connection is established
-  hidDevEnqueueReport( id, type, len, pData );
+  return bleNotReady;
 }
 
 /*********************************************************************
@@ -447,32 +365,11 @@ bStatus_t HidDev_SetParameter( uint8 param, uint8 len, void *pValue )
     case HIDDEV_ERASE_ALLBONDS:
       if ( len == 0 )
       {
-        hidRptMap_t *pRpt;
-        if ((pRpt = hidDevRptById(lastReport.id, lastReport.type)) != NULL)
-        {
-          // See if the last report sent out wasn't a release key
-          if (HidDev_isbufset(lastReport.data, 0x00, lastReport.len) == FALSE)
-          {
-            // Send a release report before disconnecting, otherwise
-            // the last pressed key would get 'stuck' on the HID Host.
-            tmos_memset(lastReport.data, 0x00, lastReport.len);
-
-            // Send report notification
-            HidDev_sendNoti(pRpt->handle, lastReport.len, lastReport.data);
-          }
-          
-          // Clear out last report
-          tmos_memset(&lastReport, 0, sizeof(hidDevReport_t));
-        }
-
         // Drop connection
         if ( hidDevGapState == GAPROLE_CONNECTED )
         {
           GAPRole_TerminateLink( gapConnHandle );
         }
-
-        // Flush report queue
-        firstQIdx = lastQIdx = 0;
 
         // Erase bonding info
         GAPBondMgr_SetParameter( GAPBOND_ERASE_ALLBONDS, 0, NULL );
@@ -618,12 +515,6 @@ bStatus_t HidDev_ReadAttrCB( uint16 connHandle, gattAttribute_t *pAttr,
     tmos_memcpy( pValue, pAttr->pValue, HID_EXT_REPORT_REF_LEN );
   }
 
-  // restart idle timer
-  if ( status == SUCCESS )
-  {
-    hidDevStartIdleTimer();
-  }
-
   return ( status );
 }
 
@@ -730,12 +621,6 @@ bStatus_t HidDev_WriteAttrCB( uint16 connHandle, gattAttribute_t *pAttr,
     }
   }
 
-  // restart idle timer
-  if (status == SUCCESS)
-  {
-    hidDevStartIdleTimer();
-  }
-
   return ( status );
 }
 
@@ -820,9 +705,6 @@ static void hidDevHandleConnStatusCB( uint16 connHandle, uint8 changeType )
  */
 static void hidDevDisconnected( void )
 {
-  // Stop idle timer
-  hidDevStopIdleTimer();
-
   // Reset client characteristic configuration descriptors
   Batt_HandleConnStatusCB( gapConnHandle, LINKDB_STATUS_UPDATE_REMOVED );
   ScanParam_HandleConnStatusCB( gapConnHandle, LINKDB_STATUS_UPDATE_REMOVED );
@@ -831,11 +713,7 @@ static void hidDevDisconnected( void )
   // Reset state variables
   hidDevConnSecure = FALSE;
   hidProtocolMode = HID_PROTOCOL_MODE_REPORT;
-  hidDevPairingStarted = FALSE;
 
-  // Reset last report sent out
-  //tmos_memset( &lastNoti, 0, sizeof( attHandleValueNoti_t ) );
-  tmos_memset(&lastReport, 0, sizeof(hidDevReport_t));
   // if bonded and normally connectable start advertising
   if ( ( hidDevBondCount() > 0 ) &&
        ( pHidDevCfg->hidFlags & HID_FLAGS_NORMALLY_CONNECTABLE ) )
@@ -871,8 +749,6 @@ static void hidDevGapStateCB( gapRole_States_t newState, gapRoleEvent_t * pEvent
     param = FALSE;
     GAPRole_SetParameter( GAPROLE_ADVERT_ENABLED, sizeof( uint8 ), &param );
 
-    // start idle timer
-    hidDevStartIdleTimer();
   }
   // if disconnected
   else if ( hidDevGapState == GAPROLE_CONNECTED &&
@@ -931,14 +807,8 @@ static void hidDevParamUpdateCB( uint16 connHandle, uint16 connInterval,
  */
 static void hidDevPairStateCB( uint16 connHandle, uint8 state, uint8 status )
 {
-  if ( state == GAPBOND_PAIRING_STATE_STARTED )
+  if ( state == GAPBOND_PAIRING_STATE_COMPLETE )
   {
-    hidDevPairingStarted = TRUE;
-  }
-  else if ( state == GAPBOND_PAIRING_STATE_COMPLETE )
-  {
-    hidDevPairingStarted = FALSE;
-
     if ( status == SUCCESS )
     {
       hidDevConnSecure = TRUE;
@@ -959,11 +829,6 @@ static void hidDevPairStateCB( uint16 connHandle, uint8 state, uint8 status )
   }
 	else if( state == GAPBOND_PAIRING_STATE_BOND_SAVED )
   {
-  }
-  if ( !reportQEmpty() && hidDevConnSecure )
-  {
-    // Notify our task to send out pending reports
-    tmos_set_event( hidDevTaskId, HID_SEND_REPORT_EVT );
   }
 }
 
@@ -1139,11 +1004,12 @@ static hidRptMap_t *hidDevRptById( uint8 id, uint8 type )
  *
  * @return  None.
  */
-static void hidDevSendReport( uint8 id, uint8 type, uint8 len, uint8 *pData )
+static uint8 hidDevSendReport( uint8 id, uint8 type, uint8 len, uint8 *pData )
 {
   hidRptMap_t           *pRpt;
   gattAttribute_t       *pAttr;
   uint16                retHandle;
+  uint8                 state = bleNoResources;
 
   // get att handle for report
   if ( (pRpt = hidDevRptById(id, type)) != NULL )
@@ -1157,20 +1023,11 @@ static void hidDevSendReport( uint8 id, uint8 type, uint8 len, uint8 *pData )
       if ( value & GATT_CLIENT_CFG_NOTIFY )
       {
         // Send report notification
-				if (HidDev_sendNoti(pRpt->handle, len, pData) == SUCCESS)
-				{
-					// Save the report just sent out
-					lastReport.id = id;
-					lastReport.type = type;
-					lastReport.len = len;
-					tmos_memcpy(lastReport.data, pData, len);
-				}
-				
-				// start idle timer
-        hidDevStartIdleTimer();
+        state = HidDev_sendNoti(pRpt->handle, len, pData);
       }
     }
   }
+  return state;
 }
 
 /*********************************************************************
@@ -1209,71 +1066,6 @@ static uint8 HidDev_sendNoti(uint16 handle, uint8 len, uint8 *pData)
   }
   
   return status;
-}
-
-/*********************************************************************
- * @fn      hidDevEnqueueReport
- *
- * @brief   Enqueue a HID report to be sent later.
- *
- * @param   id - HID report ID.
- * @param   type - HID report type.
- * @param   len - Length of report.
- * @param   pData - Report data.
- *
- * @return  None.
- */
-static void hidDevEnqueueReport( uint8 id, uint8 type, uint8 len, uint8 *pData )
-{
-  // Enqueue only if bonded
-  if ( hidDevBondCount() > 0 )
-  {
-    // Update last index
-    lastQIdx = ( lastQIdx + 1 ) % HID_DEV_REPORT_Q_SIZE;
-
-    if ( lastQIdx == firstQIdx )
-    {
-      // Queue overflow; discard oldest report
-      firstQIdx = ( firstQIdx + 1 ) % HID_DEV_REPORT_Q_SIZE;
-    }
-
-    // Save report
-    hidDevReportQ[lastQIdx].id = id;
-    hidDevReportQ[lastQIdx].type = type;
-    hidDevReportQ[lastQIdx].len = len;
-    tmos_memcpy( hidDevReportQ[lastQIdx].data, pData, len );
-
-    if ( hidDevConnSecure )
-    {
-      // Notify our task to send out pending reports
-      tmos_set_event( hidDevTaskId, HID_SEND_REPORT_EVT );
-    }
-  }
-}
-
-/*********************************************************************
- * @fn      hidDevDequeueReport
- *
- * @brief   Dequeue a HID report to be sent out.
- *
- * @param   id - HID report ID.
- * @param   type - HID report type.
- * @param   len - Length of report.
- * @param   pData - Report data.
- *
- * @return  None.
- */
-static hidDevReport_t *hidDevDequeueReport( void )
-{
-  if ( reportQEmpty() )
-  {
-    return NULL;
-  }
-
-  // Update first index
-  firstQIdx = ( firstQIdx + 1 ) % HID_DEV_REPORT_Q_SIZE;
-
-  return ( &(hidDevReportQ[firstQIdx]) );
 }
 
 /*********************************************************************
@@ -1354,70 +1146,6 @@ static uint8 hidDevBondCount( void )
 
   return ( bondCnt );
 }
-
-
-/*********************************************************************
- * @fn      HidDev_isbufset
- *
- * @brief   Is all of the array elements set to a value?
- *
- * @param   buf - buffer to check.
- * @param   val - value to check each array element for.
- * @param   len - length to check.
- *
- * @return  TRUE if all "val".
- *          FALSE otherwise.
- */
-static uint8 HidDev_isbufset(uint8 *buf, uint8 val, uint8 len)
-{
-  uint8 x;
-
-  // Validate pointer and length of report
-  if ((buf == NULL) || (len >  HID_DEV_DATA_LEN))
-  {
-    return ( FALSE );
-  }
-
-  for ( x = 0; x < len; x++ )
-  {
-    // Check for non-initialized value
-    if ( buf[x] != val )
-    {
-      return ( FALSE );
-    }
-  }
-  
-  return ( TRUE );
-}
-
-
-/*********************************************************************
- * @fn      hidDevStartIdleTimer
- *
- * @brief   Start the idle timer.
- *
- * @return  None.
- */
-static void hidDevStartIdleTimer( void )
-{
-  if ( pHidDevCfg->idleTimeout > 0 )
-  {
-//    tmos_start_task( hidDevTaskId, HID_IDLE_EVT, pHidDevCfg->idleTimeout );
-  }
-}
-
-/*********************************************************************
- * @fn      hidDevStopIdleTimer
- *
- * @brief   Stop the idle timer.
- *
- * @return  None.
- */
-static void hidDevStopIdleTimer( void )
-{
-  tmos_stop_task( hidDevTaskId, HID_IDLE_EVT );
-}
-
 
 /*********************************************************************
 *********************************************************************/

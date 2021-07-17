@@ -22,6 +22,7 @@ static tmosTaskID testTaskID;
 static u8 TestEnalbe = FALSE;
 #endif
 
+static u8 payload=0;
 
 /*******************************************************************************
  * @fn          HAL_ProcessEvent
@@ -41,36 +42,11 @@ static u8 TestEnalbe = FALSE;
  */
 tmosEvents TEST_ProcessEvent( tmosTaskID task_id, tmosEvents events )
 {
-  static u8 payload=0;
 	uint8 * msgPtr;
-  keyChange_t *msgKeyPtr;
 
   if( events & SYS_EVENT_MSG ){  // 处理HAL层消息，调用tmos_msg_receive读取消息，处理完成后删除消息。
 		msgPtr = tmos_msg_receive(task_id);
     if( msgPtr ){
-			switch(  ((tmos_event_hdr_t*)msgPtr)->event){
-        case KEY_CHANGE:
-          msgKeyPtr = (keyChange_t *)msgPtr;
-          if( msgKeyPtr->keys&HAL_KEY_SW_1 ){
-            if( TestEnalbe == FALSE ){ 
-              payload++;
-              TestEnalbe = TRUE;
-              HalLedBlink( HAL_LED_1, 0xff, 30 , 4000);
-              API_LE_TransmitterTestCmd( 0, 20, payload&7, 0x15|0x80 );
-              PRINT("(key)test start ...\n");
-            }
-            else{
-              TestEnalbe = FALSE;
-              HalLedSet( HAL_LED_1, HAL_LED_MODE_OFF );
-              API_LE_TestEndCmd( );
-              PRINT("   (key)end!\n");
-            }
-            tmos_stop_task( testTaskID, TEST_EVENT );
-          }
-          break;
-        default:
-          break;
-      }
       /* De-allocate */
       tmos_msg_deallocate( msgPtr );
     }
@@ -97,6 +73,41 @@ tmosEvents TEST_ProcessEvent( tmosTaskID task_id, tmosEvents events )
 }
 
 /*******************************************************************************
+ * @fn          key_Change
+ *
+ * @brief       按键回调
+ *
+ * input parameters
+ *
+ * @param       keys.
+ *
+ * output parameters
+ *
+ * @param       None.
+ *
+ * @return      None.
+ */
+void key_Change( uint8 keys )
+{
+  if( keys&HAL_KEY_SW_1 ){
+    if( TestEnalbe == FALSE ){
+      payload++;
+      TestEnalbe = TRUE;
+      HalLedBlink( HAL_LED_1, 0xff, 30 , 4000);
+      API_LE_TransmitterTestCmd( 0, 20, payload&7, 0x15|0x80 );
+      PRINT("(key)test start ...\n");
+    }
+    else{
+      TestEnalbe = FALSE;
+      HalLedSet( HAL_LED_1, HAL_LED_MODE_OFF );
+      API_LE_TestEndCmd( );
+      PRINT("   (key)end!\n");
+    }
+    tmos_stop_task( testTaskID, TEST_EVENT );
+  }
+}
+
+/*******************************************************************************
  * @fn          Hal_Init
  *
  * @brief       硬件初始化
@@ -115,7 +126,7 @@ tmosEvents TEST_ProcessEvent( tmosTaskID task_id, tmosEvents events )
 {
   testTaskID = TMOS_ProcessEventRegister(TEST_ProcessEvent);
 #if (defined HAL_KEY) && (HAL_KEY == TRUE)
-  HAL_KEY_RegisterForKeys(testTaskID);
+  HalKeyConfig( key_Change );
 #endif
 #if BLE_DIRECT_TEST
   tmos_start_task( testTaskID , TEST_EVENT ,1000 ); // 添加一个测试任务

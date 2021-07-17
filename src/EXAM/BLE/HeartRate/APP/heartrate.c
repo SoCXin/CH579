@@ -44,10 +44,10 @@
 #define DEFAULT_HEARTRATE_PERIOD              2000
 
 // Minimum connection interval (units of 1.25ms)
-#define DEFAULT_DESIRED_MIN_CONN_INTERVAL     200
+#define DEFAULT_DESIRED_MIN_CONN_INTERVAL     20
 
 // Maximum connection interval (units of 1.25ms)
-#define DEFAULT_DESIRED_MAX_CONN_INTERVAL     1600
+#define DEFAULT_DESIRED_MAX_CONN_INTERVAL     160
 
 // Slave latency to use if parameter update request
 #define DEFAULT_DESIRED_SLAVE_LATENCY         1

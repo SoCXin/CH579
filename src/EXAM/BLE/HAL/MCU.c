@@ -144,11 +144,9 @@ tmosEvents HAL_ProcessEvent( tmosTaskID task_id, tmosEvents events )
   }
   if( events & HAL_KEY_EVENT ){
 #if (defined HAL_KEY) && (HAL_KEY == TRUE)
-    HAL_KeyPoll();              /* Check for keys */
-    if (!Hal_KeyIntEnable){        
-			tmos_start_task( halTaskID, HAL_KEY_EVENT, MS1_TO_SYSTEM_TIME(100) );
-    }
-		return events ^ HAL_KEY_EVENT;
+    HAL_KeyPoll(); /* Check for keys */
+    tmos_start_task( halTaskID, HAL_KEY_EVENT, MS1_TO_SYSTEM_TIME(100) );
+    return events ^ HAL_KEY_EVENT;
 #endif
   }
   if( events & HAL_REG_INIT_EVENT ){
@@ -227,7 +225,7 @@ void LLE_IRQHandler(void)
 /*******************************************************************************
  * @fn          HAL_GetInterTempValue
  *
- * @brief       None.
+ * @brief       如果使用了ADC中断采样，需在此函数中暂时屏蔽中断.
  *
  * input parameters
  *
@@ -241,22 +239,21 @@ void LLE_IRQHandler(void)
  */
 uint16 HAL_GetInterTempValue( void )
 {
-  uint8 sensor,channel,config;
+  uint8 sensor, channel, config;
   uint16 adc_data;
   
-  sensor  = R8_TEM_SENSOR;
+  sensor = R8_TEM_SENSOR;
   channel = R8_ADC_CHANNEL;
-  config  = R8_ADC_CFG;
-  R8_TEM_SENSOR |= RB_TEM_SEN_PWR_ON;
-  R8_ADC_CHANNEL = CH_INTE_VTEMP;
-  R8_ADC_CFG = RB_ADC_POWER_ON|( 2<<4 )	;
+  config = R8_ADC_CFG;
+  ADC_InterTSSampInit();
   R8_ADC_CONVERT |= RB_ADC_START;
-  while( R8_ADC_CONVERT & RB_ADC_START );
+  while( R8_ADC_CONVERT & RB_ADC_START )
+    ;
   adc_data = R16_ADC_DATA;
-  R8_TEM_SENSOR  = sensor;
+  R8_TEM_SENSOR = sensor;
   R8_ADC_CHANNEL = channel;
   R8_ADC_CFG = config;
-  return( adc_data );
+  return ( adc_data );
 }
 
 /******************************** endfile @ mcu ******************************/

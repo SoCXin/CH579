@@ -45,8 +45,10 @@ int main()
     GPIOA_ModeCfg( GPIO_Pin_2, GPIO_ModeOut_PP_5mA );
     
     TMR3_PWMInit( High_Level, PWM_Times_1 );
-    TMR3_PWMCycleCfg( 3200 );        // 周期 100ms
-    TMR3_PWMActDataWidth( 1000 );              // 占空比 50%
+    TMR3_PWMCycleCfg( 3200 );        // 周期 100us
+    TMR3_Disable();
+    TMR3_PWMActDataWidth( 1000 );              // 占空比设置 , 修改占空比必须暂时关闭定时器
+    TMR3_Enable();
     
 #endif   
 
@@ -58,6 +60,7 @@ int main()
     TMR1_CapInit( Edge_To_Edge );
     TMR1_CAPTimeoutCfg( 0xFFFFFFFF );   // 设置捕捉超时时间
     TMR1_DMACfg( ENABLE, (UINT16)&CapBuf[0], (UINT16)&CapBuf[100], Mode_Single );
+    TMR1_ClearITFlag( TMR1_2_IT_DMA_END );      // 清除中断标志  
     TMR1_ITCfg(ENABLE, TMR1_2_IT_DMA_END);          // 开启DMA完成中断
     NVIC_EnableIRQ( TMR1_IRQn );
     

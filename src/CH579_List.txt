@@ -1,5 +1,5 @@
 
-南京沁恒微电子股份有限公司 2021.02
+南京沁恒微电子股份有限公司 2021.05
 最新资料请到我们的网站上查询
 http://wch.cn
 
@@ -7,7 +7,7 @@ http://wch.cn
 文件目录
   |
   |-- CH579: 低功耗蓝牙 - 32位Cortex-M0内核微控制器
-  |      |-- CH579安卓OTA升级工具V1.1: CH579 OTA相关例程配套APP升级工具及源码
+  |      |-- 安卓OTA工具: CH579 OTA相关例程配套APP升级工具及源码,OTA升级说明文档及合并工具
   |      |-- EVT: CH579评估板和CH579相关例程
   |      |      |-- PUB: 
   |      |      |      |-- CH579评估板说明书.pdf: CH579评估板说明及工程创建说明
@@ -60,19 +60,6 @@ http://wch.cn
   |      |      |      |      |-- UDP_Server：UDP_Server例程，接受来自广播IP的指定端口报文，并将接受到报文的地址作为目标地址发送报文
   |      |      |      |      |-- CH57xNET协议栈库说明.pdf：以太网协议栈库说明  
   |      |      |      |-- BLE
-  |      |      |      |      |-- BLE_MESH
-  |      |      |      |      |       |-- Ali_Genie_Light：天猫精灵灯例程，上电找队友绑定连接，控制智能灯
-  |      |      |      |      |       |-- Generic_Model_With_Proxy：通用模型例程，支持PB-ADV和PB-GATT，支持代理
-  |      |      |      |      |       |-- Generic_Model_With_Proxy_Only：通用模型例程，支持PB-GATT，支持代理
-  |      |      |      |      |       |-- Generic_OnOff_Models：通用模型例程，支持PB-ADV，支持转发
-  |      |      |      |      |       |-- Self_Provision_Friend：自配网朋友节点，需与低功耗节点结合使用
-  |      |      |      |      |       |-- Self_Provision_Low_Power_Node：自配网低功耗节点，需与朋友节点结合使用
-  |      |      |      |      |       |-- Self_Provision_Generic_OnOff_Publish：自配网例程，通用开关模型周期发布例程，
-  |      |      |      |      |       |-- Self_Provision_Generic_OnOff_Subscription：自配网例程，通用开关模型订阅例程
-  |      |      |      |      |       |-- Self_Provisioner：配置者例程，将设备通过配网流程入网，与Generic_OnOff_Models结合使用
-  |      |      |      |      |       |-- Common：通用配置文件
-  |      |      |      |      |       |-- LIB：BLE Mesh协议栈库文件及其头文件
-  |      |      |      |      |       |-- 认证及证书：蓝牙Mesh BQB认证证书以及阿里天猫精灵证书
   |      |      |      |      |-- Broadcaster：广播者角色例程，处于广播态一直广播
   |      |      |      |      |-- CyclingSensor：骑行传感器例程，连接主机后定时上传速度和踏频
   |      |      |      |      |-- CentPeri：主从一体例程，整合了主机例程和从机例程的功能同时运行
@@ -88,9 +75,22 @@ http://wch.cn
   |      |      |      |      |-- Observer：观察者角色例程，定时扫描，如果扫描结果不为空，则打印扫描到的广播地址
   |      |      |      |      |-- DirectTest：直接测试例程，测试指定通信频道发送数据包
   |      |      |      |      |-- RF_PHY：非标准无线收发例程
-  |      |      |      |      |-- OTA：无线升级例程
-  |      |      |      |      |-- OTA_OnlyUpdateApp：固定库无线升级例程,只升级用户程序
-  |      |      |      |      |-- Peripheral_OnlyUpdateApp：固定库无线升级用户程序例程,与OTA_OnlyUpdateApp配合使用，需用合成工具将IAP文件、用户文件、库文件合成单个BIN文件后用ISP工具烧录。
+  |      |      |      |      |-- BackupUpgrade_IAP：备份无线升级IAP例程，检测当前代码标志，判断是否搬运备份区代码到用户区并运行用户区代码
+  |      |      |      |      |-- BackupUpgrade_OTA：备份无线升级用户例程，外设从机例程基础上添加OTA功能，可将升级固件保存到备份区后跳转IAP程序进行升级
+  |      |      |      |      |-- OnlyUpdateApp_IAP：固定库无线升级IAP例程，具备OTA功能，接收升级固件后对用户区代码进行升级
+  |      |      |      |      |-- OnlyUpdateApp_Peripheral：固定库无线升级用户例程，外设从机例程基础上添加跳转IAP程序进行后续升级的功能
+  |      |      |      |      |-- MESH
+  |      |      |      |      |      |-- adv_ali_light：天猫精灵灯例程，可通过天猫精灵找队友配网设备，控制开关状态。默认只有开关属性，如需添加其余属性（亮度，电量，温度等），需要自行根据阿里云产品配置的属性描述添加对应处理函数以及状态上报函数。
+  |      |      |      |      |      |-- adv_ali_light_add_lightness：MESH通用属性添加例程。天猫精灵灯例程的基础上，添加了亮度属性，用于对照原天猫精灵灯例程，快速熟悉添加其他MESH通用属性的方法。
+  |      |      |      |      |      |-- adv_ali_light_add_windspeed：天猫定义属性添加例程。天猫精灵灯例程的基础上，添加了风速属性，用于对照原天猫精灵灯例程，快速熟悉添加其他天猫定义属性的方法。
+  |      |      |      |      |      |-- adv_ali_light_with_peripheral：天猫精灵灯例程的基础上，支持手机BLE调试助手连接控制。
+  |      |      |      |      |      |-- adv_proxy：代理节点例程，可通过PV_GATT层（BLE连接）进行配网。
+  |      |      |      |      |      |-- adv_vendor：厂商自定义模型例程，配合self_provisioner_vendor使用，支持有应答传输和无应答透传两种通信属性，自行拟定通信协议。
+  |      |      |      |      |      |-- adv_vendor_friend：厂商自定义模型例程的基础上，支持朋友节点功能
+  |      |      |      |      |      |-- adv_vendor_low_power：厂商自定义模型例程的基础上，支持低功耗节点功能，需与朋友节点配合使用
+  |      |      |      |      |      |-- self_provisioner_vendor：厂商自定义模型自配网发起者例程，配合adv_vendor使用，自动配网周围未配网设备，并将其加入自身mesh网络，默认支持配网6个设备。默认配置设备绑定1个APPKEY,用于有应答传输和无应答透传，配置设备绑定1个订阅地址，用于群发无应答消息
+  |      |      |      |      |      |-- self_provisioner_vendor_with_peripheral：厂商自定义模型自配网发起者例程的基础上，支持手机BLE调试助手连接控制，中转手机与mesh网络的通信，可自行拟定通信协议实现手机控制mesh网络中所有设备。
+  |      |      |      |      |      |-- MESH_LIB：MESH协议栈库文件及其头文件
   |      |      |      |      |-- HAL：例程共用的硬件相关文件
   |      |      |      |      |-- LIB：BLE协议栈库文件及其头文件
   |      |      |      |      |-- CH57xBLE协议栈库说明.pdf：蓝牙协议栈库说明
