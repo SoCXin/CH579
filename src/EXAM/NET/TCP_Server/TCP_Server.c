@@ -54,21 +54,21 @@ __align(4)UINT8 Mem_ArpTable[CH57xNET_RAM_ARP_TABLE_SIZE];
 /* TCP协议栈采用滑动窗口进行流控，窗口最大值为socket的接收缓冲区长度。在设定 */
 /* RX_QUEUE_ENTRIES时要考虑MSS和窗口之间的关系，例如窗口值为4*MSS，则远端一次会发送 */
 /* 4个TCP包，如果RX_QUEUE_ENTRIES小于4，则必然会导致数据包丢失，从而导致通讯效率降低 */
-/* 建议RX_QUEUE_ENTRIES要大于( 窗口/MSS ),如果多个socket同时进行大批量发送数据，则 */ 
+/* 建议RX_QUEUE_ENTRIES要大于( 窗口/MSS ),如果多个socket同时进行大批量发送数据，则 */
 /* 建议RX_QUEUE_ENTRIES要大于(( 窗口/MSS )*socket个数) 在多个socket同时进行大批数据收发时 */
 /* 为了节约RAM，请将接收缓冲区的长度设置为MSS */
- 
-																				
+
+
 /* CH579相关定义 */
 UINT8 MACAddr[6]= {0x84,0xc2,0xe4,0x02,0x03,0x04};                              /* CH579MAC地址 */
-UINT8 IPAddr[4] = {192,168,1,200};                                              /* CH579IP地址 */
-UINT8 GWIPAddr[4]={192,168,1,1};                                                /* CH579网关 */
+UINT8 IPAddr[4] = {192,168,10,200};                                              /* CH579IP地址 */
+UINT8 GWIPAddr[4]={192,168,10,1};                                                /* CH579网关 */
 UINT8 IPMask[4] = {255,255,255,0};                                              /* CH579子网掩码 */
 
 
 /* 网口灯定义 PB口低十六位有效 */
 UINT16 CH57xNET_LEDCONN=0x0010;                                                 /* 连接指示灯 PB4 */
-UINT16 CH57xNET_LEDDATA=0x0080;                                                 /* 通讯指示灯 PB7 */ 
+UINT16 CH57xNET_LEDDATA=0x0080;                                                 /* 通讯指示灯 PB7 */
 
 UINT8 SocketId;                                                                 /* 保存socket索引，可以不用定义 */
 UINT8 SocketRecvBuf[4][RECE_BUF_LEN];                                              /* socket接收缓冲区 */
@@ -104,7 +104,7 @@ void TMR0_IRQHandler( void ) 					                            	/* 定时器中断 */
 void mStopIfError(UINT8 iError)
 {
     if (iError == CH57xNET_ERR_SUCCESS) return;                                /* 操作成功 */
-    PRINT("mStopIfError: %02X\r\n", (UINT16)iError);                           /* 显示错误 */    
+    PRINT("mStopIfError: %02X\r\n", (UINT16)iError);                           /* 显示错误 */
 }
 
 /*******************************************************************************
@@ -116,7 +116,7 @@ void mStopIfError(UINT8 iError)
 *******************************************************************************/
 void CH57xNET_CreatTcpSocket(void)
 {
-   UINT8 i;                                                             
+   UINT8 i;
    SOCK_INF TmpSocketInf;                                                       /* 创建临时socket变量 */
 
    memset((void *)&TmpSocketInf,0,sizeof(SOCK_INF));                            /* 库内部会将此变量复制，所以最好将临时变量先全部清零 */
@@ -141,7 +141,7 @@ void CH57xNET_CreatTcpSocket(void)
 /*******************************************************************************
 * Function Name  : net_initkeeplive
 * Description    : keeplive初始化
-* Input          : None      
+* Input          : None
 * Output         : None
 * Return         : None
 *******************************************************************************/
@@ -163,7 +163,7 @@ void net_initkeeplive(void)
 * Input          : ip      ip地址指针
 *                ：gwip    网关ip地址指针
 *                : mask    掩码指针
-*                : macaddr MAC地址指针 
+*                : macaddr MAC地址指针
 * Output         : None
 * Return         : 执行状态
 *******************************************************************************/
@@ -174,7 +174,7 @@ UINT8 CH57xNET_LibInit(/*const*/ UINT8 *ip,/*const*/ UINT8 *gwip,/*const*/ UINT8
 
     if(CH57xNET_GetVer() != CH57xNET_LIB_VER)return 0xfc;                       /* 获取库的版本号，检查是否和头文件一致 */
     CH57xNETConfig = LIB_CFG_VALUE;                                             /* 将配置信息传递给库的配置变量 */
-    cfg.RxBufSize = RX_BUF_SIZE; 
+    cfg.RxBufSize = RX_BUF_SIZE;
     cfg.TCPMss   = CH57xNET_TCP_MSS;
     cfg.HeapSize = CH57x_MEM_HEAP_SIZE;
     cfg.ARPTableNum = CH57xNET_NUM_ARP_TABLE;
@@ -184,7 +184,7 @@ UINT8 CH57xNET_LibInit(/*const*/ UINT8 *ip,/*const*/ UINT8 *gwip,/*const*/ UINT8
 #ifdef  KEEPLIVE_ENABLE
     net_initkeeplive( );
 #endif
-    return (i);                      
+    return (i);
 }
 
 /*******************************************************************************
@@ -204,7 +204,7 @@ void CH57xNET_HandleSockInt(UINT8 sockeid,UINT8 initstat)
     if(initstat & SINT_STAT_RECV)                                               /* 接收中断 */
     {
         len = CH57xNET_SocketRecvLen(sockeid,NULL);                             /* 查询长度 */
-		PRINT("Receive Len = %d\r\n",len);                           
+		PRINT("Receive Len = %d\r\n",len);
         totallen = len;
         CH57xNET_SocketRecv(sockeid,MyBuf,&len);                                /* 将接收缓冲区的数据读到MyBuf中*/
         while(1)
@@ -219,7 +219,7 @@ void CH57xNET_HandleSockInt(UINT8 sockeid,UINT8 initstat)
     }
     if(initstat & SINT_STAT_CONNECT)                                            /* TCP连接中断 */
     {                                                                           /* 产生此中断表示TCP已经连接，可以进行收发数据 */
-        PRINT("TCP Connect Success\n");                           
+        PRINT("TCP Connect Success\n");
         CH57xNET_ModifyRecvBuf(sockeid,(UINT32)SocketRecvBuf[sockeid],RECE_BUF_LEN);
     }
     if(initstat & SINT_STAT_DISCONNECT)                                         /* TCP断开中断 */
@@ -251,24 +251,24 @@ void CH57xNET_HandleGlobalInt(void)
     {
         PRINT("UnreachCode ：%d\n",CH57xInf.UnreachCode);                       /* 查看不可达代码 */
         PRINT("UnreachProto ：%d\n",CH57xInf.UnreachProto);                     /* 查看不可达协议类型 */
-        PRINT("UnreachPort ：%d\n",CH57xInf.UnreachPort);                       /* 查询不可达端口 */      
+        PRINT("UnreachPort ：%d\n",CH57xInf.UnreachPort);                       /* 查询不可达端口 */
     }
    if(initstat & GINT_STAT_IP_CONFLI)                                           /* IP冲突中断 */
    {
-   
+
    }
    if(initstat & GINT_STAT_PHY_CHANGE)                                          /* PHY改变中断 */
    {
        i = CH57xNET_GetPHYStatus();                                             /* 获取PHY状态 */
-       PRINT("GINT_STAT_PHY_CHANGE %02x\n",i);  
+       PRINT("GINT_STAT_PHY_CHANGE %02x\n",i);
    }
    if(initstat & GINT_STAT_SOCKET)                                              /* Socket中断 */
    {
-       for(i = 0; i < CH57xNET_MAX_SOCKET_NUM; i ++)                     
+       for(i = 0; i < CH57xNET_MAX_SOCKET_NUM; i ++)
        {
            socketinit = CH57xNET_GetSocketInt(i);                               /* 读socket中断并清零 */
            if(socketinit)CH57xNET_HandleSockInt(i,socketinit);                  /* 如果有中断则清零 */
-       }    
+       }
    }
 }
 
@@ -287,7 +287,7 @@ void Timer0Init(UINT32 time)
 	R8_TMR0_INT_FLAG = R8_TMR0_INT_FLAG;		                                /* 清除标志 */
 	R8_TMR0_INTER_EN = RB_TMR_IE_CYC_END;	                                 	/* 定时中断 */
 	R8_TMR0_CTRL_MOD |= RB_TMR_COUNT_EN;
-	NVIC_EnableIRQ(TMR0_IRQn);	
+	NVIC_EnableIRQ(TMR0_IRQn);
 }
 
 /*******************************************************************************
@@ -300,7 +300,7 @@ void Timer0Init(UINT32 time)
 void SystemClock_UART1_init(void)
 {
     PWR_UnitModCfg(ENABLE, UNIT_SYS_PLL);                                      /* PLL上电 */
-    DelayMs(3); 
+    DelayMs(3);
     SetSysClock(CLK_SOURCE_HSE_32MHz);                                          /* 外部晶振 PLL 输出32MHz */
     GPIOA_SetBits( GPIO_Pin_9 );
     GPIOA_ModeCfg( GPIO_Pin_9, GPIO_ModeOut_PP_5mA );                           /* 串口1的IO口设置 */
@@ -317,12 +317,12 @@ void SystemClock_UART1_init(void)
 void GetMacAddr(UINT8 *pMAC)
 {
 	UINT8 transbuf[6],i;
-	
+
 	GetMACAddress(transbuf);
 	for(i=0;i<6;i++)
 	{
 		pMAC[5-i]=transbuf[i];
-	
+
 	}
 }
 
@@ -333,22 +333,22 @@ void GetMacAddr(UINT8 *pMAC)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-int main(void) 
+int main(void)
 {
     UINT8 i = 0;
-      
-    SystemClock_UART1_init();                                                   /* 系统时钟和串口1初始化 */  
+
+    SystemClock_UART1_init();                                                   /* 系统时钟和串口1初始化 */
 	GetMacAddr(MACAddr);
     i = CH57xNET_LibInit(IPAddr,GWIPAddr,IPMask,MACAddr);                       /* 库初始化 */
     mStopIfError(i);                                                            /* 检查错误 */
-    PRINT("CH57xNETLibInit Success\r\n");   
+    PRINT("CH57xNETLibInit Success\r\n");
 	Timer0Init( 10000 );		                                                /* 初始化定时器:10ms */
-	NVIC_EnableIRQ(ETH_IRQn);	
+	NVIC_EnableIRQ(ETH_IRQn);
 	while ( CH57xInf.PHYStat < 2 ) {
 		DelayMs(50);
-	}	
+	}
     CH57xNET_CreatTcpSocket();                                                  /* 创建TCP Socket */
-    PRINT("CH579 TCP server create！\r\n");   	
+    PRINT("CH579 TCP server create！\r\n");
     while(1)
     {
         CH57xNET_MainTask();                                                    /* CH57xNET库主任务函数，需要在主循环中不断调用 */
