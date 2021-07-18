@@ -140,19 +140,19 @@ int main( )
 //                  CH579ByteWrite( );   //写入0字节的数据,用于自动更新文件的长度,所以文件长度增加15,如果不这样做,那么执行CH554FileClose时也会自动更新文件长度
                     //创建文件演示
                     printf( "Create\n" );
-                    strcpy( (PCHAR)mCmdParam.Create.mPathName, "/NEWFILE.TXT" );          /* 新文件名,在根目录下,中文文件名 */
+                    strcpy( (PCHAR)mCmdParam.Create.mPathName, "/QITAS.TXT" );          /* 新文件名,在根目录下,中文文件名 */
                     s = CH579FileCreate( );                                        /* 新建文件并打开,如果文件已经存在则先删除后再新建 */
                     mStopIfError( s );
                     printf( "ByteWrite\n" );
                     //实际应该判断写数据长度和定义缓冲区长度是否相符，如果大于缓冲区长度则需要多次写入
                     i = sprintf( (PCHAR)buf,"Note: \xd\xa这个程序是以字节为单位进行U盘文件读写,579简单演示功能。\xd\xa");  /*演示 */
-                    for(c=0; c<10; c++)
+                    for(c=0; c<100; c++)
                     {
                         mCmdParam.ByteWrite.mByteCount = i;                          /* 指定本次写入的字节数 */
                         mCmdParam.ByteWrite.mByteBuffer = buf;                       /* 指向缓冲区 */
                         s = CH579ByteWrite( );                                       /* 以字节为单位向文件写入数据 */
                         mStopIfError( s );
-                        printf("成功写入 %02X次\n",(UINT16)c);
+                        printf(" 成功写入%02X次\n",(UINT16)c);
                     }
                     //演示修改文件属性
 //                  printf( "Modify\n" );
