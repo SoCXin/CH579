@@ -1,6 +1,6 @@
 Dependencies for Project 'MQTT_Sub', Target 'CH57x': (DO NOT MODIFY !)
 CompilerVersion: 5060960::V5.06 update 7 (build 960)::ARMCC
-F (.\MQTT_Sub.c)(0x5F27B518)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\mqtt_sub.o --omf_browse .\obj\mqtt_sub.crf --depend .\obj\mqtt_sub.d)
+F (.\MQTT_Sub.c)(0x60F3C32D)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\mqtt_sub.o --omf_browse .\obj\mqtt_sub.crf --depend .\obj\mqtt_sub.d)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
 I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_common.h)(0x5E056B0E)
