@@ -1,10 +1,16 @@
 *.pyc
-*.hex
+!*.hex
 *.log
-.pio/
 .vscode/
 list
-obj
+# obj
 Lst
 *uvgui*
 *uvopt*
+*.o
+*.d
+*.crf
+*.axf
+*.sct
+*.lnp
+*.htm

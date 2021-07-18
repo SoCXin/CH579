@@ -1,0 +1,268 @@
+Dependencies for Project 'MQTT_Sub', Target 'CH57x': (DO NOT MODIFY !)
+CompilerVersion: 5060960::V5.06 update 7 (build 960)::ARMCC
+F (.\MQTT_Sub.c)(0x60DC21DC)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\mqtt_sub.o --omf_browse .\obj\mqtt_sub.crf --depend .\obj\mqtt_sub.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_common.h)(0x5E056B0E)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_clk.h)(0x5FA90752)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH579SFR.h)(0x5E96C828)
+I (..\..\..\SRC\CMSIS\Include\core_cm0.h)(0x5C2C2AFC)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E8E3CC2)
+I (..\..\..\SRC\CMSIS\Include\core_cmInstr.h)(0x53FEF2AA)
+I (..\..\..\SRC\CMSIS\Include\core_cmFunc.h)(0x53FEF2AA)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_uart.h)(0x5CC6B8D4)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_gpio.h)(0x5EA12E30)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_lcd.h)(0x5C6D0596)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_flash.h)(0x5E913D32)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwr.h)(0x5E82B97C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwm.h)(0x5C6D059A)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_adc.h)(0x5E912E5C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_sys.h)(0x5DD28746)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_timer.h)(0x5FC732DC)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_spi.h)(0x5F33B292)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbdev.h)(0x5C6D05D0)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbhost.h)(0x601CB758)
+I (..\..\LIB\CH57xNET.H)(0x5F587AB6)
+I (..\MQTT_SRC\MQTTPacket.H)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTConnect.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTPublish.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTSubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTUnsubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTFormat.h)(0x5AD1991C)
+I (..\MQTT_SRC\StackTrace.h)(0x5AD1991C)
+F (..\..\..\SRC\StdPeriphDriver\CH57x_clk.c)(0x5FA90656)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\ch57x_clk.o --omf_browse .\obj\ch57x_clk.crf --depend .\obj\ch57x_clk.d)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_common.h)(0x5E056B0E)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_clk.h)(0x5FA90752)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH579SFR.h)(0x5E96C828)
+I (..\..\..\SRC\CMSIS\Include\core_cm0.h)(0x5C2C2AFC)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E8E3CC2)
+I (..\..\..\SRC\CMSIS\Include\core_cmInstr.h)(0x53FEF2AA)
+I (..\..\..\SRC\CMSIS\Include\core_cmFunc.h)(0x53FEF2AA)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_uart.h)(0x5CC6B8D4)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_gpio.h)(0x5EA12E30)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_lcd.h)(0x5C6D0596)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_flash.h)(0x5E913D32)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwr.h)(0x5E82B97C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwm.h)(0x5C6D059A)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_adc.h)(0x5E912E5C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_sys.h)(0x5DD28746)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_timer.h)(0x5FC732DC)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_spi.h)(0x5F33B292)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbdev.h)(0x5C6D05D0)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbhost.h)(0x601CB758)
+F (..\..\..\SRC\StdPeriphDriver\CH57x_gpio.c)(0x5EA12E4A)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\ch57x_gpio.o --omf_browse .\obj\ch57x_gpio.crf --depend .\obj\ch57x_gpio.d)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_common.h)(0x5E056B0E)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_clk.h)(0x5FA90752)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH579SFR.h)(0x5E96C828)
+I (..\..\..\SRC\CMSIS\Include\core_cm0.h)(0x5C2C2AFC)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E8E3CC2)
+I (..\..\..\SRC\CMSIS\Include\core_cmInstr.h)(0x53FEF2AA)
+I (..\..\..\SRC\CMSIS\Include\core_cmFunc.h)(0x53FEF2AA)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_uart.h)(0x5CC6B8D4)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_gpio.h)(0x5EA12E30)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_lcd.h)(0x5C6D0596)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_flash.h)(0x5E913D32)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwr.h)(0x5E82B97C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwm.h)(0x5C6D059A)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_adc.h)(0x5E912E5C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_sys.h)(0x5DD28746)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_timer.h)(0x5FC732DC)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_spi.h)(0x5F33B292)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbdev.h)(0x5C6D05D0)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbhost.h)(0x601CB758)
+F (..\..\..\SRC\StdPeriphDriver\CH57x_pwr.c)(0x5F335F96)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\ch57x_pwr.o --omf_browse .\obj\ch57x_pwr.crf --depend .\obj\ch57x_pwr.d)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_common.h)(0x5E056B0E)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_clk.h)(0x5FA90752)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH579SFR.h)(0x5E96C828)
+I (..\..\..\SRC\CMSIS\Include\core_cm0.h)(0x5C2C2AFC)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E8E3CC2)
+I (..\..\..\SRC\CMSIS\Include\core_cmInstr.h)(0x53FEF2AA)
+I (..\..\..\SRC\CMSIS\Include\core_cmFunc.h)(0x53FEF2AA)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_uart.h)(0x5CC6B8D4)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_gpio.h)(0x5EA12E30)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_lcd.h)(0x5C6D0596)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_flash.h)(0x5E913D32)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwr.h)(0x5E82B97C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwm.h)(0x5C6D059A)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_adc.h)(0x5E912E5C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_sys.h)(0x5DD28746)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_timer.h)(0x5FC732DC)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_spi.h)(0x5F33B292)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbdev.h)(0x5C6D05D0)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbhost.h)(0x601CB758)
+F (..\..\..\SRC\StdPeriphDriver\CH57x_sys.c)(0x5DD287C2)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\ch57x_sys.o --omf_browse .\obj\ch57x_sys.crf --depend .\obj\ch57x_sys.d)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_common.h)(0x5E056B0E)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_clk.h)(0x5FA90752)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH579SFR.h)(0x5E96C828)
+I (..\..\..\SRC\CMSIS\Include\core_cm0.h)(0x5C2C2AFC)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E8E3CC2)
+I (..\..\..\SRC\CMSIS\Include\core_cmInstr.h)(0x53FEF2AA)
+I (..\..\..\SRC\CMSIS\Include\core_cmFunc.h)(0x53FEF2AA)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_uart.h)(0x5CC6B8D4)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_gpio.h)(0x5EA12E30)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_lcd.h)(0x5C6D0596)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_flash.h)(0x5E913D32)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwr.h)(0x5E82B97C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwm.h)(0x5C6D059A)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_adc.h)(0x5E912E5C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_sys.h)(0x5DD28746)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_timer.h)(0x5FC732DC)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_spi.h)(0x5F33B292)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbdev.h)(0x5C6D05D0)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbhost.h)(0x601CB758)
+F (..\..\..\SRC\StdPeriphDriver\CH57x_uart1.c)(0x5DAEC5BE)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\ch57x_uart1.o --omf_browse .\obj\ch57x_uart1.crf --depend .\obj\ch57x_uart1.d)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_common.h)(0x5E056B0E)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_clk.h)(0x5FA90752)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH579SFR.h)(0x5E96C828)
+I (..\..\..\SRC\CMSIS\Include\core_cm0.h)(0x5C2C2AFC)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E8E3CC2)
+I (..\..\..\SRC\CMSIS\Include\core_cmInstr.h)(0x53FEF2AA)
+I (..\..\..\SRC\CMSIS\Include\core_cmFunc.h)(0x53FEF2AA)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_uart.h)(0x5CC6B8D4)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_gpio.h)(0x5EA12E30)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_lcd.h)(0x5C6D0596)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_flash.h)(0x5E913D32)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwr.h)(0x5E82B97C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwm.h)(0x5C6D059A)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_adc.h)(0x5E912E5C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_sys.h)(0x5DD28746)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_timer.h)(0x5FC732DC)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_spi.h)(0x5F33B292)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbdev.h)(0x5C6D05D0)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbhost.h)(0x601CB758)
+F (..\..\..\SRC\StdPeriphDriver\CH57x_int.c)(0x5F62FE34)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\ch57x_int.o --omf_browse .\obj\ch57x_int.crf --depend .\obj\ch57x_int.d)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_common.h)(0x5E056B0E)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_clk.h)(0x5FA90752)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH579SFR.h)(0x5E96C828)
+I (..\..\..\SRC\CMSIS\Include\core_cm0.h)(0x5C2C2AFC)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E8E3CC2)
+I (..\..\..\SRC\CMSIS\Include\core_cmInstr.h)(0x53FEF2AA)
+I (..\..\..\SRC\CMSIS\Include\core_cmFunc.h)(0x53FEF2AA)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_uart.h)(0x5CC6B8D4)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_gpio.h)(0x5EA12E30)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_lcd.h)(0x5C6D0596)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_flash.h)(0x5E913D32)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwr.h)(0x5E82B97C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwm.h)(0x5C6D059A)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_adc.h)(0x5E912E5C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_sys.h)(0x5DD28746)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_timer.h)(0x5FC732DC)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_spi.h)(0x5F33B292)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbdev.h)(0x5C6D05D0)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbhost.h)(0x601CB758)
+F (..\..\..\SRC\StdPeriphDriver\CH57x_flash.c)(0x5E9515E2)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\ch57x_flash.o --omf_browse .\obj\ch57x_flash.crf --depend .\obj\ch57x_flash.d)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_common.h)(0x5E056B0E)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_clk.h)(0x5FA90752)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH579SFR.h)(0x5E96C828)
+I (..\..\..\SRC\CMSIS\Include\core_cm0.h)(0x5C2C2AFC)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5E8E3CC2)
+I (..\..\..\SRC\CMSIS\Include\core_cmInstr.h)(0x53FEF2AA)
+I (..\..\..\SRC\CMSIS\Include\core_cmFunc.h)(0x53FEF2AA)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_uart.h)(0x5CC6B8D4)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_gpio.h)(0x5EA12E30)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_lcd.h)(0x5C6D0596)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_flash.h)(0x5E913D32)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwr.h)(0x5E82B97C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_pwm.h)(0x5C6D059A)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_adc.h)(0x5E912E5C)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_sys.h)(0x5DD28746)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_timer.h)(0x5FC732DC)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_spi.h)(0x5F33B292)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbdev.h)(0x5C6D05D0)
+I (..\..\..\SRC\StdPeriphDriver\inc\CH57x_usbhost.h)(0x601CB758)
+F (..\..\..\SRC\Startup\startup_ARMCM0.s)(0x5C4E75E2)(--cpu Cortex-M0 -g --apcs=interwork --pd "__MICROLIB SETA 1"-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include--pd "__UVISION_VERSION SETA 534"--list .\lst\startup_armcm0.lst --xref -o .\obj\startup_armcm0.o --depend .\obj\startup_armcm0.d)
+F (..\..\LIB\CH57xNET.LIB)(0x5F587EDE)()
+F (..\MQTT_SRC\MQTTConnectClient.c)(0x5AD197F0)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\mqttconnectclient.o --omf_browse .\obj\mqttconnectclient.crf --depend .\obj\mqttconnectclient.d)
+I (..\MQTT_SRC\MQTTPacket.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTConnect.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTPublish.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTSubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTUnsubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTFormat.h)(0x5AD1991C)
+I (..\MQTT_SRC\StackTrace.h)(0x5AD1991C)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
+F (..\MQTT_SRC\MQTTDeserializePublish.c)(0x5AD197F0)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\mqttdeserializepublish.o --omf_browse .\obj\mqttdeserializepublish.crf --depend .\obj\mqttdeserializepublish.d)
+I (..\MQTT_SRC\StackTrace.h)(0x5AD1991C)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (..\MQTT_SRC\MQTTPacket.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTConnect.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTPublish.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTSubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTUnsubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTFormat.h)(0x5AD1991C)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
+F (..\MQTT_SRC\MQTTFormat.c)(0x5AD197F0)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\mqttformat.o --omf_browse .\obj\mqttformat.crf --depend .\obj\mqttformat.d)
+I (..\MQTT_SRC\StackTrace.h)(0x5AD1991C)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (..\MQTT_SRC\MQTTPacket.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTConnect.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTPublish.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTSubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTUnsubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTFormat.h)(0x5AD1991C)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
+F (..\MQTT_SRC\MQTTPacket.c)(0x5AD197F0)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\mqttpacket.o --omf_browse .\obj\mqttpacket.crf --depend .\obj\mqttpacket.d)
+I (..\MQTT_SRC\StackTrace.h)(0x5AD1991C)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (..\MQTT_SRC\MQTTPacket.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTConnect.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTPublish.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTSubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTUnsubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTFormat.h)(0x5AD1991C)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
+F (..\MQTT_SRC\MQTTSerializePublish.c)(0x5AD197F0)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\mqttserializepublish.o --omf_browse .\obj\mqttserializepublish.crf --depend .\obj\mqttserializepublish.d)
+I (..\MQTT_SRC\MQTTPacket.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTConnect.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTPublish.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTSubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTUnsubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTFormat.h)(0x5AD1991C)
+I (..\MQTT_SRC\StackTrace.h)(0x5AD1991C)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
+F (..\MQTT_SRC\MQTTSubscribeClient.c)(0x5AD197F0)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\mqttsubscribeclient.o --omf_browse .\obj\mqttsubscribeclient.crf --depend .\obj\mqttsubscribeclient.d)
+I (..\MQTT_SRC\MQTTPacket.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTConnect.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTPublish.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTSubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTUnsubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTFormat.h)(0x5AD1991C)
+I (..\MQTT_SRC\StackTrace.h)(0x5AD1991C)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
+F (..\MQTT_SRC\MQTTUnsubscribeClient.c)(0x5AD197F0)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\mqttunsubscribeclient.o --omf_browse .\obj\mqttunsubscribeclient.crf --depend .\obj\mqttunsubscribeclient.d)
+I (..\MQTT_SRC\MQTTPacket.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTConnect.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTPublish.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTSubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTUnsubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTFormat.h)(0x5AD1991C)
+I (..\MQTT_SRC\StackTrace.h)(0x5AD1991C)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
+F (..\MQTT_SRC\MQTTUnsubscribeServer.c)(0x5AD1AD44)(-c --cpu Cortex-M0 -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ..\..\..\SRC\CMSIS\Include -I ..\..\LIB -I ..\MQTT_SRC -I ..\..\..\SRC\StdPeriphDriver\inc --diag_suppress=231-IC:\Keil_v5\ARM\PACK\Keil\WCH57x_DFP\1.1.0\Drivers\CMSIS\Device\WCH\CH57x\Include-D__UVISION_VERSION="534" -DDEBUG-o .\obj\mqttunsubscribeserver.o --omf_browse .\obj\mqttunsubscribeserver.crf --depend .\obj\mqttunsubscribeserver.d)
+I (..\MQTT_SRC\MQTTPacket.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTConnect.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTPublish.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTSubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTUnsubscribe.h)(0x5AD1991C)
+I (..\MQTT_SRC\MQTTFormat.h)(0x5AD1991C)
+I (..\MQTT_SRC\StackTrace.h)(0x5AD1991C)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
