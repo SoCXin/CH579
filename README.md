@@ -38,13 +38,15 @@
 
 [CH579](https://github.com/SoCXin/CH579) 是一款非常有特色的SoC，在紧凑的封装内集成了以太网所有功能，同时还具有无线通信。
 
-* QFN48(5X5)
-* QFN28(4X4)
+
 
 [![sites](docs/diff.png)](http://www.wch.cn/products/CH579.html)
 
+* CH579M:QFN48 (5X5)
+* CH579F:QFN28 (4X4)
+
 #### 相关开发板
 
-[![sites](docs/B.png)](https://item.taobao.com/item.htm?spm=a230r.1.14.18.a51ac05bwhVsnp&id=608342676773&ns=1&abbucket=19#detail)
+[![sites](docs/B.jpg)](https://item.taobao.com/item.htm?spm=a230r.1.14.18.a51ac05bwhVsnp&id=608342676773&ns=1&abbucket=19#detail)
 
 ### [探索芯世界 www.SoC.xin](http://www.SoC.Xin)
