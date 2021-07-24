@@ -49,4 +49,10 @@
 
 [![sites](docs/B.jpg)](https://item.taobao.com/item.htm?spm=a230r.1.14.18.a51ac05bwhVsnp&id=608342676773&ns=1&abbucket=19#detail)
 
+
+#### 完成度较高开源项目
+
+* [硬件设计:CH579带网口蓝牙开发板](https://oshwhub.com/staunchheart/ch579)
+
+
 ### [探索芯世界 www.SoC.xin](http://www.SoC.Xin)
