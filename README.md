@@ -1,6 +1,6 @@
 ﻿# [CH579](https://github.com/SoCXin/CH579)
 
-[![sites](http://182.61.61.133/link/resources/SoC.png)](http://www.SoC.Xin)
+[![sites](http://182.61.61.133/link/resources/SoC.png)](http://docs.soc.xin/CH579)
 
 * [WCH](http://www.wch.cn/)：[Cortex-M0](https://github.com/SoCXin/Cortex)
 * [L2R3](https://github.com/SoCXin/Level)：40 MHz
@@ -34,11 +34,10 @@
 * [参考文档](docs/)
 * [参考工程](project/)
 
+
 ### [选型建议](https://github.com/SoCXin)
 
 [CH579](https://github.com/SoCXin/CH579) 是一款非常有特色的SoC，在紧凑的封装内集成了以太网所有功能，同时还具有无线通信。
-
-
 
 [![sites](docs/diff.png)](http://www.wch.cn/products/CH579.html)
 
@@ -50,9 +49,8 @@
 [![sites](docs/B.jpg)](https://item.taobao.com/item.htm?spm=a230r.1.14.18.a51ac05bwhVsnp&id=608342676773&ns=1&abbucket=19#detail)
 
 
-#### 完成度较高开源项目
 
 * [硬件设计:CH579带网口蓝牙开发板](https://oshwhub.com/staunchheart/ch579)
 
 
-### [探索芯世界 www.SoC.xin](http://www.SoC.Xin)
+### [www.SoC.xin](http://www.SoC.Xin)

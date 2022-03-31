@@ -41,7 +41,7 @@ int main( void )
   GPIOA_ModeCfg(bTXD1, GPIO_ModeOut_PP_5mA);
   UART1_DefInit( );
 #endif   
-  PRINT("Qitas %s\n",VER_LIB);
+  PRINT("%s\n",VER_LIB);
   CH57X_BLEInit( );
 	HAL_Init( );
 	GAPRole_PeripheralInit( );

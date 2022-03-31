@@ -2,7 +2,7 @@
 /* Website:  http://wch.cn  */
 /* Email:    tech@wch.cn    */
 /* Author:   W.ch 2016.10   */
-/* V0.2 SpecialFunctionRegister */
+/* V0.3 SpecialFunctionRegister */
 
 // multi-blocks: __BASE_TYPE__, __CH579SFR_H__, __CH579ETHSFR_H__, __CH579USBSFR_H__, __USB_TYPE__...
 
@@ -350,7 +350,7 @@ extern "C" {
 #define  RB_PWR_DCDC_PRE    0x0400                    // RWA, DC/DC converter pre-enable
 #define  RB_PWR_PLAN_EN     0x8000                    // RWA/WZ, power plan enable, auto clear after sleep executed
 #define  RB_PWR_MUST_0010   0x1000                    // RWA, must write 0010
-#define R8_AUX_POWER_ADJ    (*((PUINT8V)0x40001022))  // RWA, aux power adjust control, SAM
+#define R16_AUX_POWER_ADJ   (*((PUINT8V)0x40001022))  // RWA, aux power adjust control, SAM
 #define  RB_ULPLDO_ADJ      0x0007                    // RWA, Ultra-Low-Power LDO voltage adjust
 
 /* System: battery detector register */

@@ -28,7 +28,7 @@ void mStopIfError( UINT8 iError )
     {
         return;    /* 操作成功 */
     }
-    printf( "Error Q: %02X\n", (UINT16)iError );  /* 显示错误 */
+    printf( "Error: %02X\n", (UINT16)iError );  /* 显示错误 */
     /* 遇到错误后,应该分析错误码以及CH554DiskStatus状态,例如调用CH579DiskReady查询当前U盘是否连接,如果U盘已断开那么就重新等待U盘插上再操作,
        建议出错后的处理步骤:
        1、调用一次CH579DiskReady,成功则继续操作,例如Open,Read/Write等
@@ -41,11 +41,11 @@ int main( )
 {
     UINT8   s, c, i;
 //    UINT16  TotalCount;
-
+    
     SetSysClock( CLK_SOURCE_HSE_32MHz );
     PWR_UnitModCfg( ENABLE, UNIT_SYS_PLL );		// 打开PLL
     DelayMs(5);
-
+    
 	GPIOA_SetBits(GPIO_Pin_9);
 	GPIOA_ModeCfg(GPIO_Pin_8, GPIO_ModeIN_PU);
 	GPIOA_ModeCfg(GPIO_Pin_9, GPIO_ModeOut_PP_5mA);
@@ -54,9 +54,9 @@ int main( )
 
     pHOST_RX_RAM_Addr = RxBuffer;
     pHOST_TX_RAM_Addr = TxBuffer;
-	USB_HostInit();
+	USB_HostInit();    
     CH579LibInit( );                           //初始化U盘程序库以支持U盘文件
-
+    
     FoundNewDev = 0;
     while ( 1 )
     {
@@ -67,7 +67,7 @@ int main( )
             s = AnalyzeRootHub( );                                          // 分析ROOT-HUB状态
             if ( s == ERR_USB_CONNECT ) 		FoundNewDev = 1;
         }
-
+        
         if ( FoundNewDev || s == ERR_USB_CONNECT )                         // 有新的USB设备插入
         {
             FoundNewDev = 0;
@@ -87,13 +87,13 @@ int main( )
                     }
                     else
                     {
-                        printf("test %02x\n",(UINT16)s);
+                        printf("%02x\n",(UINT16)s);
                     }
                     mDelaymS( 50 );
                 }
-
+                
                 if ( CH579DiskStatus >= DISK_MOUNTED )
-                {
+                {                    
 //                  /* 读文件 */
 //                  strcpy( mCmdParam.Open.mPathName, "/C51/CH579HFT.C" );     //设置将要操作的文件路径和文件名/C51/CH579HFT.C
 //                  s = CH579FileOpen( );                                      //打开文件
@@ -140,19 +140,19 @@ int main( )
 //                  CH579ByteWrite( );   //写入0字节的数据,用于自动更新文件的长度,所以文件长度增加15,如果不这样做,那么执行CH554FileClose时也会自动更新文件长度
                     //创建文件演示
                     printf( "Create\n" );
-                    strcpy( (PCHAR)mCmdParam.Create.mPathName, "/QITAS.TXT" );          /* 新文件名,在根目录下,中文文件名 */
+                    strcpy( (PCHAR)mCmdParam.Create.mPathName, "/NEWFILE.TXT" );          /* 新文件名,在根目录下,中文文件名 */
                     s = CH579FileCreate( );                                        /* 新建文件并打开,如果文件已经存在则先删除后再新建 */
                     mStopIfError( s );
                     printf( "ByteWrite\n" );
                     //实际应该判断写数据长度和定义缓冲区长度是否相符，如果大于缓冲区长度则需要多次写入
                     i = sprintf( (PCHAR)buf,"Note: \xd\xa这个程序是以字节为单位进行U盘文件读写,579简单演示功能。\xd\xa");  /*演示 */
-                    for(c=0; c<100; c++)
+                    for(c=0; c<10; c++)
                     {
                         mCmdParam.ByteWrite.mByteCount = i;                          /* 指定本次写入的字节数 */
                         mCmdParam.ByteWrite.mByteBuffer = buf;                       /* 指向缓冲区 */
                         s = CH579ByteWrite( );                                       /* 以字节为单位向文件写入数据 */
                         mStopIfError( s );
-                        printf(" 成功写入%02X次\n",(UINT16)c);
+                        printf("成功写入 %02X次\n",(UINT16)c);
                     }
                     //演示修改文件属性
 //                  printf( "Modify\n" );
@@ -166,12 +166,12 @@ int main( )
                     mCmdParam.Close.mUpdateLen = 1;                                  /* 自动计算文件长度,以字节为单位写文件,建议让程序库关闭文件以便自动更新文件长度 */
                     i = CH579FileClose( );
                     mStopIfError( i );
-
+                    
 //                  strcpy( (PCHAR)mCmdParam.Create.mPathName, "/NEWFILE.TXT" );          /* 新文件名,在根目录下,中文文件名 */
 //                  s = CH579FileOpen( );                                        /* 新建文件并打开,如果文件已经存在则先删除后再新建 */
 //                  mStopIfError( s );
-
-
+                   
+                    
 //                  /* 删除某文件 */
 //                  printf( "Erase\n" );
 //                  strcpy( mCmdParam.Create.mPathName, "/OLD" );  //将被删除的文件名,在根目录下

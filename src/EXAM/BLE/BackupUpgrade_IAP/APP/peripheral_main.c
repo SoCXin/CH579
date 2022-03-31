@@ -125,7 +125,7 @@ void ReadImageFlag(void)
         CurrImageFlag = IMAGE_A_FLAG;
     }
     
-    PRINT("ImageQ Flag %02x\n",CurrImageFlag);
+    PRINT("Image Flag %02x\n",CurrImageFlag);
 }
 
 /*******************************************************************************
