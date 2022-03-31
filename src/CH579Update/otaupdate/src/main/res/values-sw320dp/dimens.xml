@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<dimen name="fab_margin">14.2222dp</dimen>
+	<dimen name="corners_btn">4.4444dp</dimen>
+	<dimen name="dp_10">8.8889dp</dimen>
+	<dimen name="dp_5">4.4444dp</dimen>
+	<dimen name="dp_80">71.1111dp</dimen>
+	<dimen name="dp_40">35.5556dp</dimen>
+	<dimen name="dp_15">13.3333dp</dimen>
+</resources>

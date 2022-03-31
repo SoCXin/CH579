@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="cn.wch.otaupdate.MainActivity">
+    <item
+        android:id="@+id/connect"
+        android:orderInCategory="100"
+        android:title="连接蓝牙"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/disconnect"
+        android:orderInCategory="101"
+        android:title="断开连接"
+        app:showAsAction="always"
+        android:visible="false"
+        />
+</menu>
