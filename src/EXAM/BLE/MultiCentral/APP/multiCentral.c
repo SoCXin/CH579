@@ -1,13 +1,17 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : multiCentral.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/11/12
-* Description        : 主机多连接例程，主动扫描周围设备，连接至给定的三个从机设备地址，
-*                      寻找自定义服务及特征，执行读写命令，需与从机例程配合使用,
-                       并将从机设备地址修改为该例程目标地址，三个从机设备地址默认为
-                       (84:C2:E4:03:02:02)、(84:C2:E4:03:02:03)、(84:C2:E4:03:02:04)
-*******************************************************************************/
+ * File Name          : multiCentral.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/11/12
+ * Description        : 主机多连接例程，主动扫描周围设备，连接至给定的三个从机设备地址，
+ *                      寻找自定义服务及特征，执行读写命令，需与从机例程配合使用,
+ *                      并将从机设备地址修改为该例程目标地址，三个从机设备地址默认为
+ *                      (84:C2:E4:03:02:02)、(84:C2:E4:03:02:03)、(84:C2:E4:03:02:04)
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*********************************************************************
  * INCLUDES
@@ -96,6 +100,9 @@
 // Default read or write timer delay in 0.625ms
 #define DEFAULT_READ_OR_WRITE_DELAY           1600
 
+// Default write CCCD delay in 0.625ms
+#define DEFAULT_WRITE_CCCD_DELAY              1600
+
 // Establish link timeout in 0.625ms
 #define ESTABLISH_LINK_TIMEOUT            		3200
 
@@ -113,7 +120,8 @@ enum
 {
   BLE_DISC_STATE_IDLE,                // Idle
   BLE_DISC_STATE_SVC,                 // Service discovery
-  BLE_DISC_STATE_CHAR                 // Characteristic discovery
+  BLE_DISC_STATE_CHAR,                 // Characteristic discovery
+  BLE_DISC_STATE_CCCD,                // client characteristic configuration discovery
 };
 /*********************************************************************
  * TYPEDEFS
@@ -276,6 +284,7 @@ static void centralInitConnItem( uint8 task_id, centralConnItem_t* centralConnLi
     centralConnList[connItem].charHdl = 0;
     centralConnList[connItem].svcStartHdl = 0;
     centralConnList[connItem].svcEndHdl = 0;
+    centralConnList[connItem].cccHdl = 0;
   }
 }
 
@@ -414,6 +423,36 @@ static uint16 connect0_ProcessEvent( uint8 task_id, uint16 events )
 		return ( events ^ START_PARAM_UPDATE_EVT );
 	}
 	
+  if(events & START_WRITE_CCCD_EVT)
+  {
+      if(centralConnList[CONNECT0_ITEM].procedureInProgress == FALSE)
+      {
+          // Do a write
+          attWriteReq_t req;
+
+          req.cmd = FALSE;
+          req.sig = FALSE;
+          req.handle = centralConnList[CONNECT0_ITEM].cccHdl;
+          req.len = 2;
+          req.pValue = GATT_bm_alloc(centralConnList[CONNECT0_ITEM].connHandle, ATT_WRITE_REQ, req.len, NULL, 0);
+          if(req.pValue != NULL)
+          {
+              req.pValue[0] = 1;
+              req.pValue[1] = 0;
+
+              if(GATT_WriteCharValue(centralConnList[CONNECT0_ITEM].connHandle, &req, centralTaskId) == SUCCESS)
+              {
+                  centralConnList[CONNECT0_ITEM].procedureInProgress = TRUE;
+              }
+              else
+              {
+                  GATT_bm_free((gattMsg_t *)&req, ATT_WRITE_REQ);
+              }
+          }
+      }
+      return (events ^ START_WRITE_CCCD_EVT);
+  }
+
 	if ( events & START_READ_RSSI_EVT )
 	{
 		GAPRole_ReadRssiCmd(centralConnList[CONNECT0_ITEM].connHandle);
@@ -459,6 +498,7 @@ static void centralProcessGATTMsg( gattMsgEvent_t *pMsg )
   }
   if( connItem == CENTRAL_MAX_CONNECTION )
   {
+    GATT_bm_free(&pMsg->msg, pMsg->method);
     return;
     // Should not go there
   }
@@ -467,6 +507,7 @@ static void centralProcessGATTMsg( gattMsgEvent_t *pMsg )
   {
     // In case a GATT message came after a connection has dropped,
     // ignore the message
+    GATT_bm_free(&pMsg->msg, pMsg->method);
     return;
   }
   
@@ -813,7 +854,7 @@ static void centralPasscodeCB( uint8 *deviceAddr, uint16 connectionHandle,
   // Display passcode to user
   if ( uiOutputs != 0 )
   {
-    PRINT("Passcode:%d\n",(int)passcode);
+    PRINT("Passcode:%06d\n",(int)passcode);
   }
   // Send passcode response
   GAPBondMgr_PasscodeRsp( connectionHandle, SUCCESS, passcode );
@@ -904,6 +945,41 @@ static void centralGATTDiscoveryEvent( uint8 connItem, gattMsgEvent_t *pMsg )
         // Display Characteristic 1 handle
         PRINT("Found Characteristic 1 handle : %x \n",centralConnList[0].charHdl);      
       }
+
+      if((pMsg->method == ATT_READ_BY_TYPE_RSP &&
+          pMsg->hdr.status == bleProcedureComplete) ||
+          (pMsg->method == ATT_ERROR_RSP))
+      {
+          // Discover characteristic
+          centralConnList[connItem].discState = BLE_DISC_STATE_CCCD;
+          req.startHandle = centralConnList[connItem].svcStartHdl;
+          req.endHandle = centralConnList[connItem].svcEndHdl;
+          req.type.len = ATT_BT_UUID_SIZE;
+          req.type.uuid[0] = LO_UINT16(GATT_CLIENT_CHAR_CFG_UUID);
+          req.type.uuid[1] = HI_UINT16(GATT_CLIENT_CHAR_CFG_UUID);
+
+          GATT_ReadUsingCharUUID(centralConnList[connItem].connHandle, &req, centralTaskId);
+      }
+
+  }
+  else if(centralConnList[connItem].discState == BLE_DISC_STATE_CCCD)
+  {
+      // Characteristic found, store handle
+      if(pMsg->method == ATT_READ_BY_TYPE_RSP &&
+      pMsg->msg.readByTypeRsp.numPairs > 0)
+      {
+          centralConnList[connItem].cccHdl = BUILD_UINT16(pMsg->msg.readByTypeRsp.pDataList[0],
+                                      pMsg->msg.readByTypeRsp.pDataList[1]);
+
+          centralConnList[connItem].procedureInProgress = FALSE;
+
+          // Start do write CCCD
+          tmos_start_task(centralConnList[connItem].taskID, START_WRITE_CCCD_EVT, DEFAULT_WRITE_CCCD_DELAY);
+
+          // Display Characteristic 1 handle
+          PRINT("Found client characteristic configuration handle : %x \n", centralConnList[connItem].cccHdl);
+      }
+
       centralConnList[connItem].discState = BLE_DISC_STATE_IDLE;
     } 
   }    

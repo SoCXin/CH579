@@ -1,18 +1,20 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : broadcaster.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/10
-* Description        : 广播应用程序，初始化广播连接参数，然后处于广播态一直广播
-            
-*******************************************************************************/
+ * File Name          : broadcaster.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/10
+ * Description        : 广播应用程序，初始化广播连接参数，然后处于广播态一直广播         
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*********************************************************************
  * INCLUDES
  */
 #include "CONFIG.h"
 #include "CH57x_common.h"
-#include "battservice.h"
 #include "devinfoservice.h"
 #include "broadcaster.h"
 
@@ -24,8 +26,8 @@
  * CONSTANTS
  */
 
-// What is the advertising interval when device is discoverable (units of 625us, 80=50ms)
-#define DEFAULT_ADVERTISING_INTERVAL          80
+// What is the advertising interval when device is discoverable (units of 625us, 160=100ms)
+#define DEFAULT_ADVERTISING_INTERVAL          160
 
 // Company Identifier: WCH 
 #define WCH_COMPANY_ID                        0x07D7

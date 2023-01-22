@@ -1,9 +1,7 @@
 ﻿# [CH579](https://github.com/SoCXin/CH579)
 
-[![sites](http://182.61.61.133/link/resources/SoC.png)](http://docs.soc.xin/CH579)
-
 * [WCH](http://www.wch.cn/)：[Cortex-M0](https://github.com/SoCXin/Cortex)
-* [L2R3](https://github.com/SoCXin/Level)：40 MHz
+* [L1R2](https://github.com/SoCXin/Level)：40 MHz
 
 ## [简介](https://github.com/SoCXin/CH579/wiki)
 
@@ -16,7 +14,7 @@
 
 [![sites](docs/CH579.png)](http://www.wch.cn/products/CH579.html)
 
-#### 关键特性
+### 关键特性
 
 * 32K SRAM，250KB，2KB DataFlash, 4KB BootLoader
 * BLE 4.2，Zigbee兼容IEEE 802.15.4规范，单端RF接口无需外部电感
@@ -28,16 +26,16 @@
 * 内置AES-128加解密单元
 * 支持8位被动并口
 
-### [资源收录](https://github.com/SoCXin)
+## [资源收录](https://github.com/SoCXin)
 
 * [参考资源](src/)
 * [参考文档](docs/)
 * [参考工程](project/)
 
 
-### [选型建议](https://github.com/SoCXin)
+## [选型建议](https://github.com/SoCXin)
 
-[CH579](https://github.com/SoCXin/CH579) 是一款非常有特色的SoC，在紧凑的封装内集成了以太网所有功能，同时还具有无线通信。
+[CH579](https://github.com/SoCXin/CH579) 是一款非常有特色的SoC，在紧凑的封装内集成了以太网所有功能，同时还具有无线通信。在物联网通信集成度上非常高。
 
 
 * CH579M:QFN48 (5X5)

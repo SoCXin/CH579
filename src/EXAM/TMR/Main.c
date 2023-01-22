@@ -1,14 +1,20 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : Main.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2019/4/28
-* Description 		 : 定时器例子
-*******************************************************************************/
+ * File Name          : Main.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2019/4/28
+ * Description 		 : 定时器例子
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 #include "CH57x_common.h"
 
 __align(4) UINT32 CapBuf[100];
+__align(4) UINT32 PwmBuf[100];
+
 volatile UINT8 capFlag = 0;
 
 void DebugInit(void)		
@@ -59,7 +65,7 @@ int main()
 
     TMR1_CapInit( Edge_To_Edge );
     TMR1_CAPTimeoutCfg( 0xFFFFFFFF );   // 设置捕捉超时时间
-    TMR1_DMACfg( ENABLE, (UINT16)&CapBuf[0], (UINT16)&CapBuf[100], Mode_Single );
+    TMR1_DMACfg( ENABLE, (UINT16)(UINT32)&CapBuf[0], (UINT16)(UINT32)&CapBuf[100], Mode_Single );
     TMR1_ClearITFlag( TMR1_2_IT_DMA_END );      // 清除中断标志  
     TMR1_ITCfg(ENABLE, TMR1_2_IT_DMA_END);          // 开启DMA完成中断
     NVIC_EnableIRQ( TMR1_IRQn );
@@ -92,6 +98,30 @@ int main()
 		}while(1); 
 
 #endif
+
+#if 1 /* 定时器2,DMA PWM.*/
+    GPIOB_ModeCfg(GPIO_Pin_11, GPIO_ModeOut_PP_5mA);
+    GPIOPinRemap(ENABLE, RB_PIN_TMR2);
+
+    PRINT("TMR2 DMA PWM\n");
+    TMR2_PWMCycleCfg(120000); // 周期 2000us
+    for(i=0; i<50; i++)
+    {
+      PwmBuf[i]=2400*i;
+    }
+    for(i=50; i<100; i++)
+    {
+      PwmBuf[i]=2400*(100-i);
+    }
+    TMR2_PWMInit(Low_Level, PWM_Times_16);
+    /* Note: DMA须在PWM初始化后进行配置 */
+    TMR2_DMACfg(ENABLE, (uint16_t)(uint32_t)&PwmBuf[0], (uint16_t)(uint32_t)&PwmBuf[100], Mode_LOOP);
+    /* 开启计数溢出中断，计慢1000个周期进入中断 */
+    TMR2_ClearITFlag(TMR1_2_IT_DMA_END);
+    NVIC_EnableIRQ(TMR2_IRQn);
+    TMR2_ITCfg(ENABLE, TMR1_2_IT_DMA_END);
+
+#endif
     while(1);    
 }
 
@@ -119,13 +149,19 @@ void TMR1_IRQHandler( void )        // TMR1 定时中断
 
 void TMR2_IRQHandler(void)
 {
-   if( TMR2_GetITFlag(TMR0_3_IT_CYC_END) ) 
-   {
-       TMR2_ClearITFlag( TMR0_3_IT_CYC_END );
-       /* 计数器计满，硬件自动清零，重新开始计数 */
-       /* 用户可自行添加需要的处理 */
-   }
-   
+	if( TMR2_GetITFlag(TMR0_3_IT_CYC_END) ) 
+	{
+		 TMR2_ClearITFlag( TMR0_3_IT_CYC_END );
+		 /* 计数器计满，硬件自动清零，重新开始计数 */
+		 /* 用户可自行添加需要的处理 */
+	}
+	if(TMR2_GetITFlag(TMR1_2_IT_DMA_END))
+	{
+			TMR2_ClearITFlag(TMR1_2_IT_DMA_END);
+			PRINT("DMA end\n");
+			/* DMA 结束 */
+			/* 用户可自行添加需要的处理 */
+	}
 }
 
 

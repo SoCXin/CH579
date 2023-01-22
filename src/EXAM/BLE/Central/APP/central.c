@@ -1,12 +1,16 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : central.c
-* Author             : WCH
-* Version            : V1.1
-* Date               : 2019/11/05
-* Description        : 主机例程，主动扫描周围设备，连接至给定的从机设备地址，
-*                      寻找自定义服务及特征，执行读写命令，需与从机例程配合使用,
-                       并将从机设备地址修改为该例程目标地址，默认为(84:C2:E4:03:02:02)
-*******************************************************************************/
+ * File Name          : central.c
+ * Author             : WCH
+ * Version            : V1.1
+ * Date               : 2019/11/05
+ * Description        : 主机例程，主动扫描周围设备，连接至给定的从机设备地址，
+ *                      寻找自定义服务及特征，执行读写命令，需与从机例程配合使用,
+ *                      并将从机设备地址修改为该例程目标地址，默认为(84:C2:E4:03:02:02)
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*********************************************************************
  * INCLUDES
@@ -446,6 +450,7 @@ static void centralProcessGATTMsg( gattMsgEvent_t *pMsg )
   {
     // In case a GATT message came after a connection has dropped,
     // ignore the message
+    GATT_bm_free(&pMsg->msg, pMsg->method);
     return;
   }
   
@@ -542,11 +547,7 @@ static void centralRssiCB( uint16 connHandle, int8 rssi )
  */
 static void centralHciMTUChangeCB( uint16 connHandle, uint16 maxTxOctets, uint16 maxRxOctets )
 {
-  attExchangeMTUReq_t req;
-  
-  req.clientRxMTU = maxRxOctets;
-  GATT_ExchangeMTU(connHandle,&req,centralTaskId);
-  PRINT("exchange mtu:%d\n",maxRxOctets);
+  PRINT(" HCI data length changed, Tx: %d, Rx: %d\n", maxTxOctets, maxRxOctets);
   centralProcedureInProgress = TRUE;
 }
 
@@ -622,11 +623,17 @@ static void centralEventCB( gapRoleEvent_t *pEvent )
       {
         tmos_stop_task( centralTaskId, ESTABLISH_LINK_TIMEOUT_EVT );
         if ( pEvent->gap.hdr.status == SUCCESS )
-        {
+        {          
+          attExchangeMTUReq_t req = {0};
+
           centralState = BLE_STATE_CONNECTED;
           centralConnHandle = pEvent->linkCmpl.connectionHandle;
-          centralProcedureInProgress = TRUE;             
-          
+          centralProcedureInProgress = TRUE;  
+                     
+          // Update MTU
+					req.clientRxMTU = BLE_BUFF_MAX_LEN - 4;
+          GATT_ExchangeMTU(centralConnHandle, &req, centralTaskId);
+
           // Initiate service discovery
           tmos_start_task( centralTaskId, START_SVC_DISCOVERY_EVT, DEFAULT_SVC_DISCOVERY_DELAY);
           
@@ -746,7 +753,7 @@ static void centralPasscodeCB( uint8 *deviceAddr, uint16 connectionHandle,
   // Display passcode to user
   if ( uiOutputs != 0 )
   {
-    PRINT("Passcode:%d\n",(int)passcode);
+    PRINT("Passcode:%06d\n",(int)passcode);
   }
   // Send passcode response
   GAPBondMgr_PasscodeRsp( connectionHandle, SUCCESS, passcode );

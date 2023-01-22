@@ -1,10 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : Main.c
-* Author             : WCH
-* Version            : V1.2
-* Date               : 2020/05/27
-* Description 		 : 系统睡眠模式并唤醒演示：GPIOA_6和GPIOA_5作为唤醒源，共6种睡眠等级
-*******************************************************************************/
+ * File Name          : Main.c
+ * Author             : WCH
+ * Version            : V1.2
+ * Date               : 2020/05/27
+ * Description 		 : 系统睡眠模式并唤醒演示：GPIOA_6和GPIOA_5作为唤醒源，共6种睡眠等级
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /* 
 注意：使用低功耗（Idle模式除外）睡眠唤醒后，需要重新配置系统时钟，否则使用的是内部32M时钟5分频，6.4M主频 

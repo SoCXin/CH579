@@ -1,11 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : runningservice.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/12
-* Description        : 跑步服务
-            
-*******************************************************************************/
+ * File Name          : runningservice.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/12
+ * Description        : 跑步服务        
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*********************************************************************
  * INCLUDES

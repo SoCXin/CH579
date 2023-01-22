@@ -1291,45 +1291,45 @@ extern "C" {
 #define ETH_BASE_ADDR           (0x40009000)
 
 /* ETH register */
-#define R8_ETH_EIE              (*((PUINT8V)(0x40009003))) /* 中断使能寄存器 */
-#define  RB_ETH_EIE_INTIE       0x80                  /* RW 中断使能 */
-#define  RB_ETH_EIE_RXIE        0x40                  /* RW 接收完成中断使能 */
-#define  RB_ETH_EIE_LINKIE      0x10                  /* RW Link 变化中断使能 */
-#define  RB_ETH_EIE_TXIE        0x08                  /* RW 发送完成中断使能 */
-#define  RB_ETH_EIE_R_EN50      0x04                  /* RW TX 50Ω电阻调节。1：片内 50Ω连接 0：片内 50Ω断开 */
-#define  RB_ETH_EIE_TXERIE      0x02                  /* RW 发送错误中断使能 */
-#define  RB_ETH_EIE_RXERIE      0x01                  /* RW1 接收错误标志 */
+#define R8_ETH_EIE              (*((PUINT8V)(0x40009003)))           /* Interrupt Enable Register */
+#define  RB_ETH_EIE_INTIE       0x80                  /* RW interrupt enable */
+#define  RB_ETH_EIE_RXIE        0x40                  /* RW Receive complete interrupt enable */
+#define  RB_ETH_EIE_LINKIE      0x10                  /* RW Link Change Interrupt Enable */
+#define  RB_ETH_EIE_TXIE        0x08                  /* RW Transmit complete interrupt enable */
+#define  RB_ETH_EIE_R_EN50      0x04                  /* RW TX 50ohm resistance adjustment 1: On-chip 50ohm enabled 0: On-chip 50ohm disabled */
+#define  RB_ETH_EIE_TXERIE      0x02                  /* RW Transmit error interrupt enable */
+#define  RB_ETH_EIE_RXERIE      0x01                  /* RW1 receive error flag */
 #define R32_ETH_CON             (*((PUINT32V)(0x40009004)))
-#define R8_ETH_EIR              (*((PUINT8V)(0x40009004))) /* 中断标志寄存器 */ 
-#define  RB_ETH_EIR_RXIF        0x40                  /* RW1 接收完成标志 */
-#define  RB_ETH_EIR_LINKIF      0x10                  /* RW1 Link 变化标志 */
-#define  RB_ETH_EIR_TXIF        0x08                  /* RW1 发送完成标志 */
-#define  RB_ETH_EIR_TXERIF      0x02                  /* RW1 发送错误标志 */
+#define R8_ETH_EIR              (*((PUINT8V)(0x40009004))) /* Interrupt Flag Register */
+#define  RB_ETH_EIR_RXIF        0x40                  /* RW1 receive completion flag */
+#define  RB_ETH_EIR_LINKIF      0x10                  /* RW1 Link change flag */
+#define  RB_ETH_EIR_TXIF        0x08                  /* RW1 send completion flag */
+#define  RB_ETH_EIR_TXERIF      0x02                  /* RW1 send ERR flag */
 #define  RB_ETH_EIR_RXERIF      0x01 
-#define R8_ETH_ESTAT            (*((PUINT8V)(0x40009005))) /* 状态寄存器 */
-#define  RB_ETH_ESTAT_INT       0x80                  /* RW1 中断 */
-#define  RB_ETH_ESTAT_BUFER     0x40                  /* RW1 Buffer 错误，理论上 mcu 主频太低才会发生 */
-#define  RB_ETH_ESTAT_RXCRCER   0x20                  /* RO 接收 crc 出错 */
-#define  RB_ETH_ESTAT_RXNIBBLE  0x10                  /* RO 接收 nibble 错误 */
-#define  RB_ETH_ESTAT_RXMORE    0x08                  /* RO 接收超过最大数据包 */
-#define  RB_ETH_ESTAT_RXBUSY    0x04                  /* RO 接收进行中 */
-#define  RB_ETH_ESTAT_TXABRT    0x02                  /* RO 发送被 mcu 打断 */
-#define R8_ETH_ECON2            (*((PUINT8V)(0x40009006))) /* ETH PHY模拟模块控制寄存器 */
-#define  RB_ETH_ECON2_RX        0x0E                  /* 必须写入011 */
+#define R8_ETH_ESTAT            (*((PUINT8V)(0x40009005))) /* status register */
+#define  RB_ETH_ESTAT_INT       0x80                  /* RW1 Interrupt */
+#define  RB_ETH_ESTAT_BUFER     0x40                  /* RW1 Buffer ERR8 */
+#define  RB_ETH_ESTAT_RXCRCER   0x20                  /* RO Receive CRC error */
+#define  RB_ETH_ESTAT_RXNIBBLE  0x10                  /* RO Receive nibble error */
+#define  RB_ETH_ESTAT_RXMORE    0x08                  /* RO Receive more than maximum packets */
+#define  RB_ETH_ESTAT_RXBUSY    0x04                  /* RO receiving in progress */
+#define  RB_ETH_ESTAT_TXABRT    0x02                  /* RO Transmission interrupted by MCU */
+#define R8_ETH_ECON2            (*((PUINT8V)(0x40009006))) /* ETH PHY Analog Module Control Register */
+#define  RB_ETH_ECON2_RX        0x0E               
 #define  RB_ETH_ECON2_TX        0x01
-#define  RB_ETH_ECON2_MUST      0x06                  /* 必须写入011 */
-#define R8_ETH_ECON1            (*((PUINT8V)(0x40009007))) /* 收发控制寄存器 */
-#define  RB_ETH_ECON1_TXRST     0x80                  /* RW 发送模块复位 */
-#define  RB_ETH_ECON1_RXRST     0x40                  /* RW 接收模块复位 */
-#define  RB_ETH_ECON1_TXRTS     0x08                  /* RW 发送开始，发送完成后自动清零，如主动清零会使发送错误标志TXERIF和TXABRT变1 */
-#define  RB_ETH_ECON1_RXEN      0x04                  /* RW 接收使能，清零时如正在接受则错误标志RXERIF变1 */
+#define  RB_ETH_ECON2_MUST      0x06                 
+#define R8_ETH_ECON1            (*((PUINT8V)(0x40009007))) /* Transceiver Control Register */
+#define  RB_ETH_ECON1_TXRST     0x80                  /* RW Send module reset */
+#define  RB_ETH_ECON1_RXRST     0x40                  /* RW Receiver module reset */
+#define  RB_ETH_ECON1_TXRTS     0x08                  /* RW The transmission starts, and it is automatically cleared after the transmission is completed. */
+#define  RB_ETH_ECON1_RXEN      0x04                  /* RW receive enable */
 
-#define R32_ETH_TX              (*((PUINT32V)(0x40009008))) /* 发送控制 */
-#define R16_ETH_ETXST           (*((PUINT16V)(0x40009008))) /* RW 发送 DMA 缓冲区起始地址 */
-#define R16_ETH_ETXLN           (*((PUINT16V)(0x4000900A))) /* RW 发送长度 */
-#define R32_ETH_RX              (*((PUINT32V)(0x4000900C))) /* 接收控制 */
-#define R16_ETH_ERXST           (*((PUINT16V)(0x4000900C))) /* RW 接收 DMA 缓冲区起始地址 */
-#define R16_ETH_ERXLN           (*((PUINT16V)(0x4000900E))) /* RO 接收长度 */
+#define R32_ETH_TX              (*((PUINT32V)(0x40009008))) /* send control */
+#define R16_ETH_ETXST           (*((PUINT16V)(0x40009008))) /* RW Send DMA buffer start address */
+#define R16_ETH_ETXLN           (*((PUINT16V)(0x4000900A))) /* RW send length */
+#define R32_ETH_RX              (*((PUINT32V)(0x4000900C))) /* receive control */
+#define R16_ETH_ERXST           (*((PUINT16V)(0x4000900C))) /* RW Receive DMA buffer start address */
+#define R16_ETH_ERXLN           (*((PUINT16V)(0x4000900E))) /* RO receive length */
 
 #define R32_ETH_HTL             (*((PUINT32V)(0x40009010)))
 #define R8_ETH_EHT0             (*((PUINT8V)(0x40009010))) /* RW Hash Table Byte0 */
@@ -1343,42 +1343,50 @@ extern "C" {
 #define R8_ETH_EHT7             (*((PUINT8V)(0x40009017))) /* RW Hash Table Byte7 */
 
 #define R32_ETH_MACON           (*((PUINT32V)(0x40009018)))
-#define R8_ETH_ERXFCON          (*((PUINT8V)(0x40009018))) /* 接收包过滤控制寄存器 */
-#define  RB_ETH_ERXFCON_UCEN    0x80                  /* RW 0=不启用该过滤条件，1=当ANDOR=1，目标地址不匹配将被过滤，当ANDOR=0，目标地址匹配将被接收 */
-#define  RB_ETH_ERXFCON_ANDOR   0x40                  /* RW 1=AND，所有过滤条件都满足包才被接收 0=OR，任一过滤条件满足包均被接收 */
-#define  RB_ETH_ERXFCON_CRCEN   0x20                  /* RW 0=不启用该过滤条件，1=当ANDOR=1，CRC校验错将被过滤，当ANDOR=0，CRC校验正确将被接收 */
-#define  RB_ETH_ERXFCON_MPEN    0x08                  /* RW 0=不启用该过滤条件，1=当ANDOR=1，非魔法包将被过滤，当ANDOR=0，魔法包将被接收 */
-#define  RB_ETH_ERXFCON_HTEN    0x04                  /* RW 0=不启用该过滤条件，1=当ANDOR=1，hash table不匹配将被过滤，当ANDOR=0，hash table匹配将被接收 */
-#define  RB_ETH_ERXFCON_MCEN    0x02                  /* RW 0=不启用该过滤条件，1=当ANDOR=1，组播包不匹配将被过滤，当ANDOR=0，组播包匹配将被接收 */
-#define  RB_ETH_ERXFCON_BCEN    0x01                  /* RW 0=不启用该过滤条件，1=当ANDOR=1，非广播包将被过滤，当ANDOR=0，广播包将被接收 */
-#define R8_ETH_MACON1           (*((PUINT8V)(0x40009019))) /* Mac 层流控制寄存器 */
-#define  RB_ETH_MACON1_FCEN     0x30                  /* RW 当FULDPX=0均无效，当FULDPX=1，11=发送0 timer暂停帧，然后停止发送，10=周期性发送暂停帧，01=发送一次暂停帧，然后停止发送，00=停止发送暂停帧 */
-#define  RB_ETH_MACON1_TXPAUS   0x08                  /* RW 发送pause帧使能 */
-#define  RB_ETH_MACON1_RXPAUS   0x04                  /* RW 接收pause帧使能 */
-#define  RB_ETH_MACON1_PASSALL  0x02                  /* RW 1=没被过滤的控制帧将写入缓存，0=控制帧将被过滤 */
-#define  RB_ETH_MACON1_MARXEN   0x01                  /* RW MAC层接收使能 */
-#define R8_ETH_MACON2           (*((PUINT8V)(0x4000901A))) /* Mac 层封包控制寄存器 */
-#define  RB_ETH_MACON2_PADCFG   0xE0                  /* RW 短包填充设置 */
-#define  RB_ETH_MACON2_TXCRCEN  0x10                  /* RW 发送添加crc，PADCFG中如需要添加crc，该位置1 */
-#define  RB_ETH_MACON2_PHDREN   0x08                  /* RW 特殊4字节不参与crc校验 */
-#define  RB_ETH_MACON2_HFRMEN   0x04                  /* RW 允许接收巨型帧 */
-#define  RB_ETH_MACON2_FULDPX   0x01                  /* RW 全双工 */
-#define R8_ETH_MABBIPG          (*((PUINT8V)(0x4000901B))) /* 最小包间间隔寄存器 */
-#define  RB_ETH_MABBIPG_MABBIPG 0x7F                  /* RW 最小包间间隔字节数 */
+#define R8_ETH_ERXFCON          (*((PUINT8V)(0x40009018))) /* Received Packet Filtering Control Register */
+#define  RB_ETH_ERXFCON_UCEN    0x80                  
+#define  RB_ETH_ERXFCON_ANDOR   0x40                  
+#define  RB_ETH_ERXFCON_CRCEN   0x20                 
+#define  RB_ETH_ERXFCON_MPEN    0x08                  
+#define  RB_ETH_ERXFCON_HTEN    0x04                 
+#define  RB_ETH_ERXFCON_MCEN    0x02                  
+#define  RB_ETH_ERXFCON_BCEN    0x01                  
+#define R8_ETH_MACON1           (*((PUINT8V)(0x40009019))) /* MAC Layer Flow Control Register 1*/
+#define  RB_ETH_MACON1_FCEN     0x30                 
+#define  RB_ETH_MACON1_TXPAUS   0x08                 
+#define  RB_ETH_MACON1_RXPAUS   0x04                 
+#define  RB_ETH_MACON1_PASSALL  0x02                
+#define  RB_ETH_MACON1_MARXEN   0x01              
+#define R8_ETH_MACON2           (*((PUINT8V)(0x4000901A))) /* MAC Layer Flow Control Register 2 */
+#define  RB_ETH_MACON2_PADCFG   0xE0                  
+#define  RB_ETH_MACON2_TXCRCEN  0x10                  
+#define  RB_ETH_MACON2_PHDREN   0x08                  
+#define  RB_ETH_MACON2_HFRMEN   0x04                
+#define  RB_ETH_MACON2_FULDPX   0x01                
+#define R8_ETH_MABBIPG          (*((PUINT8V)(0x4000901B))) /* Minimum Interpacket Interval Register */
+#define  RB_ETH_MABBIPG_MABBIPG 0x7F                  
 
 #define R32_ETH_TIM             (*((PUINT32V)(0x4000901C)))
-#define R16_ETH_EPAUS           (*((PUINT16V)(0x4000901C))) /* RW 流控制暂停帧时间寄存器 */
-#define R16_ETH_MAMXFL          (*((PUINT16V)(0x4000901E))) /* RW 最大接收包长度寄存器 */
-#define R16_ETH_MIRD            (*((PUINT16V)(0x40009020))) /* RW MII 读数据寄存器 */
+#define R16_ETH_EPAUS           (*((PUINT16V)(0x4000901C))) /* RW Flow Control Pause Frame Time Register */
+#define R16_ETH_MAMXFL          (*((PUINT16V)(0x4000901E))) /* RW Maximum Received Packet Length Register */
+#define R16_ETH_MIRD            (*((PUINT16V)(0x40009020))) /* RW MII read data register */
 
 #define R32_ETH_MIWR            (*((PUINT32V)(0x40009024)))
-#define R8_ETH_MIREGADR         (*((PUINT8V)(0x40009024))) /* MII 地址寄存器 */
-#define  RB_ETH_MIREGADR_MASK   0x1F                  /* RW PHY 寄存器地址掩码 */    
-#define R8_ETH_MISTAT           (*((PUINT8V)(0x40009025))) /* MII 状态寄存器 */
-//#define  RB_ETH_MIREGADR_MIIWR  0x20                  /* WO MII 写命令 */
-#define R16_ETH_MIWR            (*((PUINT16V)(0x40009026))) /* WO MII 写数据寄存器 */
-#define R32_ETH_MAADRL          (*((PUINT32V)(0x40009028))) /* RW MAC 1-4 */
-#define R16_ETH_MAADRH          (*((PUINT16V)(0x4000902C))) /* RW MAC 5-6 */
+#define R8_ETH_MIREGADR         (*((PUINT8V)(0x40009024))) /* MII address register */
+#define  RB_ETH_MIREGADR_MASK   0x1F                  
+#define R8_ETH_MISTAT           (*((PUINT8V)(0x40009025))) /* MII Status Register */
+#define RB_ETH_MIREGADR_MIIWR 	0x20                         /* WO MII write command */
+#define RB_ETH_MIREGADR_MIRDL 	0x1f                       
+#define R16_ETH_MIWR            (*((PUINT16V)(0x40009026))) /* WO MII write data register */
+
+#define R32_ETH_MAADRL      	(*((PUINT32V)(0x40009028)))            /* RW MAC 1-4 */
+#define R8_ETH_MAADR1           (*((PUINT8V)(ETH_BASE_ADDR+0x28)))		/* RW MAC Address Byte1 */
+#define R8_ETH_MAADR2           (*((PUINT8V)(ETH_BASE_ADDR+0x29)))		/* RW MAC Address Byte2 */
+#define R8_ETH_MAADR3           (*((PUINT8V)(ETH_BASE_ADDR+0x2a)))		/* RW MAC Address Byte3 */
+#define R8_ETH_MAADR4           (*((PUINT8V)(ETH_BASE_ADDR+0x2b)))		/* RW MAC Address Byte4 */
+#define R16_ETH_MAADRH      	(*((PUINT16V)(0x4000902C)))             /* RW MAC 5-6 */
+#define R8_ETH_MAADR5           (*((PUINT8V)(ETH_BASE_ADDR+0x2c)))		/* RW MAC Address Byte5 */
+#define R8_ETH_MAADR6           (*((PUINT8V)(ETH_BASE_ADDR+0x2d)))		/* RW MAC Address Byte6 */
 
 #ifdef __cplusplus
 }

@@ -1,4 +1,14 @@
-
+/********************************** (C) COPYRIGHT *******************************
+ * File Name          : CH57x_sys.h
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2022/12/05
+ * Description        : 
+ ********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 
 #ifndef __CH57x_SYS_H__
@@ -54,7 +64,7 @@ void SYS_ResetExecute( void );													/* 执行系统软件复位 */
 
 void SYS_DisableAllIrq( PUINT32 pirqv);									        /* 关闭所有中断，并保留当前中断值 */
 void SYS_RecoverIrq( UINT32 irq_status );									    /* 恢复之前关闭的中断值 */
-UINT32 SYS_GetSysTickCnt( void );												/* 获取当前系统(SYSTICK)计数值 */
+uint32_t SYS_GetSysTickCnt( void );												/* 获取当前系统(SYSTICK)计数值 */
 
 #define  WWDG_SetCounter( c )		(R8_WDOG_COUNT = c)							/* 加载看门狗计数初值，递增型 */
 void  WWDG_ITCfg( UINT8 s );							/* 看门狗溢出中断使能 */

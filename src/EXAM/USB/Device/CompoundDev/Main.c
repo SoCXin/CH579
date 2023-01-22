@@ -1,10 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : Main.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2020/02/20
-* Description        : 模拟USB复合设备，键鼠，支持类命令
-*******************************************************************************/
+ * File Name          : Main.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2020/02/20
+ * Description        : 模拟USB复合设备，键鼠，支持类命令
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 #include "CH57x_common.h"
 
@@ -270,50 +274,51 @@ void USB_DevTransProcess( void )
 				len = R8_USB_RX_LEN;
 				if(SetupReqCode == 0x09)
         {
-					if(pEP0_DataBuf[0])
-					{
-							printf("Light on Num Lock LED!\n");
-					}
-					else if(pEP0_DataBuf[0] == 0)
-					{
-							printf("Light off Num Lock LED!\n");
-					}
-         }
+						PRINT("[%s] Num Lock\t", (pEP0_DataBuf[0] & (1<<0)) ? "*" : " ");
+						PRINT("[%s] Caps Lock\t", (pEP0_DataBuf[0] & (1<<1)) ? "*" : " ");
+						PRINT("[%s] Scroll Lock\n", (pEP0_DataBuf[0] & (1<<2)) ? "*" : " ");
+        }
 				break;
 			
 			case UIS_TOKEN_OUT | 1:
 				if ( R8_USB_INT_ST & RB_UIS_TOG_OK ) 
 				{                       // 不同步的数据包将丢弃
+					R8_UEP1_CTRL ^= RB_UEP_R_TOG;
 					len = R8_USB_RX_LEN;
 					DevEP1_OUT_Deal( len );
 				}
 				break;
 			
 			case UIS_TOKEN_IN | 1:
+				R8_UEP1_CTRL ^= RB_UEP_T_TOG;
 				R8_UEP1_CTRL = (R8_UEP1_CTRL & ~MASK_UEP_T_RES) | UEP_T_RES_NAK;
 				break;
 			
 			case UIS_TOKEN_OUT | 2:
 				if ( R8_USB_INT_ST & RB_UIS_TOG_OK ) 
 				{                       // 不同步的数据包将丢弃
+					R8_UEP2_CTRL ^= RB_UEP_R_TOG;
 					len = R8_USB_RX_LEN;
 					DevEP2_OUT_Deal( len );
 				}
 				break;
 			
 			case UIS_TOKEN_IN | 2:
+				R8_UEP2_CTRL ^= RB_UEP_T_TOG;
 				R8_UEP2_CTRL = (R8_UEP2_CTRL & ~MASK_UEP_T_RES) | UEP_T_RES_NAK;
 				break;
 			
 			case UIS_TOKEN_OUT | 3:
 				if ( R8_USB_INT_ST & RB_UIS_TOG_OK ) 
 				{                       // 不同步的数据包将丢弃
+					R8_UEP3_CTRL ^= RB_UEP_R_TOG;
 					len = R8_USB_RX_LEN;
 					DevEP3_OUT_Deal( len );
 				}
 				break;
 			
 			case UIS_TOKEN_IN | 3:
+				R8_UEP3_CTRL ^= RB_UEP_T_TOG;
 				R8_UEP3_CTRL = (R8_UEP3_CTRL & ~MASK_UEP_T_RES) | UEP_T_RES_NAK;
 				break;
 			
@@ -340,9 +345,9 @@ void USB_DevTransProcess( void )
 	{
 		R8_USB_DEV_AD = 0;
 		R8_UEP0_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
-		R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK | RB_UEP_AUTO_TOG;
-		R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK | RB_UEP_AUTO_TOG;
-		R8_UEP3_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK | RB_UEP_AUTO_TOG;
+		R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+		R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+		R8_UEP3_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
 		R8_USB_INT_FG |= RB_UIF_BUS_RST;
 	}
 	else if( intflag & RB_UIF_SUSPEND )

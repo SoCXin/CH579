@@ -1,11 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : cyclingservice.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/11
-* Description        : 骑行服务
-            
-*******************************************************************************/
+ * File Name          : cyclingservice.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/11
+ * Description        : 骑行服务          
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*********************************************************************
  * INCLUDES
@@ -259,10 +262,10 @@ gattServiceCBs_t cyclingCBs =
  *
  * @return  none
  */
-void CyclingService_Init( uint8 task_id )
+void CyclingService_Init(void)
 {
   // Only purpose is to obtain task ID
-  cyclingService_TaskID = task_id;
+  cyclingService_TaskID = TMOS_ProcessEventRegister(CyclingService_ProcessEvent);
 }
 
 /*********************************************************************

@@ -1,11 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : battservice.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/10
-* Description        : 电池服务
-            
-*******************************************************************************/
+ * File Name          : battservice.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/10
+ * Description        : 电池服务     
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*********************************************************************
  * INCLUDES
@@ -507,37 +510,6 @@ static uint8 battMeasure( void )
 {
   uint16 adc;
   uint8 percent;
-
-  /**
-   * Battery level conversion from ADC to a percentage:
-   *
-   * The maximum ADC value for the battery voltage level is 511 for a
-   * 10-bit conversion.  The ADC value is references vs. 1.25v and
-   * this maximum value corresponds to a voltage of 3.75v.
-   *
-   * For a coin cell battery 3.0v = 100%.  The minimum operating
-   *
-   * To convert a voltage to an ADC value use:
-   *
-   *   (v/3)/1.25 * 511 = adc
-   *
-   * 3.0v = 409 ADC
-   * 2.0v = 273 ADC
-   *
-   * We need to map ADC values from 409-273 to 100%-0%.
-   *
-   * Normalize the ADC values to zero:
-   *
-   * 409 - 273 = 136
-   *
-   * And convert ADC range to percentage range:
-   *
-   * percent/adc = 100/136 = 25/34
-   *
-   * Resulting in the final equation, with round:
-   *
-   * percent = ((adc - 273) * 25) + 33 / 34
-   */
 
   // Call measurement setup callback
   if (battServiceSetupCB != NULL)

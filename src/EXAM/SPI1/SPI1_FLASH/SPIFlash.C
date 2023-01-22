@@ -1,10 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : SPIFlash.C
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2019/4/29
-* Description        : SPI Flash操作接口函数(W25QXX)
-*******************************************************************************/
+ * File Name          : SPIFlash.C
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2019/4/29
+ * Description        : SPI Flash操作接口函数(W25QXX)
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 #include "CH57x_common.h"
 #include "SPIFlash.H"

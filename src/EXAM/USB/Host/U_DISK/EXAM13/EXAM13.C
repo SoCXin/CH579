@@ -1,13 +1,17 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : EXAM1.C
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/08/15
-* Description        :
- C语言的U盘创建长文件名文件例程
- 支持: FAT12/FAT16/FAT32
- 注意包含 CH579UFI.LIB/USBHOST.C/DEBUG.C
-*******************************************************************************/
+ * File Name          : EXAM1.C
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/08/15
+ * Description        :
+ * C语言的U盘创建长文件名文件例程
+ * 支持: FAT12/FAT16/FAT32
+ * 注意包含 CH579UFI.LIB/USBHOST.C/DEBUG.C
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /** 不使用U盘文件系统库或者U盘挂载USBhub下面，需要关闭定义 #define	FOR_ROOT_UDISK_ONLY  */
 /** 使用U盘文件系统库，需要开启下面定义, 不使用请关闭 #define DISK_BASE_BUF_LEN		512	      */

@@ -4,7 +4,11 @@
 * Version            : V1.0
 * Date               : 2018/11/12
 * Description        : 蓝牙鼠标应用主函数及任务系统初始化
-*******************************************************************************/
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /******************************************************************************/
 /* 头文件包含 */

@@ -1,4 +1,14 @@
-
+/********************************** (C) COPYRIGHT *******************************
+ * File Name          : CH57x_usbhost.h
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2022/12/05
+ * Description        : 
+ ********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 
 #ifndef __CH57x_USBHOST_H__
@@ -11,12 +21,14 @@
 #include "CH579SFR.h"
 #include "core_cm0.h"
 
-/***************************************** 不使用U盘文件系统库或者U盘挂载USBhub下面，需要关闭下面定义 */
-#define	FOR_ROOT_UDISK_ONLY
-/***************************************** 使用U盘文件系统库，需要开启下面定义, 不使用请关闭 */
-#define DISK_BASE_BUF_LEN		512	        /* 默认的磁盘数据缓冲区大小为512字节,建议选择为2048甚至4096以支持某些大扇区的U盘,为0则禁止在.H文件中定义缓冲区并由应用程序在pDISK_BASE_BUF中指定 */
-    
-     
+#if DISK_LIB_ENABLE
+  #if DISK_WITHOUT_USB_HUB
+  /* 不使用U盘文件系统库或者U盘挂载USBhub下面，需要关闭下面定义 */
+    #define FOR_ROOT_UDISK_ONLY
+  #endif
+  /* 使用U盘文件系统库，需要开启下面定义, 不使用请关闭 */
+  #define DISK_BASE_BUF_LEN    512  /* 默认的磁盘数据缓冲区大小为512字节,建议选择为2048甚至4096以支持某些大扇区的U盘,为0则禁止在.H文件中定义缓冲区并由应用程序在pDISK_BASE_BUF中指定 */
+#endif 
      
 // 各子程序返回状态码
 #define ERR_SUCCESS         0x00    // 操作成功

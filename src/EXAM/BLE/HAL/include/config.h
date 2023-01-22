@@ -1,10 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : CONFIG.h
-* Author             : WCH
-* Version            : V1.10
-* Date               : 2019/11/05
-* Description        : 配置说明及默认值，建议在工程配置里的预处理中修改当前值
-*******************************************************************************/
+ * File Name          : CONFIG.h
+ * Author             : WCH
+ * Version            : V1.10
+ * Date               : 2019/11/05
+ * Description        : 配置说明及默认值，建议在工程配置里的预处理中修改当前值
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /******************************************************************************/
 #ifndef __CONFIG_H
@@ -21,15 +25,21 @@
 #else
 #include "CH57xBLE_LIB.H"
 #endif
+
+#include "CH57x_common.h"
+
 /*********************************************************************
 【MAC】
 	BLE_MAC												- 是否自定义蓝牙Mac地址 ( 默认:FALSE - 使用芯片Mac地址 )，需要在main.c修改Mac地址定义
 
 【SLEEP】
 	HAL_SLEEP   									- 是否开启睡眠功能 ( 默认:FALSE )
-	WAKE_UP_RTC_MAX_TIME					- 等待32M晶振稳定时间，根据不同睡眠类型取值可分为：睡眠模式/下电模式 -	45(默认)
-																																										暂停模式					-	45
-																																										空闲模式					-	5
+	SLEEP_RTC_MIN_TIME                         - 非空闲模式下睡眠的最小时间（单位：一个RTC周期）
+	SLEEP_RTC_MAX_TIME                         - 非空闲模式下睡眠的最大时间（单位：一个RTC周期）
+	WAKE_UP_RTC_MAX_TIME                       - 等待32M晶振稳定时间（单位：一个RTC周期）
+																							根据不同睡眠类型取值可分为： 睡眠模式/下电模式  - 45(默认)
+																																						暂停模式					-	45
+																																						空闲模式					-	5
 	
 【TEMPERATION】
 	TEM_SAMPLE										- 是否打开根据温度变化校准的功能，单次校准耗时小于10ms( 默认:TRUE )
@@ -43,7 +53,7 @@
 	BLE_SNV_ADDR    					    - SNV信息保存地址，使用data flash最后( 默认:0x3EC00 )
 
 【RTC】
-	CLK_OSC32K										- RTC时钟选择，如包含主机角色必须使用外部32K( 默认:0 外部(32768Hz)，1：内部(32000Hz)，2：内部(32768Hz) )
+	CLK_OSC32K										- RTC时钟选择，如包含主机角色必须使用外部32K( 0: 外部(32768Hz)，默认:1：内部(32000Hz)，2：内部(32768Hz) )
 
 【MEMORY】
 	BLE_MEMHEAP_SIZE  						- 蓝牙协议栈使用的RAM大小，不小于6K ( 默认:(1024*8) )               
@@ -68,8 +78,14 @@
 #ifndef HAL_SLEEP
 #define HAL_SLEEP										FALSE
 #endif
+#ifndef SLEEP_RTC_MIN_TIME                   
+#define SLEEP_RTC_MIN_TIME          US_TO_RTC(1000)
+#endif
+#ifndef SLEEP_RTC_MAX_TIME                   
+#define SLEEP_RTC_MAX_TIME          MS_TO_RTC(RTC_TO_MS(RTC_TIMER_MAX_VALUE) - 1000 * 60 * 60)
+#endif
 #ifndef WAKE_UP_RTC_MAX_TIME
-#define WAKE_UP_RTC_MAX_TIME				50
+#define WAKE_UP_RTC_MAX_TIME        US_TO_RTC(1500)
 #endif
 #ifndef HAL_KEY
 #define HAL_KEY											FALSE
@@ -93,7 +109,7 @@
 #define BLE_SNV_ADDR								0x3EC00
 #endif
 #ifndef CLK_OSC32K
-#define CLK_OSC32K									0							// 该项请勿在此修改，必须在工程配置里的预处理中修改，如包含主机角色必须使用外部32K
+#define CLK_OSC32K									1							// 该项请勿在此修改，必须在工程配置里的预处理中修改，如包含主机角色必须使用外部32K
 #endif
 #ifndef BLE_MEMHEAP_SIZE
 #define BLE_MEMHEAP_SIZE						(1024*8)
@@ -117,8 +133,8 @@
 #define CENTRAL_MAX_CONNECTION			3
 #endif
 
-extern u32 MEM_BUF[BLE_MEMHEAP_SIZE/4];
-extern u8C MacAddr[6];
+extern uint32_t	MEM_BUF[BLE_MEMHEAP_SIZE/4];
+extern const uint8_t MacAddr[6];
 
 #endif
 

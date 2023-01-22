@@ -1,10 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : CH57x_adc.c
-* Author             : WCH
-* Version            : V1.1
-* Date               : 2020/04/01
-* Description 
-*******************************************************************************/
+ * File Name          : CH57x_adc.c
+ * Author             : WCH
+ * Version            : V1.1
+ * Date               : 2020/04/01
+ * Description 
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 #include "CH57x_common.h"
 
@@ -12,7 +16,8 @@
 /*******************************************************************************
 * Function Name  : ADC_DataCalib_Rough
 * Description    : 采样数据粗调,获取偏差值
-*                  注意，使用粗调校准，必须保证 PA5(AIN1)设置为浮空输入模式，管脚外部不要有电压
+*                  注意: 使用粗调校准，必须保证 PA5(AIN1)设置为浮空输入模式，管脚外部不要有电压
+*                       必须先配置ADC后调用此函数获取校准值
 * Input          : None
 * Return         : 偏差值
 *******************************************************************************/
@@ -47,7 +52,7 @@ signed short ADC_DataCalib_Rough( void )        // 采样数据粗调,获取偏差值
 
 void ADC_DataCalib_Fine( PUINT16 dat, ADC_SignalPGATypeDef ga )        // 采样数据细调
 {
-    UINT32  d = (UINT32)*dat;
+    UINT16  d = (UINT16)*dat;
     
 	switch( ga )
 	{

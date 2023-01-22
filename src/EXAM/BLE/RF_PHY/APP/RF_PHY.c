@@ -1,10 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : main.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/11/12
-* Description        : 
-*******************************************************************************/
+ * File Name          : main.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/11/12
+ * Description        : 
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 
 
@@ -21,74 +25,80 @@ uint8 taskID;
 uint8 TX_DATA[10] ={1,2,3,4,5,6,7,8,9,0};
 
 
-void RF_2G4StatusCallBack( uint8 sta , uint8 crc, uint8 *rxBuf )
+void RF_2G4StatusCallBack(uint8_t sta, uint8_t crc, uint8_t *rxBuf)
 {
-  switch( sta )
-	{
-    case TX_MODE_TX_FINISH:
+    switch(sta)
     {
-      break;
+        case TX_MODE_TX_FINISH:
+        {
+            break;
+        }
+        case TX_MODE_TX_FAIL:
+        {
+            break;
+        }
+        case TX_MODE_RX_DATA:
+        {
+            if (crc == 0) {
+                uint8_t i;
+
+                PRINT("tx recv,rssi:%d\n", (int8_t)rxBuf[0]);
+                PRINT("len:%d-", rxBuf[1]);
+
+                for (i = 0; i < rxBuf[1]; i++) {
+                    PRINT("%x ", rxBuf[i + 2]);
+                }
+                PRINT("\n");
+            } else {
+                if (crc & (1<<0)) {
+                    PRINT("crc error\n");
+                }
+
+                if (crc & (1<<1)) {
+                    PRINT("match type error\n");
+                }
+            }
+            break;
+        }
+        case TX_MODE_RX_TIMEOUT: // Timeout is about 200us
+        {
+            break;
+        }
+        case RX_MODE_RX_DATA:
+        {
+            if (crc == 0) {
+                uint8_t i;
+
+                PRINT("rx recv, rssi: %d\n", (int8_t)rxBuf[0]);
+                PRINT("len:%d-", rxBuf[1]);
+                
+                for (i = 0; i < rxBuf[1]; i++) {
+                    PRINT("%x ", rxBuf[i + 2]);
+                }
+                PRINT("\n");
+            } else {
+                if (crc & (1<<0)) {
+                    PRINT("crc error\n");
+                }
+
+                if (crc & (1<<1)) {
+                    PRINT("match type error\n");
+                }
+            }
+            break;
+        }
+        case RX_MODE_TX_FINISH:
+        {
+            tmos_set_event(taskID, SBP_RF_RF_RX_EVT);
+            break;
+        }
+        case RX_MODE_TX_FAIL:
+        {
+            tmos_set_event(taskID, SBP_RF_RF_RX_EVT);
+            break;
+        }
     }
-    case TX_MODE_TX_FAIL:
-    {
-      break;
-    }		
-    case TX_MODE_RX_DATA:
-    {
-      RF_Shut();
-      if( crc == 1 )
-			{
-        PRINT("crc error\n");
-      }
-			else if( crc == 2 )
-			{
-        PRINT("match type error\n");
-      }
- 			else
-			{
-        uint8 i;      
-        PRINT("tx recv,rssi:%d\n",(s8)rxBuf[0]);
-        PRINT("len:%d-",rxBuf[1]);
-        for(i=0;i<rxBuf[1];i++) PRINT("%x ",rxBuf[i+2]);
-        PRINT("\n");
-      }
-      break;
-    }
-    case TX_MODE_RX_TIMEOUT:		// Default timeout is 3ms
-    {
-      break;
-    }		
-    case RX_MODE_RX_DATA:
-    {
-      if( crc == 1 )
-			{
-        PRINT("crc error\n");
-      }
-			else if( crc == 2 )
-			{
-        PRINT("match type error\n");
-      }
-			else
-      {
-        uint8 i;      
-        PRINT("rx recv, rssi: %d\n",(s8)rxBuf[0]);
-        PRINT("len: %d-",rxBuf[1]);
-        for(i=0;i<rxBuf[1];i++) PRINT("%x ",rxBuf[i+2]);
-        PRINT("\n");
-      }
-      break;
-    }
-    case RX_MODE_TX_FINISH:
-    {
-      tmos_set_event(taskID, SBP_RF_RF_RX_EVT);
-      break;
-    }
-    case RX_MODE_TX_FAIL:
-    {
-      break;
-    }		
-  }
-  PRINT("STA: %x\n",sta);
+    PRINT("STA: %x\n", sta);
 }
 
 

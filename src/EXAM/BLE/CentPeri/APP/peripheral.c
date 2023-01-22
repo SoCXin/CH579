@@ -1,11 +1,15 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : peripheral.C
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/10
-* Description        : 外设从机多连接应用程序，初始化广播连接参数，然后广播，连接主机后，
-*                      请求更新连接参数，通过自定义服务传输数据           
-*******************************************************************************/
+ * File Name          : peripheral.C
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/10
+ * Description        : 外设从机多连接应用程序，初始化广播连接参数，然后广播，连接主机后，
+ *                      请求更新连接参数，通过自定义服务传输数据           
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*********************************************************************
  * INCLUDES

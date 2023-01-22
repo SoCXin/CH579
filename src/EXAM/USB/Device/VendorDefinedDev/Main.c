@@ -1,10 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : Main.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/15
-* Description        : 自定义USB设备（CH372设备），提供8个非0通道(上传+下传)，实现数据先下传，然后数据内容取反上传
-*******************************************************************************/
+ * File Name          : Main.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/15
+ * Description        : 自定义USB设备（CH372设备），提供8个非0通道(上传+下传)，实现数据先下传，然后数据内容取反上传
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 #include "CH57x_common.h"
 
@@ -228,36 +232,42 @@ void USB_DevTransProcess( void )
 			case UIS_TOKEN_OUT | 1:
 				if ( R8_USB_INT_ST & RB_UIS_TOG_OK ) 
 				{                       // 不同步的数据包将丢弃
+					R8_UEP1_CTRL ^= RB_UEP_R_TOG;
 					len = R8_USB_RX_LEN;
 					DevEP1_OUT_Deal( len );
 				}
 				break;
 			
 			case UIS_TOKEN_IN | 1:
+				R8_UEP1_CTRL ^= RB_UEP_T_TOG;
 				R8_UEP1_CTRL = (R8_UEP1_CTRL & ~MASK_UEP_T_RES) | UEP_T_RES_NAK;
 				break;
 			
 			case UIS_TOKEN_OUT | 2:
 				if ( R8_USB_INT_ST & RB_UIS_TOG_OK ) 
 				{                       // 不同步的数据包将丢弃
+					R8_UEP2_CTRL ^= RB_UEP_R_TOG;
 					len = R8_USB_RX_LEN;
 					DevEP2_OUT_Deal( len );
 				}
 				break;
 			
 			case UIS_TOKEN_IN | 2:
+				R8_UEP2_CTRL ^= RB_UEP_T_TOG;
 				R8_UEP2_CTRL = (R8_UEP2_CTRL & ~MASK_UEP_T_RES) | UEP_T_RES_NAK;
 				break;
 			
 			case UIS_TOKEN_OUT | 3:
 				if ( R8_USB_INT_ST & RB_UIS_TOG_OK ) 
 				{                       // 不同步的数据包将丢弃
+					R8_UEP3_CTRL ^= RB_UEP_R_TOG;
 					len = R8_USB_RX_LEN;
 					DevEP3_OUT_Deal( len );
 				}
 				break;
 			
 			case UIS_TOKEN_IN | 3:
+				R8_UEP3_CTRL ^= RB_UEP_T_TOG;
 				R8_UEP3_CTRL = (R8_UEP3_CTRL & ~MASK_UEP_T_RES) | UEP_T_RES_NAK;
 				break;
 			
@@ -284,9 +294,9 @@ void USB_DevTransProcess( void )
 	{
 		R8_USB_DEV_AD = 0;
 		R8_UEP0_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
-		R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK | RB_UEP_AUTO_TOG;
-		R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK | RB_UEP_AUTO_TOG;
-		R8_UEP3_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK | RB_UEP_AUTO_TOG;
+		R8_UEP1_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+		R8_UEP2_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
+		R8_UEP3_CTRL = UEP_R_RES_ACK | UEP_T_RES_NAK;
 		R8_USB_INT_FG |= RB_UIF_BUS_RST;
 	}
 	else if( intflag & RB_UIF_SUSPEND )

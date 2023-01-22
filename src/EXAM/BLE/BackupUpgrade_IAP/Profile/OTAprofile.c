@@ -1,11 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : OTAprofile.C
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/10
-* Description        : OTA升级蓝牙通讯接口
-            
-*******************************************************************************/
+ * File Name          : OTAprofile.C
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/10
+ * Description        : OTA升级蓝牙通讯接口           
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*********************************************************************
  * INCLUDES

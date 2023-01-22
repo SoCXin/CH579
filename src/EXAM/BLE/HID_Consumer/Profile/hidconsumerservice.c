@@ -1,11 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : hidconsumerservice.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/13
-* Description        : 用户控制服务
-            
-*******************************************************************************/
+ * File Name          : hidconsumerservice.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/13
+ * Description        : 用户控制服务     
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*********************************************************************
  * INCLUDES
@@ -92,23 +95,38 @@ static CONST uint8 hidInfo[HID_INFORMATION_LEN] =
 // HID Report Map characteristic value
 static CONST uint8 hidReportMap[] =
 {
-    0x05, 0x0c,                    // USAGE_PAGE (Consumer Devices)
-    0x09, 0x01,                    // USAGE (Consumer Control)
-    0xa1, 0x01,                    // COLLECTION (Application)
-    0x85, 0x01,                    //   REPORT_ID (1)
-	
-    0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
-    0x25, 0x01,                    //   LOGICAL_MAXIMUM (1)
-    0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
-    0x25, 0x01,                    //   LOGICAL_MAXIMUM (1)
-    0x75, 0x08,                    //   REPORT_SIZE (8)
-    0x95, 0x01,                    //   REPORT_COUNT (1)
-    0x09, 0xe9,                    //   USAGE (Volume Up)
-    0x81, 0x06,                    //   INPUT (Data,Var,Rel)
-    0x09, 0xea,                    //   USAGE (Volume Down)
-    0x81, 0x06,                    //   INPUT (Data,Var,Rel)
+    // Report map for PC
+//    0x05,0x0c,
+//    0x09,0x01,
+//    0xA1,0x01,
+//    0x85,0x01,
+//    0x15,0x00,
+//    0x26,0xff,0x1f,
+//    0x19,0x00,
+//    0x2A,0xff,0x1f,
+//    0x75,0x10,
+//    0x95,0x01,
+//    0x81,0x00,
+//    0xc0
 
-    0xc0                           // END_COLLECTION
+    // Report map for Android
+    0x05, 0x0c, // USAGE_PAGE (Consumer Devices)
+    0x09, 0x01, // USAGE (Consumer Control)
+    0xa1, 0x01, // COLLECTION (Application)
+    0x85, 0x01, //   REPORT_ID (1)
+
+    0x15, 0x00, //   LOGICAL_MINIMUM (0)
+    0x25, 0x01, //   LOGICAL_MAXIMUM (1)
+    0x15, 0x00, //   LOGICAL_MINIMUM (0)
+    0x25, 0x01, //   LOGICAL_MAXIMUM (1)
+    0x75, 0x08, //   REPORT_SIZE (8)
+    0x95, 0x01, //   REPORT_COUNT (1)
+    0x09, 0xe9, //   USAGE (Volume Up)
+    0x81, 0x06, //   INPUT (Data,Var,Rel)
+    0x09, 0xea, //   USAGE (Volume Down)
+    0x81, 0x06, //   INPUT (Data,Var,Rel)
+
+    0xc0 // END_COLLECTION
 };
 
 // HID report map length

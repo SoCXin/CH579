@@ -1,10 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : hidconsumer.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/13
-* Description        : 蓝牙拍照器应用程序，初始化广播连接参数，然后广播，直至连接主机后，定时上传音量键下键
-*******************************************************************************/
+ * File Name          : hidconsumer.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/13
+ * Description        : 蓝牙拍照器应用程序，初始化广播连接参数，然后广播，直至连接主机后，定时上传音量键下键
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 
 /*********************************************************************

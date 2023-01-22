@@ -1,11 +1,15 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : peripheral.C
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/10
-* Description        : 外设从机多连接应用程序，初始化广播连接参数，然后广播，连接主机后，
-*                      请求更新连接参数，通过自定义服务传输数据           
-*******************************************************************************/
+ * File Name          : peripheral.C
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/10
+ * Description        : 外设从机多连接应用程序，初始化广播连接参数，然后广播，连接主机后，
+ *                      请求更新连接参数，通过自定义服务传输数据           
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*********************************************************************
  * INCLUDES
@@ -40,8 +44,8 @@
 // General discoverable mode advertises indefinitely
 #define DEFAULT_DISCOVERABLE_MODE             GAP_ADTYPE_FLAGS_GENERAL
 
-// Minimum connection interval (units of 1.25ms, 20=25ms) 
-#define DEFAULT_DESIRED_MIN_CONN_INTERVAL     20
+// Minimum connection interval (units of 1.25ms, 6=7.5ms) 
+#define DEFAULT_DESIRED_MIN_CONN_INTERVAL     6
 
 // Maximum connection interval (units of 1.25ms, 100=125ms)
 #define DEFAULT_DESIRED_MAX_CONN_INTERVAL     100
@@ -138,6 +142,7 @@ static uint8 attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple Peripheral";
 // Connection item list
 static peripheralConnItem_t peripheralConnList;
 
+static uint8_t peripheralMTU = ATT_MTU_SIZE;
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
@@ -377,6 +382,18 @@ uint16 Peripheral_ProcessEvent( uint8 task_id, uint16 events )
 static void Peripheral_ProcessTMOSMsg( tmos_event_hdr_t *pMsg )
 {
   switch ( pMsg->event ){
+    case GATT_MSG_EVENT:
+    {
+        gattMsgEvent_t *pMsgEvent;
+
+        pMsgEvent = (gattMsgEvent_t *)pMsg;
+        if(pMsgEvent->method == ATT_MTU_UPDATED_EVENT)
+        {
+            peripheralMTU = pMsgEvent->msg.exchangeMTUReq.clientRxMTU;
+            PRINT("mtu exchange: %d\n", pMsgEvent->msg.exchangeMTUReq.clientRxMTU);
+        }
+        break;
+    }
 		default:
 			break;
   }
@@ -407,7 +424,7 @@ static void Peripheral_LinkEstablished( gapRoleEvent_t * pEvent )
     peripheralConnList.connInterval = event->connInterval;
     peripheralConnList.connSlaveLatency = event->connLatency;
     peripheralConnList.connTimeout = event->connTimeout;
-    
+    peripheralMTU = ATT_MTU_SIZE;
     // Set timer for periodic event
     tmos_start_task( Peripheral_TaskID, SBP_PERIODIC_EVT, SBP_PERIODIC_EVT_PERIOD );
 
@@ -606,6 +623,11 @@ static void performPeriodicTask( void )
 static void peripheralChar4Notify( uint8 *pValue, uint16 len )
 {
   attHandleValueNoti_t noti;
+  if(len > (peripheralMTU - 3))
+  {
+      PRINT("Too large noti\n");
+      return;
+  }
   noti.len = len;
   noti.pValue = GATT_bm_alloc( peripheralConnList.connHandle, ATT_HANDLE_VALUE_NOTI, noti.len, NULL, 0 );
   tmos_memcpy( noti.pValue, pValue, noti.len );

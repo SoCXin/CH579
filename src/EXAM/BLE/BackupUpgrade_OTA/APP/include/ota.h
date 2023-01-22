@@ -1,10 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : ota.h
-* Author             : WCH
-* Version            : V1.10
-* Date               : 2018/12/14
-* Description        : oad相关配置定义
-*******************************************************************************/
+ * File Name          : ota.h
+ * Author             : WCH
+ * Version            : V1.10
+ * Date               : 2018/12/14
+ * Description        : oad相关配置定义
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 
 /******************************************************************************/
@@ -51,7 +55,7 @@
 
 
 /* 数据帧长度定义 */
-#define IAP_LEN                         20 
+#define IAP_LEN                         247 
  
 /* 存放在DataFlash地址，不能占用蓝牙的位置 */
 #define OTA_DATAFLASH_ADD               0x0003E800         

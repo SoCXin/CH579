@@ -1,11 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : OTAprofile.C
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/10
-* Description        : OTA升级蓝牙通讯接口
-            
-*******************************************************************************/
+ * File Name          : OTAprofile.C
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/10
+ * Description        : OTA升级蓝牙通讯接口           
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*********************************************************************
  * INCLUDES
@@ -13,7 +16,7 @@
 #include "CONFIG.h"
 #include "OTAprofile.h"
 #include "CH579SFR.h"
-
+#include "ota.h"
 
 /*********************************************************************
  * MACROS
@@ -77,9 +80,9 @@ static uint8 OTAProfileCharUserDesp[12] = "OTA Channel";
 
 // write and read buffer 
 static uint8 OTAProfileReadLen;
-static uint8 OTAProfileReadBuf[20];
+static uint8 OTAProfileReadBuf[IAP_LEN];
 static uint8 OTAProfileWriteLen;
-static uint8 OTAProfileWriteBuf[20];
+static uint8 OTAProfileWriteBuf[IAP_LEN];
 
 /*********************************************************************
  * Profile Attributes - Table

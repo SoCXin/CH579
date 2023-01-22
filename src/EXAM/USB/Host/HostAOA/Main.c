@@ -1,10 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : Main.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/15
-* Description 		 : USB设备枚举
-*******************************************************************************/
+ * File Name          : Main.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/15
+ * Description 		 : USB设备枚举
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*
  使用此例程，请在 CH57x_usbhost.h中屏蔽 FOR_ROOT_UDISK_ONLY 和 DISK_BASE_BUF_LEN 宏定义

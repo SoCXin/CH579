@@ -1,10 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : multiCentral.h
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/11/12
-* Description        : 
-*******************************************************************************/
+ * File Name          : multiCentral.h
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/11/12
+ * Description        : 
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 #ifndef MULTICENTRAL_H
 #define MULTICENTRAL_H
@@ -31,6 +35,7 @@ extern "C"
 #define START_READ_OR_WRITE_EVT                       0x0020
 #define START_READ_RSSI_EVT                           0x0040
 #define ESTABLISH_LINK_TIMEOUT_EVT                    0x0080
+#define START_WRITE_CCCD_EVT                          0x0100
 
 #define CONNECT0_ITEM                                 0
 #define CONNECT1_ITEM                                 1
@@ -50,6 +55,7 @@ typedef struct
   uint16  svcStartHdl;          // Discovered service start handle
   uint16  svcEndHdl;            // Discovered service end handle
   uint16  charHdl;              // Discovered characteristic handle
+  uint16_t cccHdl;              // client characteristic configuration discovery handle
 } centralConnItem_t;
 
 typedef struct

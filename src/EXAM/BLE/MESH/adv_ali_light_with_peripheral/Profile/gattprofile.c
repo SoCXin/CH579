@@ -1,11 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : gattprofile.C
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/10
-* Description        : 自定义包含五种不同属性的服务，包含可读、可写、通知、可读可写、安全可读
-            
-*******************************************************************************/
+ * File Name          : gattprofile.C
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/10
+ * Description        : 自定义包含五种不同属性的服务，包含可读、可写、通知、可读可写、安全可读      
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*********************************************************************
  * INCLUDES
@@ -129,7 +132,7 @@ static uint8 simpleProfileChar4[SIMPLEPROFILE_CHAR4_LEN] = { 0 };
 // instantiation of the Client Characteristic Configuration. Reads of the
 // Client Characteristic Configuration only shows the configuration for
 // that client and writes only affect the configuration of that client.
-static gattCharCfg_t simpleProfileChar4Config[4];
+static gattCharCfg_t simpleProfileChar4Config[PERIPHERAL_MAX_CONNECTION];
                                         
 // Simple Profile Characteristic 4 User Description
 static uint8 simpleProfileChar4UserDesp[] = "Characteristic 4\0";
@@ -547,12 +550,6 @@ static bStatus_t simpleProfile_ReadAttrCB( uint16 connHandle, gattAttribute_t *p
 {
   bStatus_t status = SUCCESS;
 
-  // If attribute permissions require authorization to read, return error
-  if ( gattPermitAuthorRead( pAttr->permissions ) )
-  {
-    // Insufficient authorization
-    return ( ATT_ERR_INSUFFICIENT_AUTHOR );
-  }
   
   // Make sure it's not a blob operation (no attributes in the profile are long)
   if ( offset > 0 )
@@ -575,24 +572,52 @@ static bStatus_t simpleProfile_ReadAttrCB( uint16 connHandle, gattAttribute_t *p
       // characteristic 4 does not have read permissions, but because it
       //   can be sent as a notification, it is included here
       case SIMPLEPROFILE_CHAR1_UUID:
-        *pLen = SIMPLEPROFILE_CHAR1_LEN;
-        tmos_memcpy( pValue, pAttr->pValue, SIMPLEPROFILE_CHAR1_LEN );
-        break;
-      
+          if(maxLen > SIMPLEPROFILE_CHAR1_LEN)
+          {
+              *pLen = SIMPLEPROFILE_CHAR1_LEN;
+          }
+          else
+          {
+              *pLen = maxLen;
+          }
+          tmos_memcpy(pValue, pAttr->pValue, *pLen);
+          break;
+
       case SIMPLEPROFILE_CHAR2_UUID:
-        *pLen = SIMPLEPROFILE_CHAR2_LEN;
-        tmos_memcpy( pValue, pAttr->pValue, SIMPLEPROFILE_CHAR2_LEN );
-        break;
-      
+          if(maxLen > SIMPLEPROFILE_CHAR2_LEN)
+          {
+              *pLen = SIMPLEPROFILE_CHAR2_LEN;
+          }
+          else
+          {
+              *pLen = maxLen;
+          }
+          tmos_memcpy(pValue, pAttr->pValue, *pLen);
+          break;
+
       case SIMPLEPROFILE_CHAR4_UUID:
-        *pLen = SIMPLEPROFILE_CHAR4_LEN;
-        tmos_memcpy( pValue, pAttr->pValue, SIMPLEPROFILE_CHAR4_LEN );
-        break;
-      
+          if(maxLen > SIMPLEPROFILE_CHAR4_LEN)
+          {
+              *pLen = SIMPLEPROFILE_CHAR4_LEN;
+          }
+          else
+          {
+              *pLen = maxLen;
+          }
+          tmos_memcpy(pValue, pAttr->pValue, *pLen);
+          break;
+
       case SIMPLEPROFILE_CHAR5_UUID:
-        *pLen = SIMPLEPROFILE_CHAR5_LEN;
-        tmos_memcpy( pValue, pAttr->pValue, SIMPLEPROFILE_CHAR5_LEN );
-        break;
+          if(maxLen > SIMPLEPROFILE_CHAR5_LEN)
+          {
+              *pLen = SIMPLEPROFILE_CHAR5_LEN;
+          }
+          else
+          {
+              *pLen = maxLen;
+          }
+          tmos_memcpy(pValue, pAttr->pValue, *pLen);
+          break;
         
       default:
         // Should never get here! (characteristics 3 and 4 do not have read permissions)

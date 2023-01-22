@@ -1,10 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : CH57x_timer2.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/15
-* Description 
-*******************************************************************************/
+ * File Name          : CH57x_timer2.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/15
+ * Description 
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 #include "CH57x_common.h"
 
@@ -92,6 +96,7 @@ void TMR2_CapInit( CapModeTypeDef cap )
 /*******************************************************************************
 * Function Name  : TMR2_DMACfg
 * Description    : 配置DMA功能
+* Note           : DMA须在PWM初始化后进行配置
 * Input          : s:  
                     ENABLE  - 打开   
                     DISABLE - 关闭	

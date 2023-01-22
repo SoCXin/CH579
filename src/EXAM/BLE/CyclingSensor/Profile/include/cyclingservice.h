@@ -1,11 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : cyclingservice.h
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/10
-* Description        : 
-            
-*******************************************************************************/
+ * File Name          : cyclingservice.h
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/10
+ * Description        :         
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 #ifndef CYCLINGSERVICE_H
 #define CYCLINGSERVICE_H
@@ -124,11 +127,9 @@ typedef void (*cyclingServiceCB_t)( uint8 event, uint32 *pNewCummVal );
  *
  * @brief   collect the TMOS task ID.
  *
- * @param   task_id - TMOS task ID.
- *
  * @return  none
  */
-extern void CyclingService_Init( uint8 task_id );
+extern void CyclingService_Init(void);
 
 /*********************************************************************
  * @fn      CyclingService_ProcessEvent

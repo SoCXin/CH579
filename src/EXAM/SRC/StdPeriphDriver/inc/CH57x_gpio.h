@@ -1,4 +1,14 @@
-
+/********************************** (C) COPYRIGHT *******************************
+ * File Name          : CH57x_gpio.h
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2022/12/05
+ * Description        : 
+ ********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 
 #ifndef __CH57x_GPIO_H__
@@ -78,15 +88,15 @@ void GPIOB_ModeCfg( UINT32 pin, GPIOModeTypeDef mode );				/* GPIOB¶Ë¿ÚÒý½ÅÄ£Ê½Å
 #define	GPIOB_InverseBits( pin )		(R32_PB_OUT ^= pin)			/* GPIOB¶Ë¿ÚÒý½ÅÊä³öµçÆ½·­×ª */
 #define	GPIOA_ReadPort()				(R32_PA_PIN)				/* GPIOA¶Ë¿Ú32Î»Êý¾Ý·µ»Ø£¬µÍ16Î»ÓÐÐ§ */
 #define	GPIOB_ReadPort()				(R32_PB_PIN)				/* GPIOB¶Ë¿Ú32Î»Êý¾Ý·µ»Ø£¬µÍ24Î»ÓÐÐ§ */
-#define	GPIOA_ReadPortPin( pin )		(R32_PA_PIN&pin)			/* GPIOA¶Ë¿ÚÒý½Å×´Ì¬£¬0-Òý½ÅµÍµçÆ½£¬(!0)-Òý½Å¸ßµçÆ½ */
-#define	GPIOB_ReadPortPin( pin )		(R32_PB_PIN&pin)			/* GPIOB¶Ë¿ÚÒý½Å×´Ì¬£¬0-Òý½ÅµÍµçÆ½£¬(!0)-Òý½Å¸ßµçÆ½ */
+#define	GPIOA_ReadPortPin( pin )		(R32_PA_PIN&(pin))			/* GPIOA¶Ë¿ÚÒý½Å×´Ì¬£¬0-Òý½ÅµÍµçÆ½£¬(!0)-Òý½Å¸ßµçÆ½ */
+#define	GPIOB_ReadPortPin( pin )		(R32_PB_PIN&(pin))			/* GPIOB¶Ë¿ÚÒý½Å×´Ì¬£¬0-Òý½ÅµÍµçÆ½£¬(!0)-Òý½Å¸ßµçÆ½ */
 
 void GPIOA_ITModeCfg( UINT32 pin, GPIOITModeTpDef mode );			/* GPIOAÒý½ÅÖÐ¶ÏÄ£Ê½ÅäÖÃ */
 void GPIOB_ITModeCfg( UINT32 pin, GPIOITModeTpDef mode );			/* GPIOBÒý½ÅÖÐ¶ÏÄ£Ê½ÅäÖÃ */
 #define	GPIOA_ReadITFlagPort()			(R16_PA_INT_IF)				/* ¶ÁÈ¡GPIOA¶Ë¿ÚÖÐ¶Ï±êÖ¾×´Ì¬ */
 #define	GPIOB_ReadITFlagPort()			(R16_PB_INT_IF)				/* ¶ÁÈ¡GPIOB¶Ë¿ÚÖÐ¶Ï±êÖ¾×´Ì¬ */
-#define	GPIOA_ReadITFlagBit( pin )		(R16_PA_INT_IF&pin)		    /* ¶ÁÈ¡GPIOA¶Ë¿ÚÒý½ÅÖÐ¶Ï±êÖ¾×´Ì¬ */
-#define	GPIOB_ReadITFlagBit( pin )		(R16_PB_INT_IF&pin)		    /* ¶ÁÈ¡GPIOB¶Ë¿ÚÒý½ÅÖÐ¶Ï±êÖ¾×´Ì¬ */
+#define	GPIOA_ReadITFlagBit( pin )		(R16_PA_INT_IF&(pin))		    /* ¶ÁÈ¡GPIOA¶Ë¿ÚÒý½ÅÖÐ¶Ï±êÖ¾×´Ì¬ */
+#define	GPIOB_ReadITFlagBit( pin )		(R16_PB_INT_IF&(pin))		    /* ¶ÁÈ¡GPIOB¶Ë¿ÚÒý½ÅÖÐ¶Ï±êÖ¾×´Ì¬ */
 #define	GPIOA_ClearITFlagBit( pin )		(R16_PA_INT_IF = pin)		/* Çå³ýGPIOA¶Ë¿ÚÒý½ÅÖÐ¶Ï±êÖ¾×´Ì¬ */
 #define	GPIOB_ClearITFlagBit( pin )		(R16_PB_INT_IF = pin)		/* Çå³ýGPIOB¶Ë¿ÚÒý½ÅÖÐ¶Ï±êÖ¾×´Ì¬ */
 

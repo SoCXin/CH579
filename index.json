@@ -40,9 +40,8 @@
         "speed": 115200
     },
     "keywords": [
-        "dev-platform",
         "ARM",
-        "Cortex-M",
+        "Cortex-M0",
         "WCH",
         "CH579",
         "ETH","SDIO","BLE","I2C","RTC","SPI",

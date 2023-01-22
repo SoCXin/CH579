@@ -422,6 +422,16 @@
               <FileType>1</FileType>
               <FilePath>..\Profile\gattprofile.c</FilePath>
             </File>
+            <File>
+              <FileName>app_generic_color_model.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\app_generic_color_model.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_generic_lightness_model.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\APP\app_generic_lightness_model.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

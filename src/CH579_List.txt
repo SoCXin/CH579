@@ -43,22 +43,17 @@ http://wch.cn
   |      |      |      |      |      |      |-- EXAM13.C:C示例源程序,创建长文件名文件  
   |      |      |      |      |      |-- USB_LIB：U盘文件系统库文件
   |      |      |      |-- NET
-  |      |      |      |      |-- DHCP_Client：DHCP功能例程，获取IP地址
-  |      |      |      |      |-- DNS：DNS例程，用域名解析出目标IP地址                            
-  |      |      |      |      |-- FTP_Client：FTP客户端例程
-  |      |      |      |      |-- FTP_Server：FTP服务器例程
-  |      |      |      |      |-- IP_Raw：IP_Raw例程，IP层建立连接、进行数据收发
-  |      |      |      |      |-- MQTT
-  |      |      |      |      |       |-- MQTT_SRC：MQTT协议源文件
-  |      |      |      |      |       |-- MQTT_Pub：MQTT-Publish例程
-  |      |      |      |      |       |-- MQTT_Sub：MQTT-Subscibe例程
-  |      |      |      |      |-- TCP_Client
-  |      |      |      |      |       |-- TCP_MultipleClients：TCP多客户端例程，建立4个TCP客户端
-  |      |      |      |      |       |-- TCP_SingleClient：TCP单客户端例程，建立1个TCP客户端
-  |      |      |      |      |-- TCP_Server: TCP_Server例程，建立TCP服务器
-  |      |      |      |      |-- UDP_Client：UDP_Client例程，通过UDP协议发送报文
-  |      |      |      |      |-- UDP_Server：UDP_Server例程，接受来自广播IP的指定端口报文，并将接受到报文的地址作为目标地址发送报文
-  |      |      |      |      |-- CH57xNET协议栈库说明.pdf：以太网协议栈库说明  
+  |      |      |      |      |-- DHCP：演示DHCP自动获取IP，并建立TCP连接进行数据回传
+  |      |      |      |      |-- DNS：DHCP自动获取ip后，再请求域名解析演示例程                           
+  |      |      |      |      |-- FTP_Client：FTP例程演示从FTP服务器文件夹获取指定文件内容，在服务器新建文件夹，文件夹下新建文件，写入指定内容
+  |      |      |      |      |-- FTP_Server：FTP 服务器例程
+  |      |      |      |      |-- IPRaw_PING：演示PING功能
+  |      |      |      |      |-- MQTT：演示基于TCP/IP的MQTT协议通讯 
+  |      |      |      |      |-- TcpClient：演示Tcp client连接服务器后接收数据再回传
+  |      |      |      |      |-- TcpServer：演示Tcp Server连接到客户端后接收数据并回传
+  |      |      |      |      |-- UdpClient：演示Udp Client接收数据并回传
+  |      |      |      |      |-- UdpServer：演示Udp Server接收数据并回传
+  |      |      |      |      |-- WCHNET使用文档.pdf：以太网协议栈库说明  
   |      |      |      |-- BLE
   |      |      |      |      |-- Broadcaster：广播者角色例程，处于广播态一直广播
   |      |      |      |      |-- CyclingSensor：骑行传感器例程，连接主机后定时上传速度和踏频
@@ -73,8 +68,9 @@ http://wch.cn
   |      |      |      |      |-- HID_Touch：蓝牙触摸例程，模拟触摸笔设备，连接主机后定时上传触摸值
   |      |      |      |      |-- MultiCentral：主机多连接例程，主动扫描周围设备，连接至给定的三个从机设备地址，寻找自定义服务及特征，执行读写命令，需与从机例程配合使用,并将从机设备地址修改为该例程目标地址，三个从机设备地址默认为 (84:C2:E4:03:02:02)、(84:C2:E4:03:02:03)、(84:C2:E4:03:02:04)
   |      |      |      |      |-- Observer：观察者角色例程，定时扫描，如果扫描结果不为空，则打印扫描到的广播地址
-  |      |      |      |      |-- DirectTest：直接测试例程，测试指定通信频道发送数据包
+  |      |      |      |      |-- Direct_Test_Mode：DTM测试例程序，结合RF测试工具使用
   |      |      |      |      |-- RF_PHY：非标准无线收发例程
+  |      |      |      |      |-- RF_PHY_Hop：非标准无线跳频收发例程
   |      |      |      |      |-- BackupUpgrade_IAP：备份无线升级IAP例程，检测当前代码标志，判断是否搬运备份区代码到用户区并运行用户区代码
   |      |      |      |      |-- BackupUpgrade_OTA：备份无线升级用户例程，外设从机例程基础上添加OTA功能，可将升级固件保存到备份区后跳转IAP程序进行升级
   |      |      |      |      |-- OnlyUpdateApp_IAP：固定库无线升级IAP例程，具备OTA功能，接收升级固件后对用户区代码进行升级
@@ -94,5 +90,5 @@ http://wch.cn
   |      |      |      |      |-- HAL：例程共用的硬件相关文件
   |      |      |      |      |-- LIB：BLE协议栈库文件及其头文件
   |      |      |      |      |-- CH57xBLE协议栈库说明.pdf：蓝牙协议栈库说明
-  |      |      |      |      |-- BLE认证证书：产品：WCH CH57x  QDID：135567
+  |      |      |      |      |-- BLE认证证书：产品：WCH CH57x  QDID：D051556
   |

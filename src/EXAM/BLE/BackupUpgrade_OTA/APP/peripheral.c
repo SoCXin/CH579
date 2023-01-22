@@ -1,11 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : Peripheral.C
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/10
-* Description        : 外设从机应用程序，初始化广播连接参数，然后广播，直至连接主机后，通过自定义服务传输数据
-            
-*******************************************************************************/
+ * File Name          : Peripheral.C
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/10
+ * Description        : 外设从机应用程序，初始化广播连接参数，然后广播，直至连接主机后，通过自定义服务传输数据           
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*********************************************************************
  * INCLUDES
@@ -134,7 +137,6 @@ static uint8 attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple Peripheral";
 OTA_IAP_CMD_t iap_rec_data;
 
 /* OTA解析结果 */
-__align(8) UINT32 OpParaData[4];  
 UINT32 OpParaDataLen = 0;
 UINT32 OpAdd = 0;
 
@@ -656,7 +658,6 @@ void Rec_OTA_IAP_DataDeal(void)
 		/* 编程 */
 		case CMD_IAP_PROM:
 		{
-			UINT32 i;
 			UINT8 status;
 			
 			OpParaDataLen = iap_rec_data.program.len;   
@@ -668,16 +669,7 @@ void Rec_OTA_IAP_DataDeal(void)
 			OpAdd += IMAGE_B_START_ADD;
 			PRINT("IAP_PROM: %08x len:%d \r\n",(int)OpAdd,(int)OpParaDataLen);
 
-			for(i=0; i<(OpParaDataLen/4); i++)
-			{
-				OpParaData[i] = (UINT32)(iap_rec_data.program.buf[0+4*i]);
-				OpParaData[i] |= ((UINT32)(iap_rec_data.program.buf[1+4*i]) << 8);
-				OpParaData[i] |= ((UINT32)(iap_rec_data.program.buf[2+4*i]) << 16);
-				OpParaData[i] |= ((UINT32)(iap_rec_data.program.buf[3+4*i]) << 24);
-			}
-			
-			status = FlashWriteBuf(OpAdd, OpParaData, (UINT16) OpParaDataLen);				
-			
+			status = FlashWriteBuf(OpAdd, (PUINT32)iap_rec_data.program.buf, (UINT16) OpParaDataLen);				
 			if( status ) 	OTA_IAP_SendCMDDealSta(status);
 			break;
 		}
@@ -698,7 +690,16 @@ void Rec_OTA_IAP_DataDeal(void)
 			VerifyStatus = 0;
 			
 			PRINT("IAP_ERASE start:%08x num:%d\r\n",(int)OpAdd,(int)EraseBlockNum);
-
+			
+            if(EraseAdd < IMAGE_B_START_ADD || (EraseAdd + (EraseBlockNum - 1) * FLASH_BLOCK_SIZE) > IMAGE_IAP_START_ADD)
+            {
+                OTA_IAP_SendCMDDealSta(0xFF);
+            }
+            else
+            {
+                /* 启动擦除 */
+                tmos_set_event(Peripheral_TaskID, OTA_FLASH_ERASE_EVT);
+            }
 			/* 启动擦除 */
 			tmos_set_event( Peripheral_TaskID, OTA_FLASH_ERASE_EVT );
 			break;
@@ -770,6 +771,9 @@ void Rec_OTA_IAP_DataDeal(void)
 			send_buf[5] = (UINT8)(FLASH_BLOCK_SIZE & 0xff);
 			send_buf[6] = (UINT8)((FLASH_BLOCK_SIZE>>8) & 0xff);
 			
+			/* CHIP ID */
+            send_buf[7] = CHIP_ID&0xFF;
+            send_buf[8] = (CHIP_ID>>8)&0xFF;
 			/* 有需要再增加 */
 			
 			/* 发送信息 */

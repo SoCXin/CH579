@@ -1,10 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : CH57x_clk.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/15
-* Description 
-*******************************************************************************/
+ * File Name          : CH57x_clk.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/15
+ * Description 
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 #include "CH57x_common.h"
 
@@ -28,86 +32,224 @@ void SystemInit(void)
 }
 
 /*******************************************************************************
+* Function Name  : SYS_ClkXT32MPon
+* Description    : 打开外部32MHz振荡器电源并等待其稳定
+* Input          : None			   				
+* Return         : None
+*******************************************************************************/
+void SYS_ClkXT32MPon(void)
+{
+    uint32_t i, j;
+
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+    R8_HFCK_PWR_CTRL |= RB_CLK_XT32M_PON;
+    R8_SAFE_ACCESS_SIG = 0;
+
+    /* 以40MHz时钟计算1200us延时时间 */
+    for (i = 0; i < 1200; i++) {
+        for (j = 0; j < 4; j++) {
+            __nop();
+        }
+    }
+}
+
+/*******************************************************************************
+* Function Name  : SYS_ClkXT32MPon
+* Description    : 打开内部32MHz振荡器电源并等待其稳定
+* Input          : None			   				
+* Return         : None
+*******************************************************************************/
+void SYS_ClkINT32MPon(void)
+{
+    uint32_t i;
+
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+    R8_HFCK_PWR_CTRL |= RB_CLK_INT32M_PON;
+    R8_SAFE_ACCESS_SIG = 0;
+
+    /* 以40MHz时钟计算1us延时时间 */
+    for (i = 0; i < 4; i++) {
+        __nop();
+    }
+}
+
+/*******************************************************************************
+* Function Name  : SYS_ClkXT32MPon
+* Description    : 打开PLL电源并等待其稳定
+* Input          : None			   				
+* Return         : None
+*******************************************************************************/
+void SYS_PLLPon(void)
+{
+    uint32_t i, j;
+
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+    R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+    R8_HFCK_PWR_CTRL |= RB_CLK_PLL_PON;
+    R8_SAFE_ACCESS_SIG = 0;  
+
+    /* 以40MHz时钟计算3000us延时时间 */
+    for (i = 0; i < 3000; i++) {
+        for (j = 0; j < 4; j++) {
+            __nop();
+        }
+    }
+}
+/*******************************************************************************
 * Function Name  : SetSysClock
 * Description    : 重设系统运行时钟
 * Input          : sc: 系统时钟源选择
 					refer to SYS_CLKTypeDef
 * Return         : None
 *******************************************************************************/
-void SetSysClock( SYS_CLKTypeDef sc)
-{	
-    switch( sc )
+void SetSysClock(SYS_CLKTypeDef sc)
+{
+    switch (sc)
     {
         case CLK_SOURCE_LSI:
-        	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    		R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-            R8_CK32K_CONFIG &= ~RB_CLK_OSC32K_XT;
-            R16_CLK_SYS_CFG = (3<<6)|0x08;
+            LClk32K_Select(Clk32K_LSI);
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+            R16_CLK_SYS_CFG = (3 << 6) | 0x08;
             break;
         case CLK_SOURCE_LSE:
-        	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    		R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-            R8_CK32K_CONFIG |= RB_CLK_OSC32K_XT;
-            R16_CLK_SYS_CFG = (3<<6)|0x08;
+            LClk32K_Select(Clk32K_LSE);
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+            R16_CLK_SYS_CFG = (3 << 6) | 0x08;
             break;
         case CLK_SOURCE_HSE_32MHz:
-        	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    		R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT|(2<<6)|0x08;
+            if (!SYS_IsClkXT32MPon()) {
+                SYS_ClkXT32MPon();
+            }
+
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT | (2 << 6) | 0x08;
             break;
         case CLK_SOURCE_HSE_16MHz:
-        	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    		R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT|(0<<6)|0x02;
+            if (!SYS_IsClkXT32MPon()) {
+                SYS_ClkXT32MPon();
+            }
+
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT | (0 << 6) | 0x02;
             break;
         case CLK_SOURCE_HSE_8MHz:
-        	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    		R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT|(0<<6)|0x04;
+            if (!SYS_IsClkXT32MPon()) {
+                SYS_ClkXT32MPon();
+            }
+
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT | (0 << 6) | 0x04;
             break;
         case CLK_SOURCE_HSI_32MHz:
-        	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    		R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-            R16_CLK_SYS_CFG = (2<<6)|0x08;
+           if (!SYS_IsClkINT32MPon()) {
+                SYS_ClkINT32MPon();
+            }
+
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+            R16_CLK_SYS_CFG = (2 << 6) | 0x08;
+            R8_HFCK_PWR_CTRL &= ~RB_CLK_XT32M_PON;
             break;
         case CLK_SOURCE_HSI_16MHz:
-        	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    		R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-            R16_CLK_SYS_CFG = (0<<6)|0x02;
+            if (!SYS_IsClkINT32MPon()) {
+                SYS_ClkINT32MPon();
+            }
+
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+            R16_CLK_SYS_CFG = (0 << 6) | 0x02;
+            R8_HFCK_PWR_CTRL &= ~RB_CLK_XT32M_PON;
             break;
         case CLK_SOURCE_HSI_8MHz:
-        	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    		R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-            R16_CLK_SYS_CFG = (0<<6)|0x04;
+            if (!SYS_IsClkINT32MPon()) {
+                SYS_ClkINT32MPon();
+            }
+
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+            R16_CLK_SYS_CFG = (0 << 6) | 0x04;
+            R8_HFCK_PWR_CTRL &= ~RB_CLK_XT32M_PON;
             break;
         case CLK_SOURCE_PLL_40MHz:
-        	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    		R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT|(1<<6)|12;
+            /* PLL默认使用外部32MHz时钟源倍频 */
+            if (!SYS_IsClkXT32MPon()) {
+                SYS_ClkXT32MPon();
+            }
+
+            if (!SYS_IsPLLPon()) {
+                SYS_PLLPon();
+            }
+
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT | (1 << 6) | 12;
             break;
         case CLK_SOURCE_PLL_32MHz:
-        	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    		R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT|(1<<6)|15;
+            /* PLL默认使用外部32MHz时钟源倍频 */
+            if (!SYS_IsClkXT32MPon()) {
+                SYS_ClkXT32MPon();
+            }
+
+            if (!SYS_IsPLLPon()) {
+                SYS_PLLPon();
+            }
+
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT | (1 << 6) | 15;
             break;
         case CLK_SOURCE_PLL_24MHz:
-        	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    		R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT|(1<<6)|20;
+            /* PLL默认使用外部32MHz时钟源倍频 */
+            if (!SYS_IsClkXT32MPon()) {
+                SYS_ClkXT32MPon();
+            }
+
+            if (!SYS_IsPLLPon()) {
+                SYS_PLLPon();
+            }
+
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT | (1 << 6) | 20;
             break;
         case CLK_SOURCE_PLL_20MHz:
-        	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    		R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT|(1<<6)|24;
+            /* PLL默认使用外部32MHz时钟源倍频 */
+            if (!SYS_IsClkXT32MPon()) {
+                SYS_ClkXT32MPon();
+            }
+
+            if (!SYS_IsPLLPon()) {
+                SYS_PLLPon();
+            }
+            
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT | (1 << 6) | 24;
             break;
         case CLK_SOURCE_PLL_16MHz:
-        	R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
-    		R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
-            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT|(1<<6)|30;
+            /* PLL默认使用外部32MHz时钟源倍频 */
+            if (!SYS_IsClkXT32MPon()) {
+                SYS_ClkXT32MPon();
+            }
+
+            if (!SYS_IsPLLPon()) {
+                SYS_PLLPon();
+            }
+
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+            R16_CLK_SYS_CFG = RB_CLK_OSC32M_XT | (1 << 6) | 30;
             break;
-        default :
-            break;		
-    }	
+        default:
+            break;
+    }
     R8_SAFE_ACCESS_SIG = 0;
 }
 
@@ -156,6 +298,48 @@ void HClk32M_Select( HClk32MTypeDef hc)
 }
 
 /*******************************************************************************
+* Function Name  : LClk32k_PON
+* Description    : 32K 低频振荡器电源控制
+* Input          : hc: 
+					Clk32K_LSI   -   选择内部32K
+					Clk32K_LSE   -   选择外部32K
+* Return         : None
+*******************************************************************************/
+void LClk32k_Power(LClk32KTypeDef hc, bool enable)
+{
+    uint8_t clk_pin;
+    if (enable) {
+        if (hc == Clk32K_LSI) {
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;	
+            R8_CK32K_CONFIG |= RB_CLK_INT32K_PON;
+            R8_SAFE_ACCESS_SIG = 0;
+        } else if (hc == Clk32K_LSE) {
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;	
+            R8_CK32K_CONFIG |= RB_CLK_XT32K_PON;
+            R8_SAFE_ACCESS_SIG = 0; 
+        }
+
+        do {
+            clk_pin = (R8_CK32K_CONFIG & RB_32K_CLK_PIN);
+        } while ((clk_pin != (R8_CK32K_CONFIG & RB_32K_CLK_PIN)) || (!clk_pin)); 
+    } else {
+        if (hc == Clk32K_LSI) {
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;	
+            R8_CK32K_CONFIG &= ~RB_CLK_INT32K_PON;
+            R8_SAFE_ACCESS_SIG = 0;
+        } else if (hc == Clk32K_LSE) {
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+            R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;	
+            R8_CK32K_CONFIG &= ~RB_CLK_XT32K_PON;
+            R8_SAFE_ACCESS_SIG = 0; 
+        }
+    }
+}
+
+/*******************************************************************************
 * Function Name  : LClk32K_Select
 * Description    : 32K 低频时钟来源
 * Input          : hc: 
@@ -165,6 +349,8 @@ void HClk32M_Select( HClk32MTypeDef hc)
 *******************************************************************************/
 void LClk32K_Select( LClk32KTypeDef hc)
 {
+    LClk32k_Power(hc, true);
+
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;	
     if( hc == Clk32K_LSI)

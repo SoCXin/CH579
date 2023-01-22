@@ -1,10 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : KEY.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2014/05/12
-* Description        : 
-*******************************************************************************/
+ * File Name          : KEY.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2014/05/12
+ * Description        : 
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 
 
@@ -16,7 +20,11 @@
 
 /**************************************************************************************************
  *                                        GLOBAL VARIABLES
- **************************************************************************************************/
+ ******************* *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 static uint8 halKeySavedKeys;     /* 保留按键最后的状态，用于查询是否有键值变化 */
 

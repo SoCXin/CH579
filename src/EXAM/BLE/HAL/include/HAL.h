@@ -1,10 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : HAL.h
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2016/05/05
-* Description        : 
-*******************************************************************************/
+ * File Name          : HAL.h
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2016/05/05
+ * Description        : 
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 
 

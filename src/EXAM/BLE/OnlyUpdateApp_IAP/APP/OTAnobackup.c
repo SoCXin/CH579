@@ -1,11 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : OTAnobackup.C
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/10
-* Description        : 外设从机应用程序，初始化广播连接参数，然后广播，直至连接主机后，通过自定义服务传输数据
-            
-*******************************************************************************/
+ * File Name          : OTAnobackup.C
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/10
+ * Description        : 外设从机应用程序，初始化广播连接参数，然后广播，直至连接主机后，通过自定义服务传输数据        
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*********************************************************************
  * INCLUDES
@@ -134,7 +137,7 @@ static uint8 attDeviceName[GAP_DEVICE_NAME_LEN] = "OTA OTA OTA OTA !";
 OTA_IAP_CMD_t iap_rec_data;
 
 /* OTA解析结果 */
-__align(8) UINT32 OpParaData[4];  
+__align(8) UINT32 OpParaData[256/4];  
 UINT32 OpParaDataLen = 0;
 UINT32 OpAdd = 0;
 
@@ -485,7 +488,7 @@ void Rec_OTA_IAP_DataDeal(void)
 		{
 			UINT32 i;
 			UINT8 status;
-			
+			uint8 *p_flash;
 			OpParaDataLen = iap_rec_data.program.len;   
 			
 			OpAdd = (UINT32)(iap_rec_data.program.addr[0]);
@@ -503,18 +506,29 @@ void Rec_OTA_IAP_DataDeal(void)
 			}
 			
 			/* 第一块内容 */
-			if((OpAdd + OpParaDataLen) <= FLASH_BLOCK_SIZE)
+			if(OpAdd < FLASH_BLOCK_SIZE)
 			{
-				for(i = 0; i < OpParaDataLen; i++)
+				for(i = 0; (OpAdd+i < FLASH_BLOCK_SIZE) && (i<OpParaDataLen); i++)
 				{
 					vectors_block_buf[OpAdd + i] = iap_rec_data.program.buf[i];
 				}
 				status = SUCCESS;
-				OTA_IAP_SendCMDDealSta(status);
+				if( i== OpParaDataLen )
+				{
+					OTA_IAP_SendCMDDealSta(status);
+				}
+				else
+				{
+					OpParaDataLen -= i;
+					p_flash = (UINT8 *)(OpAdd+i);
+					status = FlashWriteBuf(OpAdd+i, (PUINT32)&OpParaData[i/4], (UINT16) OpParaDataLen);
+					OTA_IAP_SendCMDDealSta(status);
+				}
 			}
 			/* 其他块 */
 			else
 			{
+				p_flash = (UINT8 *)(OpAdd);
 				status = FlashWriteBuf(OpAdd, (PUINT32)OpParaData, (UINT16) OpParaDataLen);
 				OTA_IAP_SendCMDDealSta(status);
 			}
@@ -562,23 +576,35 @@ void Rec_OTA_IAP_DataDeal(void)
 			OpAdd |= ((UINT32)(iap_rec_data.verify.addr[1]) << 8);
 			OpAdd = OpAdd * 4;
 			
-			PRINT("IAP_VERIFY: %08x len:%d \r\n",(int)OpAdd,(int)OpParaDataLen);
 			
 			p_flash = (UINT8 *)OpAdd;
 			
 			/* 第一块和RAM保存的参数对比 */
-			if( (OpAdd + OpParaDataLen) <= FLASH_BLOCK_SIZE )
+			if(OpAdd < FLASH_BLOCK_SIZE)
 			{
-				for(i=0; i<OpParaDataLen; i++)
+				for(i = 0; (OpAdd+i < FLASH_BLOCK_SIZE) && (i<OpParaDataLen); i++)
 				{
 					if(vectors_block_buf[OpAdd+i] != iap_rec_data.verify.buf[i])break;
 				}
 				if(i == OpParaDataLen) status = SUCCESS;
-				else                   status = 0xff;
+				else if((OpAdd+i == FLASH_BLOCK_SIZE))
+				{
+					UINT8 j;
+					OpParaDataLen -= i;
+					p_flash = (UINT8 *)(OpAdd+i);
+					for(j=0; j<OpParaDataLen; j++)
+					{
+						if(p_flash[j] != iap_rec_data.verify.buf[i+j]) break;
+					}
+					if(j == OpParaDataLen) status = SUCCESS;
+					else                   		status = 0xff;
+				}
+				else				status = 0xff;
 			}
 			/* 其他和Flash里对比 */
 			else
 			{
+				p_flash = (UINT8 *)(OpAdd);
 				for(i=0; i<OpParaDataLen; i++)
 				{
 					if(p_flash[i] != iap_rec_data.verify.buf[i]) break;
@@ -630,6 +656,9 @@ void Rec_OTA_IAP_DataDeal(void)
 			send_buf[5] = (UINT8)(FLASH_BLOCK_SIZE & 0xff);
 			send_buf[6] = (UINT8)((FLASH_BLOCK_SIZE>>8) & 0xff);
 			
+			/* CHIP ID */
+            send_buf[7] = CHIP_ID&0xFF;
+            send_buf[8] = (CHIP_ID>>8)&0xFF;
 			/* 有需要再增加 */
 			
 			/* 发送信息 */

@@ -1,11 +1,14 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : observer.c
-* Author             : WCH
-* Version            : V1.0
-* Date               : 2018/12/10
-* Description        : 观察应用程序，初始化扫描参数，然后定时扫描，如果扫描结果不为空，则打印扫描到的广播地址
-            
-*******************************************************************************/
+ * File Name          : observer.c
+ * Author             : WCH
+ * Version            : V1.0
+ * Date               : 2018/12/10
+ * Description        : 观察应用程序，初始化扫描参数，然后定时扫描，如果扫描结果不为空，则打印扫描到的广播地址     
+ *********************************************************************************
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * Attention: This software (modified or not) and binary are used for 
+ * microcontroller manufactured by Nanjing Qinheng Microelectronics.
+ *******************************************************************************/
 
 /*********************************************************************
  * INCLUDES
@@ -72,7 +75,7 @@ static gapDevRec_t ObserverDevList[DEFAULT_MAX_SCAN_RES];
  * LOCAL FUNCTIONS
  */
 static void ObserverEventCB( gapRoleEvent_t *pEvent );
-static void Observer_ProcessOSALMsg( tmos_event_hdr_t *pMsg );
+static void Observer_ProcessTMOSMsg( tmos_event_hdr_t *pMsg );
 static void ObserverAddDeviceInfo( uint8 *pAddr, uint8 addrType );
 char *bdAddr2Str ( uint8 *pAddr );
 
@@ -99,7 +102,7 @@ static const gapRoleObserverCB_t ObserverRoleCB =
  *          initialization/setup, table initialization, power up
  *          notification).
  *
- * @param   task_id - the ID assigned by OSAL.  This ID should be
+ * @param   task_id - the ID assigned by TMOS.  This ID should be
  *                    used to send messages and set timers.
  *
  * @return  none
@@ -128,7 +131,7 @@ void Observer_Init( )
  *          is called to process all events for the task.  Events
  *          include timers, messages and any other user defined events.
  *
- * @param   task_id  - The OSAL assigned task ID.
+ * @param   task_id  - The TMOS assigned task ID.
  * @param   events - events to process.  This is a bit map and can
  *                   contain more than one event.
  *
@@ -137,7 +140,7 @@ void Observer_Init( )
 uint16 Observer_ProcessEvent( uint8 task_id, uint16 events )
 {
   
-//  VOID task_id; // OSAL required parameter that isn't used in this function
+//  VOID task_id; // TMOS required parameter that isn't used in this function
   
   if ( events & SYS_EVENT_MSG )
   {
@@ -145,9 +148,9 @@ uint16 Observer_ProcessEvent( uint8 task_id, uint16 events )
 
     if ( (pMsg = tmos_msg_receive( ObserverTaskId )) != NULL )
     {
-      Observer_ProcessOSALMsg( (tmos_event_hdr_t *)pMsg );
+      Observer_ProcessTMOSMsg( (tmos_event_hdr_t *)pMsg );
 
-      // Release the OSAL message
+      // Release the TMOS message
       tmos_msg_deallocate( pMsg );
     }
 
@@ -168,7 +171,7 @@ uint16 Observer_ProcessEvent( uint8 task_id, uint16 events )
 }
 
 /*********************************************************************
- * @fn      Observer_ProcessOSALMsg
+ * @fn      Observer_ProcessTMOSMsg
  *
  * @brief   Process an incoming task message.
  *
@@ -176,7 +179,7 @@ uint16 Observer_ProcessEvent( uint8 task_id, uint16 events )
  *
  * @return  none
  */
-static void Observer_ProcessOSALMsg( tmos_event_hdr_t *pMsg )
+static void Observer_ProcessTMOSMsg( tmos_event_hdr_t *pMsg )
 {
   switch ( pMsg->event )
   {
