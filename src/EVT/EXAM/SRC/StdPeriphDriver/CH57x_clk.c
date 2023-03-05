@@ -20,6 +20,23 @@
 *******************************************************************************/
 void SystemInit(void)
 {
+	uint8_t  flash_cfg;
+	
+	flash_cfg = R8_CFG_FLASH & RB_CFG_FLASH_X;
+	if(flash_cfg >= 8 && flash_cfg <= 13)
+	{
+		flash_cfg = 2 + (flash_cfg - 8);
+		if(flash_cfg >= 6) {
+            flash_cfg = 6;
+        }
+        
+		flash_cfg = (R8_CFG_FLASH & (~ RB_CFG_FLASH_X)) | flash_cfg;
+		R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
+		R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
+		R8_CFG_FLASH = flash_cfg;
+		R8_SAFE_ACCESS_SIG = 0;
+	}
+
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG1;		
     R8_SAFE_ACCESS_SIG = SAFE_ACCESS_SIG2;
     R16_CLK_SYS_CFG = (2<<6)|0x08;			// 32M -> Fsys
