@@ -5,14 +5,14 @@
  * Date               : 2022/05/31
  * Description        : Main program body.
  * Copyright (c) 2023 Nanjing Qinheng Microelectronics Co., Ltd.
- * Attention: This software (modified or not) and binary are used for 
+ * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
  *******************************************************************************/
 /*
  *@Note
- MQTT example, this program is used to demonstrate TCP/IP-based MQTT protocol 
- communication. After the MCU connects to Ethernet and MQTT server, 
- it will publish a topic, then subscribe to this topic, publish messages to this 
+ MQTT example, this program is used to demonstrate TCP/IP-based MQTT protocol
+ communication. After the MCU connects to Ethernet and MQTT server,
+ it will publish a topic, then subscribe to this topic, publish messages to this
  topic, and finally receive messages sent by itself .
  */
 #include "CH57x_common.h"
@@ -24,7 +24,7 @@ uint8_t MACAddr[6];                                //MAC address
 uint8_t IPAddr[4]   = {192,168,1,10};              //IP address
 uint8_t GWIPAddr[4] = {192,168,1,1};               //Gateway IP address
 uint8_t IPMask[4]   = {255,255,255,0};             //subnet mask
-uint8_t DESIP[4]    = {0};                         //MQTT server IP address,!!need to be modified manually
+uint8_t DESIP[4]    = {124,221,183,170};                         //MQTT server IP address,!!need to be modified manually
 
 uint8_t SocketId;                                  //socket id
 uint8_t SocketRecvBuf[RECE_BUF_LEN];               //socket receive buffer
@@ -34,8 +34,8 @@ uint16_t srcport = 4200;                           //source port
 
 int pub_qos = 0;                                   //Publish quality of service
 int sub_qos = 0;                                   //Subscription quality of service
-char *username  = "user";                         //Device name, unique for each device, available "/" for classification
-char *password  = "user";                         //Server login password
+char *username  = "ch32";                         //Device name, unique for each device, available "/" for classification
+char *password  = "123456";                         //Server login password
 char *sub_topic = "topic/1";                       //subscribed session name
 char *pub_topic = "topic/1";                       //Published session name
 char *payload = "WCHNET MQTT";                     //Publish content
@@ -62,7 +62,7 @@ void mStopIfError(uint8_t iError)
         return;
     printf("Error: %02X\r\n", (uint16_t) iError);
 }
-	
+
 /*******************************************************************************
 * Function Name  : ETH_IRQHandler
 * Description    : This function handles ETH exception.
@@ -70,9 +70,9 @@ void mStopIfError(uint8_t iError)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void ETH_IRQHandler( void )						                             	
+void ETH_IRQHandler( void )
 {
-    WCHNET_ETHIsr();							                              	
+    WCHNET_ETHIsr();
 }
 
 /*******************************************************************************
@@ -82,7 +82,7 @@ void ETH_IRQHandler( void )
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void TMR0_IRQHandler( void ) 					                             	
+void TMR0_IRQHandler( void )
 {
 	if(!publishValid){            //Set the publishValid flag every 20s
 		timeCnt += 10;
@@ -91,8 +91,8 @@ void TMR0_IRQHandler( void )
 			timeCnt = 0;
 		}
 	}
-	WCHNET_TimeIsr(WCHNETTIMERPERIOD);                                     
-	R8_TMR0_INT_FLAG |= 0xff;					                      
+	WCHNET_TimeIsr(WCHNETTIMERPERIOD);
+	R8_TMR0_INT_FLAG |= 0xff;
 }
 
 /*******************************************************************************
@@ -104,13 +104,13 @@ void TMR0_IRQHandler( void )
 *******************************************************************************/
 void Timer0Init(void)
 {
-	R8_TMR0_CTRL_MOD = RB_TMR_ALL_CLEAR;		                               
-	R8_TMR0_CTRL_MOD = 0;						                             
-	R32_TMR0_CNT_END = FREQ_SYS/1000*WCHNETTIMERPERIOD;	               
-	R8_TMR0_INT_FLAG = R8_TMR0_INT_FLAG;		                          
-	R8_TMR0_INTER_EN = RB_TMR_IE_CYC_END;	                              
+	R8_TMR0_CTRL_MOD = RB_TMR_ALL_CLEAR;
+	R8_TMR0_CTRL_MOD = 0;
+	R32_TMR0_CNT_END = FREQ_SYS/1000*WCHNETTIMERPERIOD;
+	R8_TMR0_INT_FLAG = R8_TMR0_INT_FLAG;
+	R8_TMR0_INTER_EN = RB_TMR_IE_CYC_END;
 	R8_TMR0_CTRL_MOD |= RB_TMR_COUNT_EN;
-	NVIC_EnableIRQ(TMR0_IRQn);	
+	NVIC_EnableIRQ(TMR0_IRQn);
 }
 
 /*******************************************************************************
@@ -122,12 +122,12 @@ void Timer0Init(void)
 *******************************************************************************/
 void SystemClock_UART1_init(void)
 {
-    PWR_UnitModCfg(ENABLE, UNIT_SYS_PLL);                                      
-    DelayMs(3); 
-    SetSysClock(CLK_SOURCE_HSE_32MHz);                                          
+    PWR_UnitModCfg(ENABLE, UNIT_SYS_PLL);
+    DelayMs(3);
+    SetSysClock(CLK_SOURCE_HSE_32MHz);
     GPIOA_SetBits( GPIO_Pin_9 );
-    GPIOA_ModeCfg( GPIO_Pin_9, GPIO_ModeOut_PP_5mA );                           
-	UART1_DefInit( );                                                            
+    GPIOA_ModeCfg( GPIO_Pin_9, GPIO_ModeOut_PP_5mA );
+	UART1_DefInit( );
 }
 
 /*********************************************************************
@@ -325,7 +325,7 @@ void msgDeal(unsigned char *msg, int len)
 {
     unsigned char *ptr = msg;
 	uint8_t i;
-	
+
     printf("payload len = %d\r\n",len);
     printf("payload: ");
     for( i = 0; i < len; i++)
@@ -450,7 +450,7 @@ void WCHNET_HandleGlobalInt(void)
 int main(void)
 {
     uint8_t i;
-	
+
 	SystemClock_UART1_init();                                    //USART initialize
     printf("MQTT Test\r\n");
     printf("net version:%x\n", WCHNET_GetVer());
@@ -462,7 +462,7 @@ int main(void)
     for ( i = 0; i < 6; i++)
         printf("%x ", MACAddr[i]);
     printf("\n");
-    Timer0Init(); 
+    Timer0Init();
     i = ETH_LibInit(IPAddr, GWIPAddr, IPMask, MACAddr);          //Ethernet library initialize
     mStopIfError(i);
     if (i == WCHNET_ERR_SUCCESS)

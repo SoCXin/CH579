@@ -5,7 +5,7 @@
 
 ## [简介](https://github.com/SoCXin/CH579/wiki)
 
-[CH579](https://github.com/SoCXin/CH579) 片上集成低功耗蓝牙BLE(4.2)通讯模块、以太网控制器及收发器、全速USB主机和设备控制器及收发器、段式LCD驱动模块、ADC、触摸按键检测模块、RTC等外设。
+[CH579](https://www.wch.cn/products/CH579.html) 片上集成低功耗蓝牙BLE(4.2)通讯模块、以太网控制器及收发器、全速USB主机和设备控制器及收发器、段式LCD驱动模块、ADC、触摸按键检测模块、RTC等外设。
 
 支持USB2.0全速和低速主机或设备，支持控制/批量/中断同步传输，支持USB type-C主从/电流检测,提供14通道12位ADC模数转换器，支持14通道触摸按键,提供4组26位定时器，支持捕捉/采样，支持12路PWM输出。
 
@@ -37,6 +37,6 @@
 
 * [CH579M (QFN48)](https://item.szlcsc.com/489884.html)
 * [CH579F (QFN28)](https://item.szlcsc.com/489883.html)
-* 硬件设计:[CH579带网口蓝牙开发板](https://oshwhub.com/staunchheart/ch579)
+* [CH579带网口蓝牙开发板](https://oshwhub.com/staunchheart/ch579)
 
-
+[CH579](https://github.com/SoCXin/CH579)的升级替换版本包括：[CH32F208](https://github.com/SoCXin/CH32F208)和[CH32V208](https://github.com/SoCXin/CH32V208)

@@ -18,3 +18,4 @@ listing
 *.dep
 *.BIN
 *.ZIP
+*.hex
